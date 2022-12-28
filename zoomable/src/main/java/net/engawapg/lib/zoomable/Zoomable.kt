@@ -161,11 +161,11 @@ class ZoomState(
 
     private var shouldConsumeEvent: Boolean? = null
 
-    fun startGesture() {
+    internal fun startGesture() {
         shouldConsumeEvent = null
     }
 
-    fun canConsumeGesture(pan: Offset, zoom: Float): Boolean {
+    internal fun canConsumeGesture(pan: Offset, zoom: Float): Boolean {
         return shouldConsumeEvent ?: run {
             var consume = true
             if (zoom == 1f) { // One finger gesture
@@ -193,7 +193,7 @@ class ZoomState(
     private val velocityTracker = VelocityTracker()
     private var shouldFling = true
 
-    suspend fun applyGesture(
+    internal suspend fun applyGesture(
         pan: Offset,
         zoom: Float,
         position: Offset,
@@ -224,7 +224,7 @@ class ZoomState(
 
     private val velocityDecay = exponentialDecay<Float>()
 
-    suspend fun endGesture() = coroutineScope {
+    internal suspend fun endGesture() = coroutineScope {
         if (shouldFling) {
             val velocity = velocityTracker.calculateVelocity()
             launch {
