@@ -35,8 +35,10 @@ fun SingleImage(
     painter: Painter,
     modifier: Modifier = Modifier,
 ) {
-    val zoomState = rememberZoomState(maxScale = 5f)
-    zoomState.setImageSize(painter.intrinsicSize)
+    val zoomState = rememberZoomState(
+        maxScale = 5f,
+        imageSize = painter.intrinsicSize,
+    )
     Image(
         painter = painter,
         contentDescription = "Zoomable image",

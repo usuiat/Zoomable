@@ -100,7 +100,10 @@ private suspend fun PointerInputScope.detectTransformGestures(
 }
 
 @Stable
-class ZoomState(private val maxScale: Float) {
+class ZoomState(
+    private val maxScale: Float,
+    private var imageSize: Size = Size.Zero
+) {
     private var _scale = Animatable(1f).apply {
         updateBounds(0.9f, maxScale)
     }
@@ -121,7 +124,6 @@ class ZoomState(private val maxScale: Float) {
         updateFitImageSize()
     }
 
-    private var imageSize = Size.Zero
     fun setImageSize(size: Size) {
         imageSize = size
         updateFitImageSize()
@@ -129,8 +131,13 @@ class ZoomState(private val maxScale: Float) {
 
     private var fitImageSize = Size.Zero
     private fun updateFitImageSize() {
-        if ((imageSize == Size.Zero) || (layoutSize == Size.Zero)) {
+        if (layoutSize == Size.Zero) {
             fitImageSize = Size.Zero
+            return
+        }
+
+        if (imageSize == Size.Zero) {
+            fitImageSize = layoutSize
             return
         }
 
@@ -238,7 +245,12 @@ class ZoomState(private val maxScale: Float) {
 }
 
 @Composable
-fun rememberZoomState(maxScale: Float) = remember { ZoomState(maxScale) }
+fun rememberZoomState(
+    maxScale: Float,
+    imageSize: Size = Size.Zero
+) = remember {
+    ZoomState(maxScale, imageSize)
+}
 
 fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
