@@ -75,7 +75,6 @@ fun SingleImage(
     modifier: Modifier = Modifier,
 ) {
     val zoomState = rememberZoomState(
-        maxScale = 5f,
         imageSize = painter.intrinsicSize,
     )
     Image(
@@ -91,7 +90,7 @@ fun ZoomableText(
     text: String,
     modifier: Modifier = Modifier,
 ) {
-    val zoomState = rememberZoomState(maxScale = 5f)
+    val zoomState = rememberZoomState()
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.zoomable(zoomState)

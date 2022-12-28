@@ -246,7 +246,7 @@ class ZoomState(
 
 @Composable
 fun rememberZoomState(
-    maxScale: Float,
+    maxScale: Float = 5f,
     imageSize: Size = Size.Zero
 ) = remember {
     ZoomState(maxScale, imageSize)
