@@ -102,7 +102,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
 @Stable
 class ZoomState(
     private val maxScale: Float,
-    private var imageSize: Size = Size.Zero
+    private var contentSize: Size = Size.Zero
 ) {
     private var _scale = Animatable(1f).apply {
         updateBounds(0.9f, maxScale)
@@ -121,33 +121,33 @@ class ZoomState(
     private var layoutSize = Size.Zero
     fun setLayoutSize(size: Size) {
         layoutSize = size
-        updateFitImageSize()
+        updateFitContentSize()
     }
 
-    fun setImageSize(size: Size) {
-        imageSize = size
-        updateFitImageSize()
+    fun setContentSize(size: Size) {
+        contentSize = size
+        updateFitContentSize()
     }
 
-    private var fitImageSize = Size.Zero
-    private fun updateFitImageSize() {
+    private var fitContentSize = Size.Zero
+    private fun updateFitContentSize() {
         if (layoutSize == Size.Zero) {
-            fitImageSize = Size.Zero
+            fitContentSize = Size.Zero
             return
         }
 
-        if (imageSize == Size.Zero) {
-            fitImageSize = layoutSize
+        if (contentSize == Size.Zero) {
+            fitContentSize = layoutSize
             return
         }
 
-        val imageAspectRatio = imageSize.width / imageSize.height
+        val contentAspectRatio = contentSize.width / contentSize.height
         val layoutAspectRatio = layoutSize.width / layoutSize.height
 
-        fitImageSize = if (imageAspectRatio > layoutAspectRatio) {
-            imageSize * (layoutSize.width / imageSize.width)
+        fitContentSize = if (contentAspectRatio > layoutAspectRatio) {
+            contentSize * (layoutSize.width / contentSize.width)
         } else {
-            imageSize * (layoutSize.height / imageSize.height)
+            contentSize * (layoutSize.height / contentSize.height)
         }
     }
 
@@ -203,13 +203,13 @@ class ZoomState(
             _scale.snapTo(_scale.value * zoom)
         }
 
-        val boundX = java.lang.Float.max((fitImageSize.width * _scale.value - layoutSize.width), 0f) / 2f
+        val boundX = java.lang.Float.max((fitContentSize.width * _scale.value - layoutSize.width), 0f) / 2f
         _offsetX.updateBounds(-boundX, boundX)
         launch {
             _offsetX.snapTo(_offsetX.value + pan.x)
         }
 
-        val boundY = java.lang.Float.max((fitImageSize.height * _scale.value - layoutSize.height), 0f) / 2f
+        val boundY = java.lang.Float.max((fitContentSize.height * _scale.value - layoutSize.height), 0f) / 2f
         _offsetY.updateBounds(-boundY, boundY)
         launch {
             _offsetY.snapTo(_offsetY.value + pan.y)
@@ -247,9 +247,9 @@ class ZoomState(
 @Composable
 fun rememberZoomState(
     maxScale: Float = 5f,
-    imageSize: Size = Size.Zero
+    contentSize: Size = Size.Zero
 ) = remember {
-    ZoomState(maxScale, imageSize)
+    ZoomState(maxScale, contentSize)
 }
 
 fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(

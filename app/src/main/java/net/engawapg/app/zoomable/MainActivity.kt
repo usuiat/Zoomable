@@ -75,7 +75,7 @@ fun SingleImage(
     modifier: Modifier = Modifier,
 ) {
     val zoomState = rememberZoomState(
-        imageSize = painter.intrinsicSize,
+        contentSize = painter.intrinsicSize,
     )
     Image(
         painter = painter,
