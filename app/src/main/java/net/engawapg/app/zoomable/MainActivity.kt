@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -56,24 +55,16 @@ fun AppScreen() {
                 .clipToBounds()
         ) {
             when (tabTitles[tabIndex]) {
-                "Single Image" -> SingleImage(
-                    painter = painterResource(id = R.drawable.bird1),
-                    modifier = Modifier.fillMaxSize()
-                )
-                "Text" -> ZoomableText(
-                    text = "This is Zoomable Text.",
-                    modifier = Modifier.fillMaxSize()
-                )
+                "Single Image" -> SingleImage()
+                "Text" -> ZoomableText()
             }
         }
     }
 }
 
 @Composable
-fun SingleImage(
-    painter: Painter,
-    modifier: Modifier = Modifier,
-) {
+fun SingleImage() {
+    val painter = painterResource(id = R.drawable.bird1)
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
     )
@@ -81,22 +72,19 @@ fun SingleImage(
         painter = painter,
         contentDescription = "Zoomable image",
         contentScale = ContentScale.Fit,
-        modifier = modifier.zoomable(zoomState),
+        modifier = Modifier.fillMaxSize().zoomable(zoomState),
     )
 }
 
 @Composable
-fun ZoomableText(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+fun ZoomableText() {
     val zoomState = rememberZoomState()
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.zoomable(zoomState)
+        modifier = Modifier.fillMaxSize().zoomable(zoomState)
     ) {
         Text(
-            text = text,
+            text = "This is zoomable text.",
             textAlign = TextAlign.Center,
         )
     }
