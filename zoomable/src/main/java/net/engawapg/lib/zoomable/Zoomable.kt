@@ -1,6 +1,7 @@
 package net.engawapg.lib.zoomable
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.foundation.gestures.*
 import androidx.compose.runtime.Composable
@@ -102,7 +103,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
 @Stable
 class ZoomState(
     private val maxScale: Float,
-    private var contentSize: Size = Size.Zero
+    private var contentSize: Size = Size.Zero,
+    private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) {
     private var _scale = Animatable(1f).apply {
         updateBounds(0.9f, maxScale)
@@ -232,8 +234,6 @@ class ZoomState(
         }
     }
 
-    private val velocityDecay = exponentialDecay<Float>()
-
     internal suspend fun endGesture() = coroutineScope {
         if (shouldFling) {
             val velocity = velocityTracker.calculateVelocity()
@@ -257,9 +257,10 @@ class ZoomState(
 @Composable
 fun rememberZoomState(
     maxScale: Float = 5f,
-    contentSize: Size = Size.Zero
+    contentSize: Size = Size.Zero,
+    velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) = remember {
-    ZoomState(maxScale, contentSize)
+    ZoomState(maxScale, contentSize, velocityDecay)
 }
 
 fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(
