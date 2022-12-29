@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen() {
     var tabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Single Image", "HorizontalPager", "Text")
+    val tabTitles = listOf("Single Image", "Text", "HorizontalPager", "VerticalPager")
 
     Column {
         TabRow(
@@ -55,8 +56,9 @@ fun AppScreen() {
         ) {
             when (tabTitles[tabIndex]) {
                 "Single Image" -> SingleImage()
-                "HorizontalPager" -> ImageOnHorizontalPager()
                 "Text" -> ZoomableText()
+                "HorizontalPager" -> ImageOnHorizontalPager()
+                "VerticalPager" -> ImageOnVerticalPager()
             }
         }
     }
@@ -76,6 +78,22 @@ fun SingleImage() {
             .fillMaxSize()
             .zoomable(zoomState),
     )
+}
+
+@Composable
+fun ZoomableText() {
+    val zoomState = rememberZoomState()
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .zoomable(zoomState)
+    ) {
+        Text(
+            text = "This is zoomable text.",
+            textAlign = TextAlign.Center,
+        )
+    }
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -122,18 +140,47 @@ fun ImageOnHorizontalPager() {
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ZoomableText() {
-    val zoomState = rememberZoomState()
+fun ImageOnVerticalPager() {
+    val resources = listOf(R.drawable.shoebill1, R.drawable.shoebill2, R.drawable.shoebill3)
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .zoomable(zoomState)
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "This is zoomable text.",
-            textAlign = TextAlign.Center,
+        val pagerState = rememberPagerState()
+
+        VerticalPager(
+            count = resources.size,
+            state = pagerState,
+        ) {page ->
+            val painter = painterResource(id = resources[page])
+            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+            Image(
+                painter = painter,
+                contentDescription = "Zoomable image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zoomable(zoomState)
+            )
+            // Reset zoom state when the page is moved out of the window.
+            val isVisible by remember {
+                derivedStateOf {
+                    val offset = calculateCurrentOffsetForPage(page)
+                    (-1.0f < offset) and (offset < 1.0f)
+                }
+            }
+            LaunchedEffect(isVisible) {
+                zoomState.reset()
+            }
+        }
+
+        VerticalPagerIndicator(
+            pagerState = pagerState,
+            activeColor = Color(0x77ffffff),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 4.dp),
         )
     }
 }

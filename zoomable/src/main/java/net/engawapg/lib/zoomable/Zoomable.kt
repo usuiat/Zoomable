@@ -183,6 +183,16 @@ class ZoomState(
                             consume = false
                         }
                     }
+                    else if (ratio < 0.33) { // Vertical drag
+                        if ((pan.y < 0) && (_offsetY.value == _offsetY.lowerBound)) {
+                            // Drag bottom to top when bottom edge of the content is shown.
+                            consume = false
+                        }
+                        if ((pan.y > 0) && (_offsetY.value == _offsetY.upperBound)) {
+                            // Drag top to bottom when top edge of the content is shown.
+                            consume = false
+                        }
+                    }
                 }
             }
             shouldConsumeEvent = consume
