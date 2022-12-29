@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.google.accompanist.pager.*
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen() {
     var tabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Single Image", "Text", "HorizontalPager", "VerticalPager")
+    val tabTitles = listOf("Sync Image", "Async Image", "Text", "HorizontalPager", "VerticalPager")
 
     Column {
         ScrollableTabRow(
@@ -52,17 +53,18 @@ fun AppScreen() {
                 .clipToBounds()
         ) {
             when (tabTitles[tabIndex]) {
-                "Single Image" -> SingleImage()
-                "Text" -> ZoomableText()
-                "HorizontalPager" -> ImageOnHorizontalPager()
-                "VerticalPager" -> ImageOnVerticalPager()
+                "Sync Image" -> SyncImageSample()
+                "Async Image" -> AsyncImageSample()
+                "Text" -> TextSample()
+                "HorizontalPager" -> HorizontalPagerSample()
+                "VerticalPager" -> VerticalPagerSample()
             }
         }
     }
 }
 
 @Composable
-fun SingleImage() {
+fun SyncImageSample() {
     val painter = painterResource(id = R.drawable.penguin)
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
@@ -78,7 +80,23 @@ fun SingleImage() {
 }
 
 @Composable
-fun ZoomableText() {
+fun AsyncImageSample() {
+    val zoomState = rememberZoomState()
+    AsyncImage(
+        model = "https://github.com/usuiat.png",
+        contentDescription = "GitHub icon",
+        contentScale = ContentScale.Fit,
+        onSuccess = { state ->
+            zoomState.setContentSize(state.painter.intrinsicSize)
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .zoomable(zoomState)
+    )
+}
+
+@Composable
+fun TextSample() {
     val zoomState = rememberZoomState()
     Box(
         contentAlignment = Alignment.Center,
@@ -95,7 +113,7 @@ fun ZoomableText() {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ImageOnHorizontalPager() {
+fun HorizontalPagerSample() {
     val resources = listOf(R.drawable.bird1, R.drawable.bird2, R.drawable.bird3)
     Box(
         modifier = Modifier.fillMaxSize()
@@ -139,7 +157,7 @@ fun ImageOnHorizontalPager() {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ImageOnVerticalPager() {
+fun VerticalPagerSample() {
     val resources = listOf(R.drawable.shoebill1, R.drawable.shoebill2, R.drawable.shoebill3)
     Box(
         modifier = Modifier.fillMaxSize()
