@@ -64,7 +64,7 @@ fun AppScreen() {
 
 @Composable
 fun SingleImage() {
-    val painter = painterResource(id = R.drawable.bird1)
+    val painter = painterResource(id = R.drawable.penguin)
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
     )
