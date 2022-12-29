@@ -42,6 +42,18 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
+/**
+ * Customized transform gesture detector.
+ *
+ * A caller of this function can choose if the pointer events will be consumed.
+ * And the caller can implement [onGestureStart] and [onGestureEnd] event.
+ *
+ * @param panZoomLock This parameter is same as the original detectTransformGestures().
+ * @param onGesture If this lambda returns true, the pointer events will be consumed. If it returns
+ * false, the pointer events will not be consumed.
+ * @param onGestureStart This lambda is called when a gesture starts.
+ * @param onGestureEnd This lambda is called when a gesture ends.
+ */
 private suspend fun PointerInputScope.detectTransformGestures(
     panZoomLock: Boolean = false,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, rotation: Float, timeMillis: Long) -> Boolean,
@@ -116,6 +128,14 @@ private suspend fun PointerInputScope.detectTransformGestures(
     }
 }
 
+/**
+ * A state object that manage scale and offset.
+ *
+ * @param maxScale The maximum scale of the content.
+ * @param contentSize Size of content (i.e. image size.) If Zero, the composable layout size will
+ * be used as content size.
+ * @param velocityDecay The decay animation spec for fling behaviour.
+ */
 @Stable
 class ZoomState(
     private val maxScale: Float,
@@ -125,23 +145,44 @@ class ZoomState(
     private var _scale = Animatable(1f).apply {
         updateBounds(0.9f, maxScale)
     }
+    /**
+     * The scale of the content.
+     */
     val scale: Float
         get() = _scale.value
 
     private var _offsetX = Animatable(0f)
+    /**
+     * The horizontal offset of the content.
+     */
     val offsetX: Float
         get() = _offsetX.value
 
     private var _offsetY = Animatable(0f)
+    /**
+     * The vertical offset of the content.
+     */
     val offsetY: Float
         get() = _offsetY.value
 
     private var layoutSize = Size.Zero
+    /**
+     * Set composable layout size.
+     *
+     * Basically This function is called from [Modifier.zoomable] only.
+     *
+     * @param size The size of composable layout size.
+     */
     fun setLayoutSize(size: Size) {
         layoutSize = size
         updateFitContentSize()
     }
 
+    /**
+     * Set the content size.
+     *
+     * @param size The content size, for example an image size in pixel.
+     */
     fun setContentSize(size: Size) {
         contentSize = size
         updateFitContentSize()
@@ -169,6 +210,9 @@ class ZoomState(
         }
     }
 
+    /**
+     * Reset the scale and the offsets.
+     */
     suspend fun reset() = coroutineScope {
         launch { _scale.snapTo(1f) }
         _offsetX.updateBounds(0f, 0f)
@@ -270,6 +314,14 @@ class ZoomState(
     }
 }
 
+/**
+ * Creates a [ZoomState] that is remembered across compositions.
+ *
+ * @param maxScale The maximum scale of the content.
+ * @param contentSize Size of content (i.e. image size.) If Zero, the composable layout size will
+ * be used as content size.
+ * @param velocityDecay The decay animation spec for fling behaviour.
+ */
 @Composable
 fun rememberZoomState(
     maxScale: Float = 5f,
@@ -279,6 +331,11 @@ fun rememberZoomState(
     ZoomState(maxScale, contentSize, velocityDecay)
 }
 
+/**
+ * Modifier function that make the content zoomable.
+ *
+ * @param zoomState A [ZoomState] object.
+ */
 fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
         name = "zoomable"

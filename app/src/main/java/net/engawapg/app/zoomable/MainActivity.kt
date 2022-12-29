@@ -79,6 +79,11 @@ fun AppScreen() {
     }
 }
 
+/**
+ * Sample that shows a zoomable image synchronously.
+ *
+ * [Modifier.zoomable] modifies an [Image] composable which shows a resource image.
+ */
 @Composable
 fun SyncImageSample() {
     val painter = painterResource(id = R.drawable.penguin)
@@ -95,6 +100,12 @@ fun SyncImageSample() {
     )
 }
 
+/**
+ * Sample that shows a zoomable image asynchronously.
+ *
+ * [Modifier.zoomable] modifies Coil library's [AsyncImage] composable.
+ * setContentSize() will be called when the image data is loaded.
+ */
 @Composable
 fun AsyncImageSample() {
     val zoomState = rememberZoomState()
@@ -111,6 +122,11 @@ fun AsyncImageSample() {
     )
 }
 
+/**
+ * Sample that shows a zoomable text.
+ *
+ * [Modifier.zoomable] modifies [Text] composable.
+ */
 @Composable
 fun TextSample() {
     val zoomState = rememberZoomState()
@@ -127,6 +143,11 @@ fun TextSample() {
     }
 }
 
+/**
+ * Sample that shows a zoomable images on [HorizontalPager].
+ *
+ * We call reset() to reset scale and offset when an image is moved out of the windows.
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HorizontalPagerSample() {
@@ -171,6 +192,11 @@ fun HorizontalPagerSample() {
     }
 }
 
+/**
+ * Sample that shows a zoomable images on [VerticalPager].
+ *
+ * We call reset() to reset scale and offset when an image is moved out of the windows.
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun VerticalPagerSample() {
