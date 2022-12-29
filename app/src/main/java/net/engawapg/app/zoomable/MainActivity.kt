@@ -5,10 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,14 +34,14 @@ fun AppScreen() {
     val tabTitles = listOf("Single Image", "Text", "HorizontalPager", "VerticalPager")
 
     Column {
-        TabRow(
+        ScrollableTabRow(
             selectedTabIndex = tabIndex,
         ) {
             tabTitles.forEachIndexed { index, title ->
                 Tab(
                     selected = tabIndex == index,
                     onClick = { tabIndex = index },
-                    text = { Text(text = title, maxLines = 2) },
+                    text = { Text(text = title) },
                 )
             }
         }
