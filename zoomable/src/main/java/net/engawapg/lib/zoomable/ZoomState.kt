@@ -16,6 +16,7 @@
 
 package net.engawapg.lib.zoomable
 
+import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.exponentialDecay
@@ -40,10 +41,14 @@ import kotlin.math.abs
  */
 @Stable
 class ZoomState(
-    private val maxScale: Float,
+    @FloatRange(from = 1.0) private val maxScale: Float = 5f,
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) {
+    init {
+        require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
+    }
+
     private var _scale = Animatable(1f).apply {
         updateBounds(0.9f, maxScale)
     }
@@ -226,7 +231,7 @@ class ZoomState(
  */
 @Composable
 fun rememberZoomState(
-    maxScale: Float = 5f,
+    @FloatRange(from = 1.0) maxScale: Float = 5f,
     contentSize: Size = Size.Zero,
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) = remember {
