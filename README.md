@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation "net.engawapg.lib:zoomable:1.0.0"
+    implementation "net.engawapg.lib:zoomable:1.0.1"
 }
 ```
 
@@ -50,6 +50,10 @@ Image(
         .zoomable(zoomState),
 )
 ```
+
+## API Reference
+
+[API Reference🔎](https://usuiat.github.io/Zoomable/)
 
 ## Samples
 
