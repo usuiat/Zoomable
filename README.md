@@ -16,6 +16,11 @@ Image(
 )
 ```
 
+Zoomable can be used with
+- any composable components such as `Image`, `Text`, etc.
+- asynchronous image composable such as coil's `AsyncImage`.
+- Accompanist's `HorizontalPager` and `VerticalPager`.
+
 ## Usage
 
 ### Download
