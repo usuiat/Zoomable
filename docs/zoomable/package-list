@@ -1,0 +1,15 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:net.engawapg.lib.zoomable////PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/index.html
+$dokka.location:net.engawapg.lib.zoomable//rememberZoomState/#kotlin.Float#androidx.compose.ui.geometry.Size#androidx.compose.animation.core.DecayAnimationSpec[kotlin.Float]/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/remember-zoom-state.html
+$dokka.location:net.engawapg.lib.zoomable//zoomable/androidx.compose.ui.Modifier#net.engawapg.lib.zoomable.ZoomState/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/zoomable.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState///PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/index.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/ZoomState/#kotlin.Float#androidx.compose.ui.geometry.Size#androidx.compose.animation.core.DecayAnimationSpec[kotlin.Float]/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/-zoom-state.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/offsetX/#/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/offset-x.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/offsetY/#/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/offset-y.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/reset/#/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/reset.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/scale/#/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/scale.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/setContentSize/#androidx.compose.ui.geometry.Size/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/set-content-size.html
+$dokka.location:net.engawapg.lib.zoomable/ZoomState/setLayoutSize/#androidx.compose.ui.geometry.Size/PointingToDeclaration/zoomable/net.engawapg.lib.zoomable/-zoom-state/set-layout-size.html
+net.engawapg.lib.zoomable
+
