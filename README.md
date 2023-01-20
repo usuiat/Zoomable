@@ -33,9 +33,11 @@ repositories {
 }
 
 dependencies {
-    implementation "net.engawapg.lib:zoomable:1.0.1"
+    implementation "net.engawapg.lib:zoomable:$version"
 }
 ```
+
+The latest version: <img alt="Maven Central" src="https://img.shields.io/maven-central/v/net.engawapg.lib/zoomable">
 
 ### Modifier function
 
