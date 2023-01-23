@@ -15,10 +15,10 @@
  */
 
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.vanniktech.maven.publish'
-    id 'org.jetbrains.dokka'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.vanniktech.maven.publish)
+    alias(libs.plugins.dokka)
 }
 
 android {
@@ -50,20 +50,20 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.0'
+        kotlinCompilerExtensionVersion libs.versions.composeCompiler.get()
     }
 }
 
 dependencies {
-    implementation "androidx.compose.animation:animation-core:1.3.3"
-    implementation "androidx.compose.foundation:foundation:1.3.1"
-    implementation "androidx.compose.runtime:runtime:1.3.3"
-    implementation "androidx.compose.ui:ui:1.3.3"
-    implementation "androidx.compose.ui:ui-util:1.3.3"
+    implementation libs.compose.animation.core
+    implementation libs.compose.foundation
+    implementation libs.compose.runtime
+    implementation libs.compose.ui
+    implementation libs.compose.ui.util
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.test.ext
+    androidTestImplementation libs.androidx.test.espresso
 }
 
 dokkaHtml.configure {

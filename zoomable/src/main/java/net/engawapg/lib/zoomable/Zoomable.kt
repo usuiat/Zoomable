@@ -51,71 +51,69 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
 ) {
-    forEachGesture {
-        awaitPointerEventScope {
-            var rotation = 0f
-            var zoom = 1f
-            var pan = Offset.Zero
-            var pastTouchSlop = false
-            val touchSlop = viewConfiguration.touchSlop
-            var lockedToPanZoom = false
+    awaitEachGesture {
+        var rotation = 0f
+        var zoom = 1f
+        var pan = Offset.Zero
+        var pastTouchSlop = false
+        val touchSlop = viewConfiguration.touchSlop
+        var lockedToPanZoom = false
 
-            awaitFirstDown(requireUnconsumed = false)
-            onGestureStart()
-            do {
-                val event = awaitPointerEvent()
-                val canceled = event.changes.fastAny { it.isConsumed }
-                if (!canceled) {
-                    val zoomChange = event.calculateZoom()
-                    val rotationChange = event.calculateRotation()
-                    val panChange = event.calculatePan()
+        awaitFirstDown(requireUnconsumed = false)
+        onGestureStart()
+        do {
+            val event = awaitPointerEvent()
+            val canceled = event.changes.fastAny { it.isConsumed }
+            if (!canceled) {
+                val zoomChange = event.calculateZoom()
+                val rotationChange = event.calculateRotation()
+                val panChange = event.calculatePan()
 
-                    if (!pastTouchSlop) {
-                        zoom *= zoomChange
-                        rotation += rotationChange
-                        pan += panChange
+                if (!pastTouchSlop) {
+                    zoom *= zoomChange
+                    rotation += rotationChange
+                    pan += panChange
 
-                        val centroidSize = event.calculateCentroidSize(useCurrent = false)
-                        val zoomMotion = abs(1 - zoom) * centroidSize
-                        val rotationMotion = abs(rotation * kotlin.math.PI.toFloat() * centroidSize / 180f)
-                        val panMotion = pan.getDistance()
+                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                    val zoomMotion = abs(1 - zoom) * centroidSize
+                    val rotationMotion = abs(rotation * kotlin.math.PI.toFloat() * centroidSize / 180f)
+                    val panMotion = pan.getDistance()
 
-                        if (zoomMotion > touchSlop ||
-                            rotationMotion > touchSlop ||
-                            panMotion > touchSlop
-                        ) {
-                            pastTouchSlop = true
-                            lockedToPanZoom = panZoomLock && rotationMotion < touchSlop
-                        }
+                    if (zoomMotion > touchSlop ||
+                        rotationMotion > touchSlop ||
+                        panMotion > touchSlop
+                    ) {
+                        pastTouchSlop = true
+                        lockedToPanZoom = panZoomLock && rotationMotion < touchSlop
                     }
+                }
 
-                    if (pastTouchSlop) {
-                        val centroid = event.calculateCentroid(useCurrent = false)
-                        val effectiveRotation = if (lockedToPanZoom) 0f else rotationChange
-                        if (effectiveRotation != 0f ||
-                            zoomChange != 1f ||
-                            panChange != Offset.Zero
-                        ) {
-                            val isConsumed = onGesture(
-                                centroid,
-                                panChange,
-                                zoomChange,
-                                effectiveRotation,
-                                event.changes[0].uptimeMillis
-                            )
-                            if (isConsumed) {
-                                event.changes.fastForEach {
-                                    if (it.positionChanged()) {
-                                        it.consume()
-                                    }
+                if (pastTouchSlop) {
+                    val centroid = event.calculateCentroid(useCurrent = false)
+                    val effectiveRotation = if (lockedToPanZoom) 0f else rotationChange
+                    if (effectiveRotation != 0f ||
+                        zoomChange != 1f ||
+                        panChange != Offset.Zero
+                    ) {
+                        val isConsumed = onGesture(
+                            centroid,
+                            panChange,
+                            zoomChange,
+                            effectiveRotation,
+                            event.changes[0].uptimeMillis
+                        )
+                        if (isConsumed) {
+                            event.changes.fastForEach {
+                                if (it.positionChanged()) {
+                                    it.consume()
                                 }
                             }
                         }
                     }
                 }
-            } while (!canceled && event.changes.fastAny { it.pressed })
-            onGestureEnd()
-        }
+            }
+        } while (!canceled && event.changes.fastAny { it.pressed })
+        onGestureEnd()
     }
 }
 
