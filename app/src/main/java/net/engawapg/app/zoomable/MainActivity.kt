@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen() {
     var tabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Sync Image", "Async Image", "Text", "HorizontalPager", "VerticalPager")
+    val tabTitles = listOf("Sync Image", "Async Image", "Text", "HorizontalPager\n(Accompanist)", "VerticalPager\n(Accompanist)")
 
     Column {
         ScrollableTabRow(
@@ -72,8 +72,8 @@ fun AppScreen() {
                 "Sync Image" -> SyncImageSample()
                 "Async Image" -> AsyncImageSample()
                 "Text" -> TextSample()
-                "HorizontalPager" -> HorizontalPagerSample()
-                "VerticalPager" -> VerticalPagerSample()
+                "HorizontalPager\n(Accompanist)" -> AccompanistHorizontalPagerSample()
+                "VerticalPager\n(Accompanist)" -> AccompanistVerticalPagerSample()
             }
         }
     }
@@ -150,7 +150,7 @@ fun TextSample() {
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun HorizontalPagerSample() {
+fun AccompanistHorizontalPagerSample() {
     val resources = listOf(R.drawable.bird1, R.drawable.bird2, R.drawable.bird3)
     Box(
         modifier = Modifier.fillMaxSize()
@@ -199,7 +199,7 @@ fun HorizontalPagerSample() {
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun VerticalPagerSample() {
+fun AccompanistVerticalPagerSample() {
     val resources = listOf(R.drawable.shoebill1, R.drawable.shoebill2, R.drawable.shoebill3)
     Box(
         modifier = Modifier.fillMaxSize()
