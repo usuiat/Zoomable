@@ -48,7 +48,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen() {
     var tabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Sync Image", "Async Image", "Text", "HorizontalPager\n(Accompanist)", "VerticalPager\n(Accompanist)")
+    val tabTitles = listOf(
+        "Sync Image",
+        "Async Image",
+        "Text",
+        "HorizontalPager\n(Accompanist)",
+        "VerticalPager\n(Accompanist)",
+        "HorizontalPager\n(Androidx)",
+        "VerticalPager\n(Androidx)",
+    )
 
     Column {
         ScrollableTabRow(
@@ -74,6 +82,8 @@ fun AppScreen() {
                 "Text" -> TextSample()
                 "HorizontalPager\n(Accompanist)" -> AccompanistHorizontalPagerSample()
                 "VerticalPager\n(Accompanist)" -> AccompanistVerticalPagerSample()
+                "HorizontalPager\n(Androidx)" -> AndroidxHorizontalPagerSample()
+                "VerticalPager\n(Androidx)" -> AndroidxVerticalPagerSample()
             }
         }
     }
