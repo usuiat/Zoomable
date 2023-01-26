@@ -17,9 +17,14 @@ Image(
 ```
 
 Zoomable can be used with
+
 - any composable components such as `Image`, `Text`, etc.
 - asynchronous image composable such as coil's `AsyncImage`.
+
+Zoomable also can be used in conjunction with
+
 - Accompanist's `HorizontalPager` and `VerticalPager`.
+- Androidx's `HorizontalPager` and `VerticalPager` introduced in Compose v1.4.0.
 
 ## Usage
 
@@ -64,12 +69,13 @@ Image(
 
 ## Samples
 
-You can see some samples in [MainActivity.kt](app/src/main/java/net/engawapg/app/zoomable/MainActivity.kt)
+You can try sample [app](https://github.com/usuiat/Zoomable/tree/main/app) that contains following samples.
 
 - Standard Image composable
 - Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library
 - Text
-- Image on HorizontalPager and VerticalPager of [Accompanist](https://google.github.io/accompanist/pager/) library
+- Image on `HorizontalPager` and `VerticalPager` of [Accompanist](https://google.github.io/accompanist/pager/) library
+- Image on `HorizontalPager` and `VerticalPager` of [Androidx compose foundation package](https://developer.android.com/reference/kotlin/androidx/compose/foundation/pager/package-summary)
 
 ## Lisence
 
