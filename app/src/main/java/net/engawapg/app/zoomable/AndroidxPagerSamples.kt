@@ -4,14 +4,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -45,11 +41,7 @@ fun AndroidxHorizontalPagerSample() {
         )
 
         // Reset zoom state when the page is moved out of the window.
-        val isVisible by remember {
-            derivedStateOf {
-                pagerState.isVisibleForPage(page)
-            }
-        }
+        val isVisible = page == pagerState.settledPage
         LaunchedEffect(isVisible) {
             if (!isVisible) {
                 zoomState.reset()
@@ -85,27 +77,11 @@ fun AndroidxVerticalPagerSample() {
         )
 
         // Reset zoom state when the page is moved out of the window.
-        val isVisible by remember {
-            derivedStateOf {
-                pagerState.isVisibleForPage(page)
-            }
-        }
+        val isVisible = page == pagerState.settledPage
         LaunchedEffect(isVisible) {
             if (!isVisible) {
                 zoomState.reset()
             }
         }
     }
-}
-
-/**
- * Determine if the page is visible.
- *
- * @param page Page index to be determined.
- * @return true if the page is visible.
- */
-@OptIn(ExperimentalFoundationApi::class)
-fun PagerState.isVisibleForPage(page: Int): Boolean {
-    val offset = currentPageOffsetFraction + (currentPage - page).toFloat()
-    return (-1.0f < offset) and (offset < 1.0f)
 }
