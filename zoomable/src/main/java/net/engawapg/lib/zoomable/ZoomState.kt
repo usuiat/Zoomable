@@ -29,6 +29,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.lang.Float.max
 import kotlin.math.abs
 
 /**
@@ -178,20 +179,33 @@ class ZoomState(
         position: Offset,
         timeMillis: Long
     ) = coroutineScope {
-        launch {
-            _scale.snapTo(_scale.value * zoom)
-        }
+        val size = fitContentSize * scale
+        val newScale = (scale * zoom).coerceIn(0.9f, maxScale)
+        val newSize = fitContentSize * newScale
+        val deltaWidth = newSize.width - size.width
+        val deltaHeight = newSize.height - size.height
 
-        val boundX = java.lang.Float.max((fitContentSize.width * _scale.value - layoutSize.width), 0f) / 2f
+        // Position with the origin at the left top corner of the content.
+        val xInContent = position.x - offsetX + (size.width - layoutSize.width) * 0.5f
+        val yInContent = position.y - offsetY + (size.height - layoutSize.height) * 0.5f
+        // Offset to zoom the content around the pinch gesture position.
+        val newOffsetX = (deltaWidth * 0.5f) - (deltaWidth * xInContent / size.width)
+        val newOffsetY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
+
+        val boundX = max((newSize.width - layoutSize.width), 0f) * 0.5f
         _offsetX.updateBounds(-boundX, boundX)
         launch {
-            _offsetX.snapTo(_offsetX.value + pan.x)
+            _offsetX.snapTo(offsetX + pan.x + newOffsetX)
         }
 
-        val boundY = java.lang.Float.max((fitContentSize.height * _scale.value - layoutSize.height), 0f) / 2f
+        val boundY = max((newSize.height - layoutSize.height), 0f) * 0.5f
         _offsetY.updateBounds(-boundY, boundY)
         launch {
-            _offsetY.snapTo(_offsetY.value + pan.y)
+            _offsetY.snapTo(offsetY + pan.y + newOffsetY)
+        }
+
+        launch {
+            _scale.snapTo(newScale)
         }
 
         velocityTracker.addPosition(timeMillis, position)
