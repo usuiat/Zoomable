@@ -22,6 +22,7 @@ import net.engawapg.lib.zoomable.zoomable
 @Composable
 fun SyncImageSample() {
     val painter = painterResource(id = R.drawable.penguin)
+//    val painter = painterResource(id = R.drawable.grid)   // for debug
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
     )
