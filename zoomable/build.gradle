@@ -62,6 +62,7 @@ dependencies {
     implementation libs.compose.ui.util
 
     testImplementation libs.junit
+    testImplementation libs.kotlinx.coroutines.test
     androidTestImplementation libs.androidx.test.ext
     androidTestImplementation libs.androidx.test.espresso
 }
