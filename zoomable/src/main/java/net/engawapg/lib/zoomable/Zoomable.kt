@@ -39,25 +39,21 @@ import kotlin.math.abs
  * A caller of this function can choose if the pointer events will be consumed.
  * And the caller can implement [onGestureStart] and [onGestureEnd] event.
  *
- * @param panZoomLock This parameter is same as the original detectTransformGestures().
  * @param onGesture If this lambda returns true, the pointer events will be consumed. If it returns
  * false, the pointer events will not be consumed.
  * @param onGestureStart This lambda is called when a gesture starts.
  * @param onGestureEnd This lambda is called when a gesture ends.
  */
 private suspend fun PointerInputScope.detectTransformGestures(
-    panZoomLock: Boolean = false,
-    onGesture: (centroid: Offset, pan: Offset, zoom: Float, rotation: Float, timeMillis: Long) -> Boolean,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
 ) {
     awaitEachGesture {
-        var rotation = 0f
         var zoom = 1f
         var pan = Offset.Zero
         var pastTouchSlop = false
         val touchSlop = viewConfiguration.touchSlop
-        var lockedToPanZoom = false
 
         awaitFirstDown(requireUnconsumed = false)
         onGestureStart()
@@ -66,40 +62,28 @@ private suspend fun PointerInputScope.detectTransformGestures(
             val canceled = event.changes.fastAny { it.isConsumed }
             if (!canceled) {
                 val zoomChange = event.calculateZoom()
-                val rotationChange = event.calculateRotation()
                 val panChange = event.calculatePan()
 
                 if (!pastTouchSlop) {
                     zoom *= zoomChange
-                    rotation += rotationChange
                     pan += panChange
 
                     val centroidSize = event.calculateCentroidSize(useCurrent = false)
                     val zoomMotion = abs(1 - zoom) * centroidSize
-                    val rotationMotion = abs(rotation * kotlin.math.PI.toFloat() * centroidSize / 180f)
                     val panMotion = pan.getDistance()
 
-                    if (zoomMotion > touchSlop ||
-                        rotationMotion > touchSlop ||
-                        panMotion > touchSlop
-                    ) {
+                    if (zoomMotion > touchSlop || panMotion > touchSlop ) {
                         pastTouchSlop = true
-                        lockedToPanZoom = panZoomLock && rotationMotion < touchSlop
                     }
                 }
 
                 if (pastTouchSlop) {
                     val centroid = event.calculateCentroid(useCurrent = false)
-                    val effectiveRotation = if (lockedToPanZoom) 0f else rotationChange
-                    if (effectiveRotation != 0f ||
-                        zoomChange != 1f ||
-                        panChange != Offset.Zero
-                    ) {
+                    if (zoomChange != 1f || panChange != Offset.Zero) {
                         val isConsumed = onGesture(
                             centroid,
                             panChange,
                             zoomChange,
-                            effectiveRotation,
                             event.changes[0].uptimeMillis
                         )
                         if (isConsumed) {
@@ -136,7 +120,7 @@ fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(
         .pointerInput(Unit) {
             detectTransformGestures(
                 onGestureStart = { zoomState.startGesture() },
-                onGesture = { centroid, pan, zoom, _, timeMillis ->
+                onGesture = { centroid, pan, zoom, timeMillis ->
                     val canConsume = zoomState.canConsumeGesture(pan = pan, zoom = zoom)
                     if (canConsume) {
                         scope.launch {
