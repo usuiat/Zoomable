@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
@@ -50,10 +51,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGestureEnd: () -> Unit = {},
 ) {
     awaitEachGesture {
-        var zoom = 1f
-        var pan = Offset.Zero
-        var pastTouchSlop = false
-        val touchSlop = viewConfiguration.touchSlop
+        val touchSlop = TouchSlop(viewConfiguration.touchSlop)
 
         awaitFirstDown(requireUnconsumed = false)
         onGestureStart()
@@ -63,21 +61,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
             if (!canceled) {
                 val zoomChange = event.calculateZoom()
                 val panChange = event.calculatePan()
-
-                if (!pastTouchSlop) {
-                    zoom *= zoomChange
-                    pan += panChange
-
-                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
-                    val zoomMotion = abs(1 - zoom) * centroidSize
-                    val panMotion = pan.getDistance()
-
-                    if (zoomMotion > touchSlop || panMotion > touchSlop ) {
-                        pastTouchSlop = true
-                    }
-                }
-
-                if (pastTouchSlop) {
+                if (touchSlop.isPast(zoomChange, panChange, event)) {
                     val centroid = event.calculateCentroid(useCurrent = false)
                     if (zoomChange != 1f || panChange != Offset.Zero) {
                         val isConsumed = onGesture(
@@ -98,6 +82,43 @@ private suspend fun PointerInputScope.detectTransformGestures(
             }
         } while (!canceled && event.changes.fastAny { it.pressed })
         onGestureEnd()
+    }
+}
+
+/**
+ * Touch slop detector.
+ *
+ * This class holds accumulated zoom and pan value to see if touch slop is past.
+ *
+ * @param threshold Threshold of movement of gesture after touch down. If the movement exceeds this
+ * value, it is judged to be a swipe or zoom gesture.
+ */
+private class TouchSlop(private val threshold: Float) {
+    private var zoom = 1f
+    private var pan = Offset.Zero
+    private var _isPast = false
+
+    /**
+     * Judge the touch slop is past.
+     *
+     * @param zoomChange The difference of zoom compared to the previous event.
+     * @param panChange The difference of pan compared to the previous event.
+     * @param event Event that occurs this time.
+     * @return True if the accumulated zoom or pan exceeds the threshold.
+     */
+    fun isPast(zoomChange: Float, panChange: Offset, event: PointerEvent): Boolean {
+        if (_isPast) {
+            return true
+        }
+
+        zoom *= zoomChange
+        pan += panChange
+        val centroidSize = event.calculateCentroidSize(useCurrent = false)
+        val zoomMotion = abs(1 - zoom) * centroidSize
+        val panMotion = pan.getDistance()
+        _isPast = zoomMotion > threshold || panMotion > threshold
+
+        return _isPast
     }
 }
 
