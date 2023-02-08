@@ -64,24 +64,31 @@ private suspend fun PointerInputScope.detectTransformGestures(
                 if (touchSlop.isPast(zoomChange, panChange, event)) {
                     val centroid = event.calculateCentroid(useCurrent = false)
                     if (zoomChange != 1f || panChange != Offset.Zero) {
-                        val isConsumed = onGesture(
+                        val canConsume = onGesture(
                             centroid,
                             panChange,
                             zoomChange,
                             event.changes[0].uptimeMillis
                         )
-                        if (isConsumed) {
-                            event.changes.fastForEach {
-                                if (it.positionChanged()) {
-                                    it.consume()
-                                }
-                            }
+                        if (canConsume) {
+                            event.consumePositionChanges()
                         }
                     }
                 }
             }
         } while (!canceled && event.changes.fastAny { it.pressed })
         onGestureEnd()
+    }
+}
+
+/**
+ * Consume event if the position is changed.
+ */
+private fun PointerEvent.consumePositionChanges() {
+    changes.fastForEach {
+        if (it.positionChanged()) {
+            it.consume()
+        }
     }
 }
 
