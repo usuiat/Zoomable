@@ -22,10 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.toSize
@@ -49,36 +46,93 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
-) {
-    awaitEachGesture {
-        val touchSlop = TouchSlop(viewConfiguration.touchSlop)
+) = awaitEachGesture {
+    val firstDown = awaitFirstDown(requireUnconsumed = false)
+    onGestureStart()
 
-        awaitFirstDown(requireUnconsumed = false)
-        onGestureStart()
-        do {
-            val event = awaitPointerEvent()
-            val canceled = event.changes.fastAny { it.isConsumed }
-            if (!canceled) {
-                val zoomChange = event.calculateZoom()
-                val panChange = event.calculatePan()
-                if (touchSlop.isPast(zoomChange, panChange, event)) {
-                    val centroid = event.calculateCentroid(useCurrent = false)
-                    if (zoomChange != 1f || panChange != Offset.Zero) {
-                        val canConsume = onGesture(
-                            centroid,
-                            panChange,
-                            zoomChange,
-                            event.changes[0].uptimeMillis
-                        )
+    var firstUp: PointerInputChange = firstDown
+    var isTap = true
+    val touchSlop = TouchSlop(viewConfiguration.touchSlop)
+    forEachPointerEventUntilReleased { event ->
+        if (touchSlop.isPast(event)) {
+            val zoomChange = event.calculateZoom()
+            val panChange = event.calculatePan()
+            if (zoomChange != 1f || panChange != Offset.Zero) {
+                val centroid = event.calculateCentroid(useCurrent = false)
+                val timeMillis = event.changes[0].uptimeMillis
+                val canConsume = onGesture(centroid, panChange, zoomChange, timeMillis)
+                if (canConsume) {
+                    event.consumePositionChanges()
+                }
+            }
+            isTap = false
+        }
+        if (event.changes.size > 1) {
+            isTap = false
+        }
+        firstUp = event.changes[0]
+    }
+
+    if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
+        isTap = false
+    }
+
+    // Vertical scrolling following a double tap is treated as a zoom gesture.
+    if (isTap) {
+        if (awaitSecondDown(firstUp) != null) {
+            val secondTouchSlop = TouchSlop(viewConfiguration.touchSlop)
+            forEachPointerEventUntilReleased { event ->
+                if (secondTouchSlop.isPast(event)) {
+                    val panChange = event.calculatePan()
+                    val zoomChange = 1f + panChange.y * 0.004f
+                    if (zoomChange != 1f) {
+                        val centroid = event.calculateCentroid(useCurrent = false)
+                        val timeMillis = event.changes[0].uptimeMillis
+                        val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
                         if (canConsume) {
                             event.consumePositionChanges()
                         }
                     }
                 }
             }
-        } while (!canceled && event.changes.fastAny { it.pressed })
-        onGestureEnd()
+        }
     }
+    onGestureEnd()
+}
+
+/**
+ * Invoke action for each PointerEvent until all pointers are released.
+ *
+ * @param action Callback function that will be called every PointerEvents occur.
+ */
+private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
+    action: (PointerEvent) -> Unit,
+) {
+    do {
+        val event = awaitPointerEvent()
+        if (event.changes.fastAny { it.isConsumed }) {
+            break
+        }
+        action(event)
+    } while (event.changes.fastAny { it.pressed })
+}
+
+/**
+ * Await second down or timeout from first up
+ *
+ * @param firstUp The first up event
+ * @return If the second down event comes before timeout, returns it. If not, returns null.
+ */
+private suspend fun AwaitPointerEventScope.awaitSecondDown(
+    firstUp: PointerInputChange
+): PointerInputChange? = withTimeoutOrNull(viewConfiguration.doubleTapTimeoutMillis) {
+    val minUptime = firstUp.uptimeMillis + viewConfiguration.doubleTapMinTimeMillis
+    var change: PointerInputChange
+    // The second tap doesn't count if it happens before DoubleTapMinTime of the first tap
+    do {
+        change = awaitFirstDown()
+    } while (change.uptimeMillis < minUptime)
+    change
 }
 
 /**
@@ -108,20 +162,17 @@ private class TouchSlop(private val threshold: Float) {
     /**
      * Judge the touch slop is past.
      *
-     * @param zoomChange The difference of zoom compared to the previous event.
-     * @param panChange The difference of pan compared to the previous event.
      * @param event Event that occurs this time.
      * @return True if the accumulated zoom or pan exceeds the threshold.
      */
-    fun isPast(zoomChange: Float, panChange: Offset, event: PointerEvent): Boolean {
+    fun isPast(event: PointerEvent): Boolean {
         if (_isPast) {
             return true
         }
 
-        zoom *= zoomChange
-        pan += panChange
-        val centroidSize = event.calculateCentroidSize(useCurrent = false)
-        val zoomMotion = abs(1 - zoom) * centroidSize
+        zoom *= event.calculateZoom()
+        pan += event.calculatePan()
+        val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = false)
         val panMotion = pan.getDistance()
         _isPast = zoomMotion > threshold || panMotion > threshold
 
