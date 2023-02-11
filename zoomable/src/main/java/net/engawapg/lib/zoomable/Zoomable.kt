@@ -41,11 +41,14 @@ import kotlin.math.abs
  * false, the pointer events will not be consumed.
  * @param onGestureStart This lambda is called when a gesture starts.
  * @param onGestureEnd This lambda is called when a gesture ends.
+ * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
+ * vertical scrolling.
  */
 private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
+    enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
     onGestureStart()
@@ -78,7 +81,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     }
 
     // Vertical scrolling following a double tap is treated as a zoom gesture.
-    if (isTap) {
+    if (enableOneFingerZoom && isTap) {
         if (awaitSecondDown(firstUp) != null) {
             val secondTouchSlop = TouchSlop(viewConfiguration.touchSlop)
             forEachPointerEventUntilReleased { event ->
@@ -184,8 +187,13 @@ private class TouchSlop(private val threshold: Float) {
  * Modifier function that make the content zoomable.
  *
  * @param zoomState A [ZoomState] object.
+ * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
+ * vertical scrolling.
  */
-fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(
+fun Modifier.zoomable(
+    zoomState: ZoomState,
+    enableOneFingerZoom: Boolean = true,
+): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
         name = "zoomable"
         properties["zoomState"] = zoomState
@@ -217,7 +225,8 @@ fun Modifier.zoomable(zoomState: ZoomState): Modifier = composed(
                     scope.launch {
                         zoomState.endGesture()
                     }
-                }
+                },
+                enableOneFingerZoom = enableOneFingerZoom,
             )
         }
         .graphicsLayer {
