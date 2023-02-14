@@ -60,6 +60,10 @@ dependencies {
     implementation libs.compose.runtime
     implementation libs.compose.ui
     implementation libs.compose.ui.util
+    androidTestImplementation libs.compose.ui.test.junit4
+    debugImplementation libs.compose.ui.test.manifest
+
+    implementation libs.androidx.core
 
     testImplementation libs.junit
     testImplementation libs.kotlinx.coroutines.test
