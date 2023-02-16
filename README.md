@@ -1,8 +1,14 @@
 # Zoomable
 
-Zoomable is an android library working with Jetpack Compose and enabling contents zooming with pinch gesture.
+Zoomable is an android library working with Jetpack Compose.
+It enables the content zoomable by pinch gesture or by double-tap and drag gesture.
 
-![](doc/penguin.gif)
+| ![](doc/penguin.gif) | ![](doc/single_finger_gesture.gif) |
+----|---- 
+| Pinch | Double-tap and drag |
+
+
+
 
 Zoomable provides a simple Modifier extension function `Modifier.zoomable`.
 
