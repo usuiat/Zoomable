@@ -11,16 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-
       - name: Generate docs
-        run: ./generate_docs.sh
+        run: ./gradlew dokkaHtml
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.TOKEN_FOR_ACTIONS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
