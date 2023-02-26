@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 /*
  * Copyright 2022 usuiat
  *
@@ -51,6 +53,47 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.composeCompiler.get()
+    }
+    testOptions {
+        managedDevices {
+            devices {
+                pixel6api33 (ManagedVirtualDevice) {
+                    device = "Pixel 6"
+                    apiLevel = 33
+                    systemImageSource = "google"
+                }
+                pixel6api32 (ManagedVirtualDevice) {
+                    device = "Pixel 6"
+                    apiLevel = 32
+                    systemImageSource = "google"
+                }
+                pixel5api31 (ManagedVirtualDevice) {
+                    device = "Pixel 5"
+                    apiLevel = 31
+                    systemImageSource = "google"
+                }
+                pixel4api30 (ManagedVirtualDevice) {
+                    device = "Pixel 4"
+                    apiLevel = 30
+                    systemImageSource = "google"
+                }
+                pixel3api29 (ManagedVirtualDevice) {
+                    device = "Pixel 3"
+                    apiLevel = 29
+                    systemImageSource = "google"
+                }
+                pixel2api28 (ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 28
+                    systemImageSource = "aosp"
+                }
+                pixel2api27 (ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 27
+                    systemImageSource = "aosp"
+                }
+            }
+        }
     }
 }
 
