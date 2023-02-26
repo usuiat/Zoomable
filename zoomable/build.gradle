@@ -77,21 +77,21 @@ android {
                     apiLevel = 30
                     systemImageSource = "google"
                 }
-                pixel3api29 (ManagedVirtualDevice) {
-                    device = "Pixel 3"
-                    apiLevel = 29
-                    systemImageSource = "google"
-                }
-                pixel2api28 (ManagedVirtualDevice) {
-                    device = "Pixel 2"
-                    apiLevel = 28
-                    systemImageSource = "aosp"
-                }
-                pixel2api27 (ManagedVirtualDevice) {
-                    device = "Pixel 2"
-                    apiLevel = 27
-                    systemImageSource = "aosp"
-                }
+//                pixel3api29 (ManagedVirtualDevice) {
+//                    device = "Pixel 3"
+//                    apiLevel = 29
+//                    systemImageSource = "google"
+//                }
+//                pixel2api28 (ManagedVirtualDevice) {
+//                    device = "Pixel 2"
+//                    apiLevel = 28
+//                    systemImageSource = "aosp"
+//                }
+//                pixel2api27 (ManagedVirtualDevice) {
+//                    device = "Pixel 2"
+//                    apiLevel = 27
+//                    systemImageSource = "aosp"
+//                }
             }
         }
     }
