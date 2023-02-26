@@ -39,7 +39,7 @@ class ZoomStateTest {
 
         zoomState.applyGesture(Offset.Zero, 6f, Offset(50f, 50f), 0)
 
-        assertEquals(zoomState.scale, 5f)
+        assertEquals(zoomState.scale, 3f)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
