@@ -17,7 +17,7 @@ jobs:
         run: ./gradlew zoomable:testDebugUnitTest
 
   gmd_tests:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
