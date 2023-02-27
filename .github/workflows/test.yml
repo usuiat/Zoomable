@@ -33,4 +33,4 @@ jobs:
         run: /Users/runner/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager --update
 
       - name: Run tests
-        run: ./gradlew zoomable:allDevicesDebugAndroidTest --info --stacktrace
+        run: ./gradlew zoomable:allDevicesDebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=20 -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true --info
