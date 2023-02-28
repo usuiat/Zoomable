@@ -33,11 +33,11 @@ jobs:
       # Verify $ANDROID_HOME is properly set for later Gradle commands.
       - run: echo $ANDROID_HOME
 
-#      - name: Setup Java
-#        uses: actions/setup-java@v2
-#        with:
-#          java-version: '11'
-#          distribution: 'adopt'
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
 
       - uses: malinskiy/action-android/emulator-run-cmd@release/0.1.4
         with:
