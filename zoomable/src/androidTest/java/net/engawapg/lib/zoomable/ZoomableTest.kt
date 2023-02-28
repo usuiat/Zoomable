@@ -45,7 +45,7 @@ class ZoomableTest {
                 )
             }
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-        assert(boundsAfter.width < boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        assert(boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
     }
 
     @Test
