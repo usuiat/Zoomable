@@ -16,21 +16,13 @@ jobs:
       - name: Run tests
         run: ./gradlew zoomable:testDebugUnitTest
 
-  gmd_tests:
+  instrument_tests:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Java
-        uses: actions/setup-java@v2
+      - uses: malinskiy/action-android/emulator-run-cmd@release/0.1.4
         with:
-          java-version: '11'
-          distribution: 'adopt'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2.0.7
-
-      - name: Update SDK versions
-        run: /Users/runner/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager --update
-
-      - name: Run tests
-        run: ./gradlew zoomable:allDevicesDebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=20 -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true --info
+          cmd: ./gradlew zoomable:connectedDebugAndroidTest
+          api: 25
+          tag: default
+          abi: x86
