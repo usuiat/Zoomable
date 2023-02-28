@@ -45,3 +45,10 @@ jobs:
           api: 25
           tag: default
           abi: x86
+
+      - name: Save logcat output
+        uses: actions/upload-artifact@v3
+#        if: failure()
+        with:
+          name: logcat
+          path: artifacts/logcat.log
