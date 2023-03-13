@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - 'main'
-      - 'test*'
+      - 'fix_instrumental_test'
 
 jobs:
   unit_tests:
