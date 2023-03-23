@@ -40,8 +40,11 @@
             </a>
     </div>
     <div>
-1.1.0-beta    </div>
+1.4.0    </div>
     <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":zoomable:dokkaHtml/release">androidJvm</button>
+        </div>
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
     </div>
@@ -51,125 +54,127 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" id="content" pageIds="zoomable::net.engawapg.lib.zoomable/ZoomState///PointingToDeclaration//204486495">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="zoomable::net.engawapg.lib.zoomable/ZoomState///PointingToDeclaration//204486495">
   <div class="breadcrumbs"><a href="../../../index.html">zoomable</a><span class="delimiter">/</span><a href="../index.html">net.engawapg.lib.zoomable</a><span class="delimiter">/</span><span class="current">ZoomState</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Zoom</span><wbr></wbr><span><span>State</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">class </span><a href="index.html">ZoomState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span></div><p class="paragraph">A state object that manage scale and offset.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">class </span><a href="index.html">ZoomState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span></div><p class="paragraph">A state object that manage scale and offset.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>max</span><wbr></wbr><span><span>Scale</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The maximum scale of the content.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>content</span><wbr></wbr><span><span>Size</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Size of content (i.e. image size.) If Zero, the composable layout size will be used as content size.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>velocity</span><wbr></wbr><span><span>Decay</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The decay animation spec for fling behaviour.</p></div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Parameters">Parameters</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
     <div class="tabs-section-body">
-      <h4 class="">Parameters</h4>
-      <div data-togglable="Parameters">
-        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>max</span><wbr></wbr><span><span>Scale</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">The maximum scale of the content.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>content</span><wbr></wbr><span><span>Size</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Size of content (i.e. image size.) If Zero, the composable layout size will be used as content size.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span>velocity</span><wbr></wbr><span><span>Decay</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">The decay animation spec for fling behaviour.</p></div></div></div></div></div></div></div></div></div>
-      </div>
-      <h2 class="tabbedcontent">Constructors</h2>
-      <div class="table" data-togglable="Constructors"><a data-name="1332144867%2FConstructors%2F204486495" anchor-label="ZoomState" id="1332144867%2FConstructors%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue TabbedContent">
-            <div class=""><span class="inline-flex">
-                <div><a href="-zoom-state.html"><span>Zoom</span><wbr></wbr><span><span>State</span></span></a></div>
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1332144867%2FConstructors%2F204486495" anchor-label="ZoomState" id="1332144867%2FConstructors%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-zoom-state.html"><span>Zoom</span><wbr></wbr><span><span>State</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1332144867%2FConstructors%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-zoom-state.html"><span class="token function">ZoomState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="1549339167%2FFunctions%2F204486495" anchor-label="reset" id="1549339167%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="reset.html"><span><span>reset</span></span></a></div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1549339167%2FFunctions%2F204486495" anchor-label="reset" id="1549339167%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="reset.html"><span><span>reset</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1549339167%2FFunctions%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="reset.html"><span class="token function">reset</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/Job///PointingToDeclaration/">Job</span></div><div class="brief "><p class="paragraph">Reset the scale and the offsets.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="reset.html"><span class="token function">reset</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/Job///PointingToDeclaration/">Job</span></div><div class="brief "><p class="paragraph">Reset the scale and the offsets.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="1680434122%2FFunctions%2F204486495" anchor-label="setContentSize" id="1680434122%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="set-content-size.html"><span>set</span><wbr></wbr><span>Content</span><wbr></wbr><span><span>Size</span></span></a></div>
+          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-content-size.html"><span>set</span><wbr></wbr><span>Content</span><wbr></wbr><span><span>Size</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1680434122%2FFunctions%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-content-size.html"><span class="token function">setContentSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set the content size.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-content-size.html"><span class="token function">setContentSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set the content size.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="979526717%2FFunctions%2F204486495" anchor-label="setLayoutSize" id="979526717%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="set-layout-size.html"><span>set</span><wbr></wbr><span>Layout</span><wbr></wbr><span><span>Size</span></span></a></div>
+          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-layout-size.html"><span>set</span><wbr></wbr><span>Layout</span><wbr></wbr><span><span>Size</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="979526717%2FFunctions%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-layout-size.html"><span class="token function">setLayoutSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set composable layout size.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-layout-size.html"><span class="token function">setLayoutSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">size<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set composable layout size.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 class="">Properties</h2>
-      <div class="table" data-togglable="Properties"><a data-name="-155482679%2FProperties%2F204486495" anchor-label="offsetX" id="-155482679%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="offset-x.html"><span>offset</span><wbr></wbr><span><span>X</span></span></a></div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-155482679%2FProperties%2F204486495" anchor-label="offsetX" id="-155482679%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="offset-x.html"><span>offset</span><wbr></wbr><span><span>X</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-155482679%2FProperties%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><a data-name="-155482679%2FProperties%2F204486495" anchor-label="offsetX" id="-155482679%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="offset-x.html">offsetX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><a data-name="-155482679%2FProperties%2F204486495" anchor-label="offsetX" id="-155482679%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a><p class="paragraph">The horizontal offset of the content.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="offset-x.html">offsetX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">The horizontal offset of the content.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-124462872%2FProperties%2F204486495" anchor-label="offsetY" id="-124462872%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="offset-y.html"><span>offset</span><wbr></wbr><span><span>Y</span></span></a></div>
+          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="offset-y.html"><span>offset</span><wbr></wbr><span><span>Y</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-124462872%2FProperties%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><a data-name="-124462872%2FProperties%2F204486495" anchor-label="offsetY" id="-124462872%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="offset-y.html">offsetY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><a data-name="-124462872%2FProperties%2F204486495" anchor-label="offsetY" id="-124462872%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a><p class="paragraph">The vertical offset of the content.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="offset-y.html">offsetY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">The vertical offset of the content.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1859191164%2FProperties%2F204486495" anchor-label="scale" id="-1859191164%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-        <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="scale.html"><span><span>scale</span></span></a></div>
+          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale.html"><span><span>scale</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1859191164%2FProperties%2F204486495"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><a data-name="-1859191164%2FProperties%2F204486495" anchor-label="scale" id="-1859191164%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="scale.html">scale</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><a data-name="-1859191164%2FProperties%2F204486495" anchor-label="scale" id="-1859191164%2FProperties%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a><p class="paragraph">The scale of the content.</p></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="scale.html">scale</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">The scale of the content.</p></div></div></div>
+                </div>
               </div>
             </div>
           </div>
