@@ -49,10 +49,10 @@ fun AppScreen() {
         "Sync Image",
         "Async Image",
         "Text",
-        "HorizontalPager\n(Accompanist)",
-        "VerticalPager\n(Accompanist)",
         "HorizontalPager\n(Androidx)",
         "VerticalPager\n(Androidx)",
+        "HorizontalPager\n(Accompanist)",
+        "VerticalPager\n(Accompanist)",
     )
 
     Column {
