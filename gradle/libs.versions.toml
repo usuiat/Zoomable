@@ -29,7 +29,7 @@ compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compo
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
 
 androidx-activity = "androidx.activity:activity-compose:1.7.0"
-androidx-core = "androidx.core:core-ktx:1.9.0"
+androidx-core = "androidx.core:core-ktx:1.10.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
 androidx-test-ext = "androidx.test.ext:junit:1.1.5"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
