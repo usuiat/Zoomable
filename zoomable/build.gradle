@@ -69,6 +69,10 @@ dependencies {
     testImplementation libs.kotlinx.coroutines.test
     androidTestImplementation libs.androidx.test.ext
     androidTestImplementation libs.androidx.test.espresso
+
+    // Workaround for error "No static method forceEnableAppTracing()" in androidTest.
+    // https://github.com/android/android-test/issues/1755#issuecomment-1523212628
+    implementation 'androidx.tracing:tracing:1.1.0'
 }
 
 dokkaHtml.configure {
