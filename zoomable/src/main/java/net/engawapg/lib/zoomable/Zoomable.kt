@@ -48,6 +48,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
+    onDoubleTap: (position: Offset) -> Unit = {},
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
@@ -82,7 +83,10 @@ private suspend fun PointerInputScope.detectTransformGestures(
 
     // Vertical scrolling following a double tap is treated as a zoom gesture.
     if (enableOneFingerZoom && isTap) {
-        if (awaitSecondDown(firstUp) != null) {
+        val secondDown = awaitSecondDown(firstUp)
+        if (secondDown != null) {
+            var isDoubleTap = true
+            var secondUp: PointerInputChange = secondDown
             val secondTouchSlop = TouchSlop(viewConfiguration.touchSlop)
             forEachPointerEventUntilReleased { event ->
                 if (secondTouchSlop.isPast(event)) {
@@ -96,7 +100,20 @@ private suspend fun PointerInputScope.detectTransformGestures(
                             event.consumePositionChanges()
                         }
                     }
+                    isDoubleTap = false
                 }
+                if (event.changes.size > 1) {
+                    isDoubleTap = false
+                }
+                secondUp = event.changes[0]
+            }
+
+            if (secondUp.uptimeMillis - secondDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
+                isDoubleTap = false
+            }
+
+            if (isDoubleTap) {
+                onDoubleTap(secondUp.position)
             }
         }
     }
@@ -225,6 +242,8 @@ fun Modifier.zoomable(
                     scope.launch {
                         zoomState.endGesture()
                     }
+                },
+                onDoubleTap = {
                 },
                 enableOneFingerZoom = enableOneFingerZoom,
             )
