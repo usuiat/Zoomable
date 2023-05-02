@@ -233,15 +233,19 @@ class ZoomState(
         val newOffsetY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
 
         val boundX = max((newSize.width - layoutSize.width), 0f) * 0.5f
-        _offsetX.updateBounds(-boundX, boundX)
+        val x = (offsetX + newOffsetX).coerceIn(-boundX, boundX)
         launch {
-            _offsetX.animateTo(offsetX + newOffsetX)
+            _offsetX.updateBounds(null, null)
+            _offsetX.animateTo(x)
+            _offsetX.updateBounds(-boundX, boundX)
         }
 
         val boundY = max((newSize.height - layoutSize.height), 0f) * 0.5f
-        _offsetY.updateBounds(-boundY, boundY)
+        val y = (offsetY + newOffsetY).coerceIn(-boundY, boundY)
         launch {
-            _offsetY.animateTo(offsetY + newOffsetY)
+            _offsetY.updateBounds(null, null)
+            _offsetY.animateTo(y)
+            _offsetY.updateBounds(-boundY, boundY)
         }
 
         launch {
