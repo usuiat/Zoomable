@@ -25,6 +25,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import kotlinx.coroutines.coroutineScope
@@ -179,29 +180,18 @@ class ZoomState(
         position: Offset,
         timeMillis: Long
     ) = coroutineScope {
-        val size = fitContentSize * scale
         val newScale = (scale * zoom).coerceIn(0.9f, maxScale)
-        val newSize = fitContentSize * newScale
-        val deltaWidth = newSize.width - size.width
-        val deltaHeight = newSize.height - size.height
+        val newOffset = calculateNewOffset(newScale, position, pan)
+        val newBounds = calculateNewBounds(newScale)
 
-        // Position with the origin at the left top corner of the content.
-        val xInContent = position.x - offsetX + (size.width - layoutSize.width) * 0.5f
-        val yInContent = position.y - offsetY + (size.height - layoutSize.height) * 0.5f
-        // Offset to zoom the content around the pinch gesture position.
-        val newOffsetX = (deltaWidth * 0.5f) - (deltaWidth * xInContent / size.width)
-        val newOffsetY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
-
-        val boundX = max((newSize.width - layoutSize.width), 0f) * 0.5f
-        _offsetX.updateBounds(-boundX, boundX)
+        _offsetX.updateBounds(newBounds.left, newBounds.right)
         launch {
-            _offsetX.snapTo(offsetX + pan.x + newOffsetX)
+            _offsetX.snapTo(newOffset.x)
         }
 
-        val boundY = max((newSize.height - layoutSize.height), 0f) * 0.5f
-        _offsetY.updateBounds(-boundY, boundY)
+        _offsetY.updateBounds(newBounds.top, newBounds.bottom)
         launch {
-            _offsetY.snapTo(offsetY + pan.y + newOffsetY)
+            _offsetY.snapTo(newOffset.y)
         }
 
         launch {
@@ -219,8 +209,37 @@ class ZoomState(
         targetScale: Float,
         position: Offset,
     ) = coroutineScope {
-        val size = fitContentSize * scale
         val newScale = targetScale.coerceIn(0.9f, maxScale)
+        val newOffset = calculateNewOffset(newScale, position, Offset.Zero)
+        val newBounds = calculateNewBounds(newScale)
+
+        val x = newOffset.x.coerceIn(newBounds.left, newBounds.right)
+        launch {
+            _offsetX.updateBounds(null, null)
+            _offsetX.animateTo(x)
+            _offsetX.updateBounds(newBounds.left, newBounds.right)
+        }
+
+        val y = newOffset.y.coerceIn(newBounds.top, newBounds.bottom)
+        launch {
+            _offsetY.updateBounds(null, null)
+            _offsetY.animateTo(y)
+            _offsetY.updateBounds(newBounds.top, newBounds.bottom)
+        }
+
+        launch {
+            _scale.animateTo(newScale)
+        }
+
+        shouldFling = false
+    }
+
+    private fun calculateNewOffset(
+        newScale: Float,
+        position: Offset,
+        pan: Offset,
+    ): Offset {
+        val size = fitContentSize * scale
         val newSize = fitContentSize * newScale
         val deltaWidth = newSize.width - size.width
         val deltaHeight = newSize.height - size.height
@@ -232,27 +251,19 @@ class ZoomState(
         val newOffsetX = (deltaWidth * 0.5f) - (deltaWidth * xInContent / size.width)
         val newOffsetY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
 
+        val x = offsetX + pan.x + newOffsetX
+        val y = offsetY + pan.y + newOffsetY
+
+        return Offset(x, y)
+    }
+
+    private fun calculateNewBounds(
+        newScale: Float,
+    ): Rect {
+        val newSize = fitContentSize * newScale
         val boundX = max((newSize.width - layoutSize.width), 0f) * 0.5f
-        val x = (offsetX + newOffsetX).coerceIn(-boundX, boundX)
-        launch {
-            _offsetX.updateBounds(null, null)
-            _offsetX.animateTo(x)
-            _offsetX.updateBounds(-boundX, boundX)
-        }
-
         val boundY = max((newSize.height - layoutSize.height), 0f) * 0.5f
-        val y = (offsetY + newOffsetY).coerceIn(-boundY, boundY)
-        launch {
-            _offsetY.updateBounds(null, null)
-            _offsetY.animateTo(y)
-            _offsetY.updateBounds(-boundY, boundY)
-        }
-
-        launch {
-            _scale.animateTo(newScale)
-        }
-
-        shouldFling = false
+        return Rect(-boundX, -boundY, boundX, boundY)
     }
 
     internal suspend fun endGesture() = coroutineScope {
