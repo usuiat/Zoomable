@@ -215,6 +215,42 @@ class ZoomState(
         }
     }
 
+    internal suspend fun changeScale(
+        targetScale: Float,
+        position: Offset,
+    ) = coroutineScope {
+        val size = fitContentSize * scale
+        val newScale = targetScale.coerceIn(0.9f, maxScale)
+        val newSize = fitContentSize * newScale
+        val deltaWidth = newSize.width - size.width
+        val deltaHeight = newSize.height - size.height
+
+        // Position with the origin at the left top corner of the content.
+        val xInContent = position.x - offsetX + (size.width - layoutSize.width) * 0.5f
+        val yInContent = position.y - offsetY + (size.height - layoutSize.height) * 0.5f
+        // Offset to zoom the content around the pinch gesture position.
+        val newOffsetX = (deltaWidth * 0.5f) - (deltaWidth * xInContent / size.width)
+        val newOffsetY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
+
+        val boundX = max((newSize.width - layoutSize.width), 0f) * 0.5f
+        _offsetX.updateBounds(-boundX, boundX)
+        launch {
+            _offsetX.animateTo(offsetX + newOffsetX)
+        }
+
+        val boundY = max((newSize.height - layoutSize.height), 0f) * 0.5f
+        _offsetY.updateBounds(-boundY, boundY)
+        launch {
+            _offsetY.animateTo(offsetY + newOffsetY)
+        }
+
+        launch {
+            _scale.animateTo(newScale)
+        }
+
+        shouldFling = false
+    }
+
     internal suspend fun endGesture() = coroutineScope {
         if (shouldFling) {
             val velocity = velocityTracker.calculateVelocity()

@@ -243,7 +243,11 @@ fun Modifier.zoomable(
                         zoomState.endGesture()
                     }
                 },
-                onDoubleTap = {
+                onDoubleTap = { position ->
+                    scope.launch {
+                        val scale = if (zoomState.scale == 1f) 2f else 1f
+                        zoomState.changeScale(scale, position)
+                    }
                 },
                 enableOneFingerZoom = enableOneFingerZoom,
             )
