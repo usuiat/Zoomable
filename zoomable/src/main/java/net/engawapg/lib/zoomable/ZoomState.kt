@@ -247,12 +247,12 @@ class ZoomState(
         // Position with the origin at the left top corner of the content.
         val xInContent = position.x - offsetX + (size.width - layoutSize.width) * 0.5f
         val yInContent = position.y - offsetY + (size.height - layoutSize.height) * 0.5f
-        // Offset to zoom the content around the pinch gesture position.
-        val newOffsetX = (deltaWidth * 0.5f) - (deltaWidth * xInContent / size.width)
-        val newOffsetY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
+        // Amount of offset change required to zoom around the position.
+        val deltaX = (deltaWidth * 0.5f) - (deltaWidth * xInContent / size.width)
+        val deltaY = (deltaHeight * 0.5f) - (deltaHeight * yInContent / size.height)
 
-        val x = offsetX + pan.x + newOffsetX
-        val y = offsetY + pan.y + newOffsetY
+        val x = offsetX + pan.x + deltaX
+        val y = offsetY + pan.y + deltaY
 
         return Offset(x, y)
     }
