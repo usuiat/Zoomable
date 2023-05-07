@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew zoomable:testDebugUnitTest
 
   instrument_tests:
-    runs-on: macOS-10.15
+    runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v3
 
