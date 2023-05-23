@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 
@@ -45,12 +49,16 @@ fun SyncImageSample() {
 @Composable
 fun AsyncImageSample() {
     val zoomState = rememberZoomState()
+    val coroutineScope = rememberCoroutineScope()
     AsyncImage(
         model = "https://github.com/usuiat.png",
         contentDescription = "GitHub icon",
         contentScale = ContentScale.Fit,
         onSuccess = { state ->
             zoomState.setContentSize(state.painter.intrinsicSize)
+            coroutineScope.launch {
+                zoomState.zoomToOnContentSizeCoordinate(Offset.Zero)
+            }
         },
         modifier = Modifier
             .fillMaxSize()
