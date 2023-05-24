@@ -91,7 +91,7 @@ class ZoomState(
      */
     fun setLayoutSize(size: Size) {
         layoutSize = size
-        updateContentSize()
+        updateFitContentSize()
     }
 
     /**
@@ -101,11 +101,11 @@ class ZoomState(
      */
     fun setContentSize(size: Size) {
         contentSize = size
-        updateContentSize()
+        updateFitContentSize()
     }
 
     private var fitContentSize = Size.Zero
-    private fun updateContentSize() {
+    private fun updateFitContentSize() {
         if (layoutSize == Size.Zero) {
             fitContentSize = Size.Zero
             return
