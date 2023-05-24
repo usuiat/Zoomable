@@ -29,10 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Float.max
 import kotlin.math.abs
 
@@ -249,41 +250,39 @@ class ZoomState(
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
 
-        if (scale > _scale.value) {
+        suspend fun executeZoomWithAnimation(): Offset {
+            val fixedRangeXDef = async {
+                // 最終的な表示領域をZoom途中ではみ出る場合はzoomToの位置を調整する
+                val fixedTargetOffsetX =
+                    ((contentSize.width / 2 - zoomTo.x) * scale)
+                        .coerceIn(minimumValue = -boundX, maximumValue = boundX)
+                _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
+                return@async fixedTargetOffsetX
+            }
+            val fixedRangeYDef = async {
+                // 最終的な表示領域をZoom途中ではみ出る場合はzoomToの位置を調整する
+                val fixedTargetOffsetY = ((contentSize.height / 2 - zoomTo.y) * scale)
+                    .coerceIn(minimumValue = -boundX, maximumValue = boundX)
+                _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
+                return@async fixedTargetOffsetY
+            }
+            withContext(Dispatchers.Default) {
+                _scale.animateTo(scale, animationSpec)
+            }
+            return Offset(x = fixedRangeXDef.await(), y = fixedRangeYDef.await())
+        }
+
+        val fixedRange = if (scale > _scale.value) {
             _offsetX.updateBounds(-boundX, boundX)
             _offsetY.updateBounds(-boundY, boundY)
-        }
-
-        launch {
-            _scale.animateTo(scale, animationSpec)
-        }
-        // x方向にズーム先が変更された長さを結果として返す
-        val fixedRangeXDef = async {
-            // 最終的な表示領域を途中ではみ出る場合はzoomToの位置を調整する
-            val targetOffsetX = (fitContentSize.width / 2 - zoomTo.x) * scale
-            val fixedTargetOffsetX =
-                targetOffsetX.coerceIn(minimumValue = -boundX, maximumValue = boundX)
-            _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
-            return@async fixedTargetOffsetX - targetOffsetX
-        }
-        // y方向にズーム先が変更された長さを結果として返す
-        val fixedRangeYDef = async {
-            // 最終的な表示領域を途中ではみ出る場合はzoomToの位置を調整する
-            val targetOffsetY = (fitContentSize.height / 2 - zoomTo.y) * scale
-            val fixedTargetOffsetY = targetOffsetY
-                .coerceIn(minimumValue = -boundY, maximumValue = boundY)
-            _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
-            return@async fixedTargetOffsetY - targetOffsetY
-        }
-
-        val fixedRangeX = fixedRangeXDef.await()
-        val fixedRangeY = fixedRangeYDef.await()
-
-        if (scale < _scale.value) {
+            executeZoomWithAnimation()
+        } else {
+            val fixedRange = executeZoomWithAnimation()
             _offsetX.updateBounds(-boundX, boundX)
             _offsetY.updateBounds(-boundY, boundY)
+            fixedRange
         }
-        return@coroutineScope Offset(x = fixedRangeX, y = fixedRangeY)
+        return@coroutineScope fixedRange
     }
 
     suspend fun zoomToOnLayoutCoordinate(
@@ -291,38 +290,45 @@ class ZoomState(
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
     ) = coroutineScope {
+
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
-        if (scale > _scale.value) {
-            _offsetX.updateBounds(-boundX, boundX)
-            _offsetY.updateBounds(-boundY, boundY)
-        }
 
-        listOf(
-            async {
-                _scale.animateTo(scale, animationSpec)
-            },
-            async {
+        suspend fun executeZoomWithAnimation(): Offset {
+            val fixedRangeXDef = async {
                 // 最終的な表示領域をZoom途中ではみ出る場合はzoomToの位置を調整する
                 val fixedTargetOffsetX =
                     ((layoutSize.width / 2 - zoomTo.x) * scale)
                         .coerceAtMost(boundX)
                         .coerceAtLeast(-boundX)
                 _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
-            },
-            async {
+                return@async fixedTargetOffsetX
+            }
+            val fixedRangeYDef = async {
                 // 最終的な表示領域をZoom途中ではみ出る場合はzoomToの位置を調整する
                 val fixedTargetOffsetY = ((layoutSize.height / 2 - zoomTo.y) * scale)
                     .coerceAtMost(boundY)
                     .coerceAtLeast(-boundY)
                 _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
-            },
-        ).awaitAll()
+                return@async fixedTargetOffsetY
+            }
+            withContext(Dispatchers.Default) {
+                _scale.animateTo(scale, animationSpec)
+            }
+            return Offset(x = fixedRangeXDef.await(), y = fixedRangeYDef.await())
+        }
 
-        if (scale < _scale.value) {
+        val fixedRange = if (scale > _scale.value) {
             _offsetX.updateBounds(-boundX, boundX)
             _offsetY.updateBounds(-boundY, boundY)
+            executeZoomWithAnimation()
+        } else {
+            val fixedRange = executeZoomWithAnimation()
+            _offsetX.updateBounds(-boundX, boundX)
+            _offsetY.updateBounds(-boundY, boundY)
+            fixedRange
         }
+        return@coroutineScope fixedRange
     }
 }
 
