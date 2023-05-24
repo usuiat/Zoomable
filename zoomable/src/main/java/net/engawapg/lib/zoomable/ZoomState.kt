@@ -236,7 +236,7 @@ class ZoomState(
         }
     }
 
-    suspend fun zoomToOnContentSizeCoordinate(
+    suspend fun zoomToOnFitContentCoordinate(
         zoomTo: Offset,
         scale: Float = 3f,
         durationMillis: Int = 700,
@@ -249,7 +249,7 @@ class ZoomState(
         // x方向にズーム先が変更された長さを結果として返す
         val fixedRangeXDef = async {
             // 最終的な表示領域を途中ではみ出る場合はzoomToの位置を調整する
-            val targetOffsetX = (contentSize.width / 2 - zoomTo.x) * scale
+            val targetOffsetX = (fitContentSize.width / 2 - zoomTo.x) * scale
             val fixedTargetOffsetX = targetOffsetX
                 .coerceAtMost(_offsetX.upperBound ?: Float.POSITIVE_INFINITY)
                 .coerceAtLeast(_offsetX.lowerBound ?: Float.NEGATIVE_INFINITY)
@@ -259,7 +259,7 @@ class ZoomState(
         // y方向にズーム先が変更された長さを結果として返す
         val fixedRangeYDef = async {
             // 最終的な表示領域を途中ではみ出る場合はzoomToの位置を調整する
-            val targetOffsetY = (contentSize.height / 2 - zoomTo.y) * scale
+            val targetOffsetY = (fitContentSize.height / 2 - zoomTo.y) * scale
             val fixedTargetOffsetY = targetOffsetY
                 .coerceAtMost(_offsetY.upperBound ?: Float.POSITIVE_INFINITY)
                 .coerceAtLeast(_offsetY.lowerBound ?: Float.NEGATIVE_INFINITY)
@@ -272,10 +272,37 @@ class ZoomState(
         return@coroutineScope Offset(x = fixedRangeX, y = fixedRangeY)
     }
 
+    suspend fun zoomToOnLayoutCoordinate(
+        zoomTo: Offset,
+        scale: Float = 3f,
+        durationMillis: Int = 700,
+    ) = coroutineScope {
+        updateContentSize(scale)
+
+        launch {
+            _scale.animateTo(scale, tween(durationMillis))
+        }
+        launch {
+            // 最終的な表示領域をZoom途中ではみ出る場合はzoomToの位置を調整する
+            val fixedTargetOffsetX =
+                ((layoutSize.width / 2 - zoomTo.x) * scale)
+                    .coerceAtMost(_offsetX.upperBound ?: Float.POSITIVE_INFINITY)
+                    .coerceAtLeast(_offsetX.lowerBound ?: Float.NEGATIVE_INFINITY)
+            _offsetX.animateTo(fixedTargetOffsetX, tween(durationMillis))
+        }
+        launch {
+            // 最終的な表示領域をZoom途中ではみ出る場合はzoomToの位置を調整する
+            val fixedTargetOffsetY = ((layoutSize.height / 2 - zoomTo.y) * scale)
+                .coerceAtMost(_offsetY.upperBound ?: Float.POSITIVE_INFINITY)
+                .coerceAtLeast(_offsetY.lowerBound ?: Float.NEGATIVE_INFINITY)
+            _offsetY.animateTo(fixedTargetOffsetY, tween(durationMillis))
+        }
+    }
+
     private fun updateContentSize(scale: Float) {
-        val boundX = max((contentSize.width * scale - layoutSize.width), 0f) / 2f
+        val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         _offsetX.updateBounds(-boundX, boundX)
-        val boundY = max((contentSize.height * scale - layoutSize.height), 0f) / 2f
+        val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
         _offsetY.updateBounds(-boundY, boundY)
     }
 }
