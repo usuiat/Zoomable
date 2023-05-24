@@ -58,8 +58,9 @@ fun AsyncImageSample() {
         contentScale = ContentScale.Fit,
         onSuccess = { state ->
             zoomState.setContentSize(state.painter.intrinsicSize)
+            Log.d("ContentSize", state.painter.intrinsicSize.toString())
             coroutineScope.launch {
-                zoomState.zoomToOnFitContentCoordinate(zoomTo = Offset.Zero)
+                zoomState.zoomToOnContentCoordinate(zoomTo = Offset(x = 230f, y = 230f))
             }
         },
         modifier = Modifier

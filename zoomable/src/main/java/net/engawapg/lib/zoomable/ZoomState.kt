@@ -29,12 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.util.VelocityTracker
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.lang.Float.max
 import kotlin.math.abs
 
@@ -244,14 +242,16 @@ class ZoomState(
     }
 
     /**
-     * Zoom to the position based on fit content coordinate.
+     * Zoom to the position based on content coordinate.
      * @param zoomTo zoom target position
      */
-    suspend fun zoomToOnFitContentCoordinate(
+    suspend fun zoomToOnContentCoordinate(
         zoomTo: Offset,
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
     ) = coroutineScope {
+        val fitContentSizeFactor = fitContentSize.width / contentSize.height
+
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
 
@@ -259,7 +259,7 @@ class ZoomState(
             listOf(
                 async {
                     val fixedTargetOffsetX =
-                        ((fitContentSize.width / 2 - zoomTo.x) * scale)
+                        ((fitContentSize.width / 2 - zoomTo.x * fitContentSizeFactor) * scale)
                             .coerceIn(
                                 minimumValue = -boundX,
                                 maximumValue = boundX,
@@ -267,7 +267,7 @@ class ZoomState(
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
-                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - zoomTo.y) * scale)
+                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - zoomTo.y * fitContentSizeFactor) * scale)
                         .coerceIn(minimumValue = -boundY, maximumValue = boundY)
                     _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
                 },
