@@ -210,6 +210,7 @@ private class TouchSlop(private val threshold: Float) {
 fun Modifier.zoomable(
     zoomState: ZoomState,
     enableOneFingerZoom: Boolean = true,
+    doubleTapZoomSpec: DoubleTapZoomSpec = DoubleTapZoomScale(2.5f)
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
         name = "zoomable"
@@ -245,7 +246,7 @@ fun Modifier.zoomable(
                 },
                 onDoubleTap = { position ->
                     scope.launch {
-                        val scale = if (zoomState.scale == 1f) 2f else 1f
+                        val scale = doubleTapZoomSpec.nextScale(zoomState.scale)
                         zoomState.changeScale(scale, position)
                     }
                 },
