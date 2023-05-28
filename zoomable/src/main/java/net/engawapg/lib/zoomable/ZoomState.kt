@@ -18,8 +18,10 @@ package net.engawapg.lib.zoomable
 
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -208,6 +210,7 @@ class ZoomState(
     internal suspend fun changeScale(
         targetScale: Float,
         position: Offset,
+        animationSpec: AnimationSpec<Float> = spring(),
     ) = coroutineScope {
         val newScale = targetScale.coerceIn(1f, maxScale)
         val newOffset = calculateNewOffset(newScale, position, Offset.Zero)
@@ -216,19 +219,19 @@ class ZoomState(
         val x = newOffset.x.coerceIn(newBounds.left, newBounds.right)
         launch {
             _offsetX.updateBounds(null, null)
-            _offsetX.animateTo(x)
+            _offsetX.animateTo(x, animationSpec)
             _offsetX.updateBounds(newBounds.left, newBounds.right)
         }
 
         val y = newOffset.y.coerceIn(newBounds.top, newBounds.bottom)
         launch {
             _offsetY.updateBounds(null, null)
-            _offsetY.animateTo(y)
+            _offsetY.animateTo(y, animationSpec)
             _offsetY.updateBounds(newBounds.top, newBounds.bottom)
         }
 
         launch {
-            _scale.animateTo(newScale)
+            _scale.animateTo(newScale, animationSpec)
         }
 
         shouldFling = false
