@@ -1,9 +1,9 @@
 [versions]
-composeCompiler = "1.4.6"
+composeCompiler = "1.4.7"
 compose = "1.4.2"
 composeMaterial3 = "1.1.0-rc01"
 
-kotlin = "1.8.20"
+kotlin = "1.8.21"
 androidGradle = "8.0.2"
 
 coil = "2.3.0"
