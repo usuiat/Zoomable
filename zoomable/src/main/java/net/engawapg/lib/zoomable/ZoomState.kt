@@ -295,8 +295,11 @@ class ZoomState(
     }
 
     /**
-     * Zoom to the position based on content coordinate.
-     * @param offset zoom target position
+     * Animates the centering of content by modifying the offset and scale based on content coordinates.
+     *
+     * @param offset The offset to apply for centering the content.
+     * @param scale The scale to apply for zooming the content.
+     * @param animationSpec AnimationSpec for centering and scaling.
      */
     suspend fun centerByContentCoordinate(
         offset: Offset,
@@ -342,8 +345,11 @@ class ZoomState(
     }
 
     /**
-     * Zoom to the position based on layout coordinate.
-     * @param offset zoom target position
+     * Animates the centering of content by modifying the offset and scale based on layout coordinates.
+     *
+     * @param offset The offset to apply for centering the content.
+     * @param scale The scale to apply for zooming the content.
+     * @param animationSpec AnimationSpec for centering and scaling.
      */
     suspend fun centerByLayoutCoordinate(
         offset: Offset,
