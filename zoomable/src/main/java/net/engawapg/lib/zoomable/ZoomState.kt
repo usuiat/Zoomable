@@ -296,10 +296,10 @@ class ZoomState(
 
     /**
      * Zoom to the position based on content coordinate.
-     * @param zoomTo zoom target position
+     * @param offset zoom target position
      */
-    suspend fun zoomToOnContentCoordinate(
-        zoomTo: Offset,
+    suspend fun centerByContentCoordinate(
+        offset: Offset,
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
     ) = coroutineScope {
@@ -312,7 +312,7 @@ class ZoomState(
             listOf(
                 async {
                     val fixedTargetOffsetX =
-                        ((fitContentSize.width / 2 - zoomTo.x * fitContentSizeFactor) * scale)
+                        ((fitContentSize.width / 2 - offset.x * fitContentSizeFactor) * scale)
                             .coerceIn(
                                 minimumValue = -boundX,
                                 maximumValue = boundX,
@@ -320,7 +320,7 @@ class ZoomState(
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
-                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - zoomTo.y * fitContentSizeFactor) * scale)
+                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
                         .coerceIn(minimumValue = -boundY, maximumValue = boundY)
                     _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
                 },
@@ -343,10 +343,10 @@ class ZoomState(
 
     /**
      * Zoom to the position based on layout coordinate.
-     * @param zoomTo zoom target position
+     * @param offset zoom target position
      */
-    suspend fun zoomToOnLayoutCoordinate(
-        zoomTo: Offset,
+    suspend fun centerByLayoutCoordinate(
+        offset: Offset,
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
     ) = coroutineScope {
@@ -358,7 +358,7 @@ class ZoomState(
             listOf(
                 async {
                     val fixedTargetOffsetX =
-                        ((layoutSize.width / 2 - zoomTo.x) * scale)
+                        ((layoutSize.width / 2 - offset.x) * scale)
                             .coerceIn(
                                 minimumValue = -boundX,
                                 maximumValue = boundX,
@@ -366,7 +366,7 @@ class ZoomState(
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
-                    val fixedTargetOffsetY = ((layoutSize.height / 2 - zoomTo.y) * scale)
+                    val fixedTargetOffsetY = ((layoutSize.height / 2 - offset.y) * scale)
                         .coerceIn(minimumValue = -boundY, maximumValue = boundY)
                     _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
                 },
