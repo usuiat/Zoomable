@@ -303,7 +303,7 @@ class ZoomState(
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
     ) = coroutineScope {
-        val fitContentSizeFactor = fitContentSize.width / contentSize.height
+        val fitContentSizeFactor = fitContentSize.width / contentSize.width
 
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
