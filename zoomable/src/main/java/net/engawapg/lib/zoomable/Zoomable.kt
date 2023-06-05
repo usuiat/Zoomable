@@ -41,6 +41,7 @@ import kotlin.math.abs
  * false, the pointer events will not be consumed.
  * @param onGestureStart This lambda is called when a gesture starts.
  * @param onGestureEnd This lambda is called when a gesture ends.
+ * @param onTap will be called when single tap is detected.
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  */
@@ -48,6 +49,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
+    onTap: () -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
@@ -82,22 +84,26 @@ private suspend fun PointerInputScope.detectTransformGestures(
     }
 
     // Vertical scrolling following a double tap is treated as a zoom gesture.
-    if (enableOneFingerZoom && isTap) {
+    if (isTap) {
         val secondDown = awaitSecondDown(firstUp)
-        if (secondDown != null) {
+        if (secondDown == null) {
+            onTap()
+        } else {
             var isDoubleTap = true
             var secondUp: PointerInputChange = secondDown
             val secondTouchSlop = TouchSlop(viewConfiguration.touchSlop)
             forEachPointerEventUntilReleased { event ->
                 if (secondTouchSlop.isPast(event)) {
-                    val panChange = event.calculatePan()
-                    val zoomChange = 1f + panChange.y * 0.004f
-                    if (zoomChange != 1f) {
-                        val centroid = event.calculateCentroid(useCurrent = false)
-                        val timeMillis = event.changes[0].uptimeMillis
-                        val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                        if (canConsume) {
-                            event.consumePositionChanges()
+                    if (enableOneFingerZoom) {
+                        val panChange = event.calculatePan()
+                        val zoomChange = 1f + panChange.y * 0.004f
+                        if (zoomChange != 1f) {
+                            val centroid = event.calculateCentroid(useCurrent = false)
+                            val timeMillis = event.changes[0].uptimeMillis
+                            val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
+                            if (canConsume) {
+                                event.consumePositionChanges()
+                            }
                         }
                     }
                     isDoubleTap = false
@@ -206,10 +212,12 @@ private class TouchSlop(private val threshold: Float) {
  * @param zoomState A [ZoomState] object.
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
+ * @param onTap will be called when single tap is detected on the element.
  */
 fun Modifier.zoomable(
     zoomState: ZoomState,
     enableOneFingerZoom: Boolean = true,
+    onTap: () -> Unit = {},
     doubleTapZoomSpec: DoubleTapZoomSpec = DoubleTapZoomScale(2.5f)
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
@@ -244,6 +252,7 @@ fun Modifier.zoomable(
                         zoomState.endGesture()
                     }
                 },
+                onTap = onTap,
                 onDoubleTap = { position ->
                     scope.launch {
                         val scale = doubleTapZoomSpec.nextScale(zoomState.scale)
