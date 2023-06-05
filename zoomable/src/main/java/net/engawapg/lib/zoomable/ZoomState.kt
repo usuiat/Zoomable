@@ -21,6 +21,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -30,6 +31,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.lang.Float.max
@@ -56,6 +59,7 @@ class ZoomState(
     private var _scale = Animatable(1f).apply {
         updateBounds(0.9f, maxScale)
     }
+
     /**
      * The scale of the content.
      */
@@ -63,6 +67,7 @@ class ZoomState(
         get() = _scale.value
 
     private var _offsetX = Animatable(0f)
+
     /**
      * The horizontal offset of the content.
      */
@@ -70,6 +75,7 @@ class ZoomState(
         get() = _offsetX.value
 
     private var _offsetY = Animatable(0f)
+
     /**
      * The vertical offset of the content.
      */
@@ -77,6 +83,7 @@ class ZoomState(
         get() = _offsetY.value
 
     private var layoutSize = Size.Zero
+
     /**
      * Set composable layout size.
      *
@@ -155,8 +162,7 @@ class ZoomState(
                             // Drag L to R when left edge of the content is shown.
                             consume = false
                         }
-                    }
-                    else if (ratio < 0.33) { // Vertical drag
+                    } else if (ratio < 0.33) { // Vertical drag
                         if ((pan.y < 0) && (_offsetY.value == _offsetY.lowerBound)) {
                             // Drag bottom to top when bottom edge of the content is shown.
                             consume = false
@@ -285,6 +291,105 @@ class ZoomState(
             launch {
                 _scale.animateTo(1f)
             }
+        }
+    }
+
+    /**
+     * Animates the centering of content by modifying the offset and scale based on content coordinates.
+     *
+     * @param offset The offset to apply for centering the content.
+     * @param scale The scale to apply for zooming the content.
+     * @param animationSpec AnimationSpec for centering and scaling.
+     */
+    suspend fun centerByContentCoordinate(
+        offset: Offset,
+        scale: Float = 3f,
+        animationSpec: AnimationSpec<Float> = tween(700),
+    ) = coroutineScope {
+        val fitContentSizeFactor = fitContentSize.width / contentSize.width
+
+        val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
+        val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
+
+        suspend fun executeZoomWithAnimation() {
+            listOf(
+                async {
+                    val fixedTargetOffsetX =
+                        ((fitContentSize.width / 2 - offset.x * fitContentSizeFactor) * scale)
+                            .coerceIn(
+                                minimumValue = -boundX,
+                                maximumValue = boundX,
+                            ) // Adjust zoom target position to prevent execute zoom animation to out of content boundaries
+                    _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
+                },
+                async {
+                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
+                        .coerceIn(minimumValue = -boundY, maximumValue = boundY)
+                    _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
+                },
+                async {
+                    _scale.animateTo(scale, animationSpec)
+                },
+            ).awaitAll()
+        }
+
+        if (scale > _scale.value) {
+            _offsetX.updateBounds(-boundX, boundX)
+            _offsetY.updateBounds(-boundY, boundY)
+            executeZoomWithAnimation()
+        } else {
+            executeZoomWithAnimation()
+            _offsetX.updateBounds(-boundX, boundX)
+            _offsetY.updateBounds(-boundY, boundY)
+        }
+    }
+
+    /**
+     * Animates the centering of content by modifying the offset and scale based on layout coordinates.
+     *
+     * @param offset The offset to apply for centering the content.
+     * @param scale The scale to apply for zooming the content.
+     * @param animationSpec AnimationSpec for centering and scaling.
+     */
+    suspend fun centerByLayoutCoordinate(
+        offset: Offset,
+        scale: Float = 3f,
+        animationSpec: AnimationSpec<Float> = tween(700),
+    ) = coroutineScope {
+
+        val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
+        val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
+
+        suspend fun executeZoomWithAnimation() {
+            listOf(
+                async {
+                    val fixedTargetOffsetX =
+                        ((layoutSize.width / 2 - offset.x) * scale)
+                            .coerceIn(
+                                minimumValue = -boundX,
+                                maximumValue = boundX,
+                            ) // Adjust zoom target position to prevent execute zoom animation to out of content boundaries
+                    _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
+                },
+                async {
+                    val fixedTargetOffsetY = ((layoutSize.height / 2 - offset.y) * scale)
+                        .coerceIn(minimumValue = -boundY, maximumValue = boundY)
+                    _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
+                },
+                async {
+                    _scale.animateTo(scale, animationSpec)
+                },
+            ).awaitAll()
+        }
+
+        if (scale > _scale.value) {
+            _offsetX.updateBounds(-boundX, boundX)
+            _offsetY.updateBounds(-boundY, boundY)
+            executeZoomWithAnimation()
+        } else {
+            executeZoomWithAnimation()
+            _offsetX.updateBounds(-boundX, boundX)
+            _offsetY.updateBounds(-boundY, boundY)
         }
     }
 }
