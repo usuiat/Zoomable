@@ -140,9 +140,11 @@ class ZoomState(
     }
 
     private var shouldConsumeEvent: Boolean? = null
+    private val velocityTracker = VelocityTracker()
 
     internal fun startGesture() {
         shouldConsumeEvent = null
+        velocityTracker.resetTracking()
     }
 
     internal fun canConsumeGesture(pan: Offset, zoom: Float): Boolean {
@@ -179,9 +181,6 @@ class ZoomState(
         }
     }
 
-    private val velocityTracker = VelocityTracker()
-    private var shouldFling = true
-
     internal suspend fun applyGesture(
         pan: Offset,
         zoom: Float,
@@ -206,10 +205,10 @@ class ZoomState(
             _scale.snapTo(newScale)
         }
 
-        velocityTracker.addPosition(timeMillis, position)
-
-        if (zoom != 1f) {
-            shouldFling = false
+        if (zoom == 1f) {
+            velocityTracker.addPosition(timeMillis, position)
+        } else {
+            velocityTracker.resetTracking()
         }
     }
 
@@ -239,8 +238,6 @@ class ZoomState(
         launch {
             _scale.animateTo(newScale, animationSpec)
         }
-
-        shouldFling = false
     }
 
     private fun calculateNewOffset(
@@ -276,16 +273,17 @@ class ZoomState(
     }
 
     internal suspend fun endGesture() = coroutineScope {
-        if (shouldFling) {
-            val velocity = velocityTracker.calculateVelocity()
+        val velocity = velocityTracker.calculateVelocity()
+        if (velocity.x != 0f) {
             launch {
                 _offsetX.animateDecay(velocity.x, velocityDecay)
             }
+        }
+        if (velocity.y != 0f) {
             launch {
                 _offsetY.animateDecay(velocity.y, velocityDecay)
             }
         }
-        shouldFling = true
 
         if (_scale.value < 1f) {
             launch {
