@@ -213,11 +213,14 @@ private class TouchSlop(private val threshold: Float) {
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  * @param onTap will be called when single tap is detected on the element.
+ * @param onDoubleTap will be called when double tap is detected on the element. This is a suspend
+ * function and called in a coroutine scope.
  */
 fun Modifier.zoomable(
     zoomState: ZoomState,
     enableOneFingerZoom: Boolean = true,
     onTap: () -> Unit = {},
+    onDoubleTap: suspend (position: Offset) -> Unit = {},
     doubleTapZoomSpec: DoubleTapZoomSpec = DoubleTapZoomScale(2.5f)
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
@@ -255,8 +258,7 @@ fun Modifier.zoomable(
                 onTap = onTap,
                 onDoubleTap = { position ->
                     scope.launch {
-                        val scale = doubleTapZoomSpec.nextScale(zoomState.scale)
-                        zoomState.changeScale(scale, position)
+                        onDoubleTap(position)
                     }
                 },
                 enableOneFingerZoom = enableOneFingerZoom,
