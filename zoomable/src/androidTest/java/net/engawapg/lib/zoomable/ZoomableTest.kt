@@ -80,7 +80,7 @@ class ZoomableTest {
     }
 
     @Test
-    fun zoomable_doubleTapZoomScale_zoomed() {
+    fun zoomable_doubleTap_zoomed() {
         composeTestRule.setContent {
             val painter = painterResource(id = android.R.drawable.ic_dialog_info)
             val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
@@ -92,7 +92,6 @@ class ZoomableTest {
                     .fillMaxSize()
                     .zoomable(
                         zoomState = zoomState,
-                        doubleTapZoomSpec = DoubleTapZoomScale(2f),
                     )
             )
         }
@@ -104,8 +103,8 @@ class ZoomableTest {
             doubleClick(center)
         }
         val bounds1 = node.fetchSemanticsNode().boundsInRoot
-        assert((bounds1.width / bounds0.width) == 2f)
-        assert((bounds1.height / bounds0.height) == 2f)
+        assert((bounds1.width / bounds0.width) == 2.5f)
+        assert((bounds1.height / bounds0.height) == 2.5f)
 
         node.performTouchInput {
             doubleClick(center)
@@ -113,47 +112,4 @@ class ZoomableTest {
         val bounds2 = node.fetchSemanticsNode().boundsInRoot
         assert(bounds2.size == bounds0.size)
     }
-
-    @Test
-    fun zoomable_doubleTapZoomScaleList_zoomed() {
-        composeTestRule.setContent {
-            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
-            Image(
-                painter = painter,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zoomable(
-                        zoomState = zoomState,
-                        doubleTapZoomSpec = DoubleTapZoomScaleList(listOf(1f, 2f, 3f))
-                    )
-            )
-        }
-
-        val node = composeTestRule.onNodeWithContentDescription("image")
-        val bounds0 = node.fetchSemanticsNode().boundsInRoot
-
-        node.performTouchInput {
-            doubleClick(center)
-        }
-        val bounds1 = node.fetchSemanticsNode().boundsInRoot
-        assert((bounds1.width / bounds0.width) == 2f)
-        assert((bounds1.height / bounds0.height) == 2f)
-
-        node.performTouchInput {
-            doubleClick(center)
-        }
-        val bounds2 = node.fetchSemanticsNode().boundsInRoot
-        assert((bounds2.width / bounds0.width) == 3f)
-        assert((bounds2.height / bounds0.height) == 3f)
-
-        node.performTouchInput {
-            doubleClick(center)
-        }
-        val bounds3 = node.fetchSemanticsNode().boundsInRoot
-        assert(bounds3.size == bounds0.size)
-    }
-
 }
