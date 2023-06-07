@@ -212,7 +212,16 @@ class ZoomState(
         }
     }
 
-    internal suspend fun changeScale(
+    /**
+     * Change the scale with animation.
+     *
+     * Zoom in or out to [targetScale] around the [position].
+     *
+     * @param targetScale The target scale value.
+     * @param position Zoom around this point.
+     * @param animationSpec The animation configuration.
+     */
+    suspend fun changeScale(
         targetScale: Float,
         position: Offset,
         animationSpec: AnimationSpec<Float> = spring(),
