@@ -224,7 +224,6 @@ fun Modifier.zoomable(
     enableOneFingerZoom: Boolean = true,
     onTap: () -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit = { position -> zoomState.toggleScale(2.5f, position) },
-    doubleTapZoomSpec: DoubleTapZoomSpec = DoubleTapZoomScale(2.5f)
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
         name = "zoomable"
