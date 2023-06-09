@@ -12,7 +12,8 @@ It enables the content zoomable by pinch gesture, by double-tap, or by double-ta
 
 Zoomable provides a simple Modifier extension function `Modifier.zoomable`.
 
-Here is a sample code.
+Here is the simplest sample code.
+You can make image zoomable by just adding one line code.
 
 ```Kotlin
 Image(
@@ -50,7 +51,7 @@ dependencies {
 
 The latest version: <img alt="Maven Central" src="https://img.shields.io/maven-central/v/net.engawapg.lib/zoomable">
 
-### Modifier function
+### Basic Usage
 
 You can use `Modifier.zoomable` to make contents such as an image zoomable.
 The zoom state is managed in a `ZoomState` object that can be created via `rememberZoomState`.
@@ -66,6 +67,58 @@ Image(
     modifier = Modifier
         .fillMaxSize()
         .zoomable(zoomState),
+)
+```
+
+### Double tap action
+
+By default, every time double tap is detected, `zoomable` modifier switches the scale between 1.0f and 2.5f.
+
+To change the scale set for double-tap detection, call `toggleScale` with desired value in `onDoubleTap` callback.
+
+```Kotlin
+val targetScale = 5.0f
+zoomable(
+    zoomState = zoomState,
+    onDoubleTap = { position -> zoomState.toggleScale(targetScale, position) }
+)
+```
+
+If you want to implement the logic to determine the scale value yourself, you can use the `changeScale` function.
+In the example below, the scale is switched in three steps.
+
+```Kotlin
+zoomable(
+    zoomState = zoomState,
+    onDoubleTap = { position ->
+        val targetScale = when {
+            zoomState.scale < 2f -> 2f
+            zoomState.scale < 4f -> 4f
+            else -> 1f
+        }
+        zoomState.changeScale(targetScale, position)
+    }
+)
+```
+
+To disable double tap action, set empty function to `onDoubleTap`.
+
+```Kotlin
+zoomable(
+    zoomState = zoomState,
+    onDoubleTap = {}
+)
+```
+
+### One finger zoom
+
+By default, one finger zoom action, double tap followed by vertical drag, is enabled.
+If you want disable it, set false to `enableOneFingerZoom`.
+
+```Kotlin
+zoomable(
+    zoomState = zoomState,
+    enableOneFingerZoom = false,
 )
 ```
 
