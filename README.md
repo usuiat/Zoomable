@@ -3,9 +3,9 @@
 Zoomable is an android library working with Jetpack Compose.
 It enables the content zoomable by pinch gesture, by double-tap, or by double-tap and drag gesture.
 
-| ![](doc/penguin.gif) | <img src="doc/double-tap.gif" width="160"> | ![](doc/single_finger_gesture.gif) |
-|----|----|----|
-| Pinch | Double-tap | Double-tap and drag |
+| ![](doc/penguin.gif) | ![](doc/double-tap.gif) | ![](doc/single_finger_gesture.gif) |
+|----------------------|-------------------------|------------------------------------|
+| Pinch                | Double-tap              | Double-tap and drag                |
 
 
 
