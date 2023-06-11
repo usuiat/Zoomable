@@ -23,9 +23,8 @@ import net.engawapg.lib.zoomable.zoomable
 @Composable
 fun AndroidxHorizontalPagerSample() {
     val resources = listOf(R.drawable.duck1, R.drawable.duck2, R.drawable.duck3)
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { resources.size }
     HorizontalPager(
-        pageCount = resources.size,
         state = pagerState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
@@ -59,9 +58,8 @@ fun AndroidxHorizontalPagerSample() {
 @Composable
 fun AndroidxVerticalPagerSample() {
     val resources = listOf(R.drawable.eagle1, R.drawable.eagle2, R.drawable.eagle3)
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { resources.size }
     VerticalPager(
-        pageCount = resources.size,
         state = pagerState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
