@@ -28,17 +28,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
           script: ./gradlew zoomable:connectedDebugAndroidTest
-
-#      - name: Setup Java
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: '17'
-#          distribution: 'adopt'
 
       # Download & install the Android SDK.
 #      - uses: malinskiy/action-android/install-sdk@release/0.1.4
