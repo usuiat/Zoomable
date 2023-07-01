@@ -6,6 +6,7 @@ on:
     branches:
       - 'main'
       - 'release*'
+      - 'action/test/*'
 
 jobs:
   unit_tests:
@@ -27,27 +28,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          java-version: '17'
-          distribution: 'adopt'
+          api-level: 29
+          script: ./gradlew zoomable:connectedDebugAndroidTest
+
+#      - name: Setup Java
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
 
       # Download & install the Android SDK.
-      - uses: malinskiy/action-android/install-sdk@release/0.1.3
+#      - uses: malinskiy/action-android/install-sdk@release/0.1.4
 
       # Set up platform tools like adb.
-      - run: sdkmanager platform-tools
+#      - run: sdkmanager platform-tools
 
       # Start ADB (and verify that pathing is working correctly).
-      - run: adb devices
+#      - run: adb devices
 
       # Verify $ANDROID_HOME is properly set for later Gradle commands.
-      - run: echo $ANDROID_HOME
+#      - run: echo $ANDROID_HOME
 
-      - uses: malinskiy/action-android/emulator-run-cmd@release/0.1.4
-        with:
-          cmd: ./gradlew zoomable:connectedDebugAndroidTest
-          api: 25
-          tag: default
-          abi: x86
+#      - uses: malinskiy/action-android/emulator-run-cmd@release/0.1.4
+#        with:
+#          cmd: ./gradlew zoomable:connectedDebugAndroidTest
+#          api: 25
+#          tag: default
+#          abi: x86
