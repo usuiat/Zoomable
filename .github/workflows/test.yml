@@ -37,7 +37,9 @@ jobs:
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 31
+          arch: x86_64
+          emulator-boot-timeout: 1200
           script: ./gradlew zoomable:connectedDebugAndroidTest
 
       # Download & install the Android SDK.
