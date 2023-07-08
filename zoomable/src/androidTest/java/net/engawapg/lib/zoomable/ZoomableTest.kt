@@ -1,17 +1,27 @@
 package net.engawapg.lib.zoomable
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.doubleClick
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pinch
 import androidx.compose.ui.test.swipe
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
+import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
@@ -111,5 +121,66 @@ class ZoomableTest {
         }
         val bounds2 = node.fetchSemanticsNode().boundsInRoot
         assert(bounds2.size == bounds0.size)
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Test
+    fun zoomable_on_pager_zoomAfterSwipePage_zoomed() {
+        /*
+        This function tests that zooming works after page swipes.
+        We ran into a problem with Compose 1.5 where zooming did not work after swiping a
+        HorizontalPager page and then returning to the initial page.
+         */
+        composeTestRule.setContent {
+            val pagerState = rememberPagerState()
+            HorizontalPager(
+                pageCount = 2,
+                state = pagerState,
+                modifier = Modifier.fillMaxSize().semantics { testTag = "pager" }
+            ) { page ->
+                val painter = painterResource(id = android.R.drawable.ic_dialog_info)
+                val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+                Image(
+                    painter = painter,
+                    contentDescription = "image$page",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zoomable(
+                            zoomState = zoomState,
+                        )
+                )
+            }
+        }
+
+        var image= composeTestRule.onNodeWithContentDescription("image0")
+        image.assertIsDisplayed()
+        image.performTouchInput {
+            swipeLeft()
+        }
+
+        image = composeTestRule.onNodeWithContentDescription("image1")
+        image.assertIsDisplayed()
+        image.performTouchInput {
+            swipeRight()
+        }
+
+        image = composeTestRule.onNodeWithContentDescription("image0")
+        image.assertIsDisplayed()
+        image.performTouchInput {
+            pinch(
+                start0 = center + Offset(-100f, 0f),
+                end0 = center + Offset(-200f, 0f),
+                start1 = center + Offset(+100f, 0f),
+                end1 = center + Offset(+200f, 0f),
+            )
+        }
+
+        /*
+        We really want to check the size of the image, but on Pager we cannot get the size right,
+        so instead we check that Top and Right are negative numbers.
+         */
+        val bounds = image.getUnclippedBoundsInRoot()
+        assert(bounds.left < 0.dp && bounds.top < 0.dp)
     }
 }
