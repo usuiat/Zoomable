@@ -12,7 +12,8 @@
         "junit",
         "org.jetbrains.kotlinx:kotlinx-coroutines-test",
         "com.vanniktech.maven.publish",
-        "org.jetbrains.dokka"
+        "org.jetbrains.dokka",
+        "gradle"
       ],
       "automerge": true
     }
