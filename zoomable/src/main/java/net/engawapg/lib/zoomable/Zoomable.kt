@@ -236,7 +236,7 @@ fun Modifier.zoomable(
         .onSizeChanged { size ->
             zoomState.setLayoutSize(size.toSize())
         }
-        .pointerInput(Unit) {
+        .pointerInput(zoomState) {
             detectTransformGestures(
                 onGestureStart = { zoomState.startGesture() },
                 onGesture = { centroid, pan, zoom, timeMillis ->
