@@ -132,9 +132,8 @@ class ZoomableTest {
         HorizontalPager page and then returning to the initial page.
          */
         composeTestRule.setContent {
-            val pagerState = rememberPagerState()
+            val pagerState = rememberPagerState { 2 }
             HorizontalPager(
-                pageCount = 2,
                 state = pagerState,
                 modifier = Modifier.fillMaxSize().semantics { testTag = "pager" }
             ) { page ->
