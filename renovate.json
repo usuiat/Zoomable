@@ -1,7 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
-    ":disableDependencyDashboard"
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "androidx.test",
+        "com.google.accompanist",
+        "io.coil-kt",
+        "junit",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-test",
+        "com.vanniktech.maven.publish",
+        "org.jetbrains.dokka",
+        "gradle"
+      ],
+      "automerge": true
+    }
   ]
 }
