@@ -16,6 +16,7 @@ import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pinch
 import androidx.compose.ui.test.swipe
@@ -181,5 +182,34 @@ class ZoomableTest {
          */
         val bounds = image.getUnclippedBoundsInRoot()
         assert(bounds.left < 0.dp && bounds.top < 0.dp)
+    }
+
+    @Test
+    fun zoomable_tap_calledOnTap() {
+        var count = 0
+        composeTestRule.mainClock.autoAdvance = false
+        composeTestRule.setContent {
+            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
+            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+            Image(
+                painter = painter,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zoomable(
+                        zoomState = zoomState,
+                        onTap = {
+                            count = 1
+                        },
+                    )
+            )
+        }
+
+        composeTestRule.onNodeWithContentDescription("image").performClick()
+        // Wait manually because automatic synchronization does not work well.
+        // I think the wait process to determine if it is a double-tap is judged to be idle.
+        composeTestRule.mainClock.advanceTimeBy(1000L)
+        assert(count == 1)
     }
 }
