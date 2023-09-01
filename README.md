@@ -49,7 +49,7 @@ dependencies {
 }
 ```
 
-The latest version: <img alt="Maven Central" src="https://img.shields.io/maven-central/v/net.engawapg.lib/zoomable">
+The latest version: <img alt="version badge" src="https://img.shields.io/github/v/release/usuiat/Zoomable?filter=*.*.*">
 
 ### Basic Usage
 
