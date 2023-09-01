@@ -14,7 +14,7 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.25.3" }
-dokka = { id = "org.jetbrains.dokka", version = "1.8.20" }
+dokka = { id = "org.jetbrains.dokka", version = "1.9.0" }
 
 [libraries]
 compose-animation-core = { module = "androidx.compose.animation:animation-core", version.ref = "compose" }
