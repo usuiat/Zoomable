@@ -39,8 +39,7 @@ import kotlin.math.abs
  * A caller of this function can choose if the pointer events will be consumed.
  * And the caller can implement [onGestureStart] and [onGestureEnd] event.
  *
- * @param onGesture If this lambda returns true, the pointer events will be consumed. If it returns
- * false, the pointer events will not be consumed.
+ * @param onGesture Gesture handler.
  * @param onGestureStart This lambda is called when a gesture starts.
  * @param onGestureEnd This lambda is called when a gesture ends.
  * @param onTap will be called when single tap is detected.
@@ -49,7 +48,7 @@ import kotlin.math.abs
  * vertical scrolling.
  */
 private suspend fun PointerInputScope.detectTransformGestures(
-    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
     onTap: (position: Offset) -> Unit = {},
@@ -247,7 +246,6 @@ fun Modifier.zoomable(
                             )
                         }
                     }
-                    canConsume
                 },
                 onGestureEnd = {
                     scope.launch {
