@@ -69,10 +69,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
             if (zoomChange != 1f || panChange != Offset.Zero) {
                 val centroid = event.calculateCentroid(useCurrent = false)
                 val timeMillis = event.changes[0].uptimeMillis
-                val canConsume = onGesture(centroid, panChange, zoomChange, timeMillis)
-                if (canConsume) {
-                    event.consumePositionChanges()
-                }
+                onGesture(centroid, panChange, zoomChange, timeMillis)
             }
             isTap = false
         }
@@ -80,6 +77,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
             isTap = false
         }
         firstUp = event.changes[0]
+        event.consumePositionChanges()
     }
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
@@ -103,10 +101,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                         if (zoomChange != 1f) {
                             val centroid = event.calculateCentroid(useCurrent = false)
                             val timeMillis = event.changes[0].uptimeMillis
-                            val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                            if (canConsume) {
-                                event.consumePositionChanges()
-                            }
+                            onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
                         }
                     }
                     isDoubleTap = false
@@ -115,6 +110,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                     isDoubleTap = false
                 }
                 secondUp = event.changes[0]
+                event.consumePositionChanges()
             }
 
             if (secondUp.uptimeMillis - secondDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
