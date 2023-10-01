@@ -13,7 +13,8 @@
         "org.jetbrains.kotlinx:kotlinx-coroutines-test",
         "com.vanniktech.maven.publish",
         "org.jetbrains.dokka",
-        "gradle"
+        "gradle",
+        "actions/"
       ],
       "automerge": true
     }
