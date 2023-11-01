@@ -52,7 +52,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
-    onTap: () -> Unit = {},
+    onTap: (position: Offset) -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
@@ -90,7 +90,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     if (isTap) {
         val secondDown = awaitSecondDown(firstUp)
         if (secondDown == null) {
-            onTap()
+            onTap(firstUp.position)
         } else {
             var isDoubleTap = true
             var secondUp: PointerInputChange = secondDown
@@ -223,7 +223,7 @@ private class TouchSlop(private val threshold: Float) {
 fun Modifier.zoomable(
     zoomState: ZoomState,
     enableOneFingerZoom: Boolean = true,
-    onTap: () -> Unit = {},
+    onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit = { position -> zoomState.toggleScale(2.5f, position) },
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
