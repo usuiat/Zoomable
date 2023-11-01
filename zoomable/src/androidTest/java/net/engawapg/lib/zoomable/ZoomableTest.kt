@@ -12,11 +12,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pinch
 import androidx.compose.ui.test.swipe
@@ -187,6 +187,8 @@ class ZoomableTest {
     @Test
     fun zoomable_tap_calledOnTap() {
         var count = 0
+        var positionAtCallback: Offset = Offset.Unspecified
+        var positionTapped: Offset = Offset.Zero
         composeTestRule.mainClock.autoAdvance = false
         composeTestRule.setContent {
             val painter = painterResource(id = android.R.drawable.ic_dialog_info)
@@ -199,17 +201,22 @@ class ZoomableTest {
                     .fillMaxSize()
                     .zoomable(
                         zoomState = zoomState,
-                        onTap = {
+                        onTap = { position ->
                             count = 1
+                            positionAtCallback = position
                         },
                     )
             )
         }
 
-        composeTestRule.onNodeWithContentDescription("image").performClick()
+        composeTestRule.onNodeWithContentDescription("image").performTouchInput {
+            positionTapped = center
+            click(positionTapped)
+        }
         // Wait manually because automatic synchronization does not work well.
         // I think the wait process to determine if it is a double-tap is judged to be idle.
         composeTestRule.mainClock.advanceTimeBy(1000L)
         assert(count == 1)
+        assert(positionAtCallback == positionTapped)
     }
 }
