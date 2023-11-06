@@ -18,15 +18,33 @@ package net.engawapg.lib.zoomable
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculateCentroidSize
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
@@ -39,8 +57,7 @@ import kotlin.math.abs
  * A caller of this function can choose if the pointer events will be consumed.
  * And the caller can implement [onGestureStart] and [onGestureEnd] event.
  *
- * @param onGesture If this lambda returns true, the pointer events will be consumed. If it returns
- * false, the pointer events will not be consumed.
+ * @param onGesture Gesture handler.
  * @param onGestureStart This lambda is called when a gesture starts.
  * @param onGestureEnd This lambda is called when a gesture ends.
  * @param onTap will be called when single tap is detected.
@@ -49,9 +66,9 @@ import kotlin.math.abs
  * vertical scrolling.
  */
 private suspend fun PointerInputScope.detectTransformGestures(
-    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onGestureStart: () -> Unit = {},
-    onGestureEnd: () -> Unit = {},
+    onGestureEnd: (dragVelocity: Velocity) -> Unit = {},
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
     enableOneFingerZoom: Boolean = true,
@@ -60,32 +77,35 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGestureStart()
 
     var firstUp: PointerInputChange = firstDown
-    var isTap = true
+    var hasMoved = false
+    var isMultiTouch = false
+    var isLongPressed = false
     val touchSlop = TouchSlop(viewConfiguration.touchSlop)
+    val velocityTracker = VelocityTracker()
     forEachPointerEventUntilReleased { event ->
+        velocityTracker.addPointerInputChange(event.changes[0])
         if (touchSlop.isPast(event)) {
             val zoomChange = event.calculateZoom()
             val panChange = event.calculatePan()
             if (zoomChange != 1f || panChange != Offset.Zero) {
                 val centroid = event.calculateCentroid(useCurrent = false)
                 val timeMillis = event.changes[0].uptimeMillis
-                val canConsume = onGesture(centroid, panChange, zoomChange, timeMillis)
-                if (canConsume) {
-                    event.consumePositionChanges()
-                }
+                onGesture(centroid, panChange, zoomChange, timeMillis)
             }
-            isTap = false
+            hasMoved = true
         }
         if (event.changes.size > 1) {
-            isTap = false
+            isMultiTouch = true
         }
         firstUp = event.changes[0]
+        event.consumePositionChanges()
     }
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
-        isTap = false
+        isLongPressed = true
     }
 
+    val isTap = !hasMoved && !isMultiTouch && !isLongPressed
     // Vertical scrolling following a double tap is treated as a zoom gesture.
     if (isTap) {
         val secondDown = awaitSecondDown(firstUp)
@@ -103,10 +123,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                         if (zoomChange != 1f) {
                             val centroid = event.calculateCentroid(useCurrent = false)
                             val timeMillis = event.changes[0].uptimeMillis
-                            val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                            if (canConsume) {
-                                event.consumePositionChanges()
-                            }
+                            onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
                         }
                     }
                     isDoubleTap = false
@@ -115,6 +132,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                     isDoubleTap = false
                 }
                 secondUp = event.changes[0]
+                event.consumePositionChanges()
             }
 
             if (secondUp.uptimeMillis - secondDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
@@ -126,7 +144,10 @@ private suspend fun PointerInputScope.detectTransformGestures(
             }
         }
     }
-    onGestureEnd()
+
+    val isDrag = hasMoved && !isMultiTouch
+    val dragVelocity = if (isDrag) velocityTracker.calculateVelocity() else Velocity.Zero
+    onGestureEnd(dragVelocity)
 }
 
 /**
@@ -232,15 +253,19 @@ fun Modifier.zoomable(
     }
 ) {
     val scope = rememberCoroutineScope()
+    val connection = remember { object : NestedScrollConnection{} }
+    val dispatcher = remember { NestedScrollDispatcher() }
+    var canConsume = false
     Modifier
         .onSizeChanged { size ->
             zoomState.setLayoutSize(size.toSize())
         }
+        .nestedScroll(connection, dispatcher)
         .pointerInput(zoomState) {
             detectTransformGestures(
                 onGestureStart = { zoomState.startGesture() },
                 onGesture = { centroid, pan, zoom, timeMillis ->
-                    val canConsume = zoomState.canConsumeGesture(pan = pan, zoom = zoom)
+                    canConsume = zoomState.canConsumeGesture(pan = pan, zoom = zoom)
                     if (canConsume) {
                         scope.launch {
                             zoomState.applyGesture(
@@ -250,12 +275,18 @@ fun Modifier.zoomable(
                                 timeMillis = timeMillis,
                             )
                         }
+                    } else {
+                        dispatcher.dispatchPostScroll(Offset.Zero, pan, NestedScrollSource.Drag)
                     }
-                    canConsume
                 },
-                onGestureEnd = {
+                onGestureEnd = { dragVelocity ->
                     scope.launch {
                         zoomState.endGesture()
+                    }
+                    if (!canConsume) {
+                        dispatcher.coroutineScope.launch {
+                            dispatcher.dispatchPostFling(Velocity.Zero, dragVelocity)
+                        }
                     }
                 },
                 onTap = onTap,
