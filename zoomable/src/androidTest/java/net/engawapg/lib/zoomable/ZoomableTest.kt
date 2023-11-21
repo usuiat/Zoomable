@@ -136,6 +136,7 @@ class ZoomableTest {
             val pagerState = rememberPagerState { 2 }
             HorizontalPager(
                 state = pagerState,
+                pageNestedScrollConnection = ZoomableDefaults.pageNestedScrollConnection,
                 modifier = Modifier.fillMaxSize().semantics { testTag = "pager" }
             ) { page ->
                 val painter = painterResource(id = android.R.drawable.ic_dialog_info)
