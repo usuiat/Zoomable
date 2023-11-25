@@ -26,7 +26,9 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.GraphicsLayerScope
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -40,19 +42,13 @@ import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.node.DelegatingNode
-import androidx.compose.ui.node.LayoutAwareModifierNode
-import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.PointerInputModifierNode
 import androidx.compose.ui.platform.InspectorInfo
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Velocity
-import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.launch
@@ -291,25 +287,31 @@ private data class ZoomableElement(
     }
 }
 
-private class OnSizeChangedModifierNode(
-    var onSizeChanged: (IntSize) -> Unit,
-) : LayoutAwareModifierNode, Modifier.Node() {
-    override fun onRemeasured(size: IntSize) {
-        onSizeChanged(size)
-    }
-}
+private class DrawZoomedContentModifierNode(
+    var zoomState: ZoomState,
+) : DrawModifierNode, Modifier.Node() {
+    var needToSetSize = true
 
-private class BlockGraphicsLayerModifier(
-    var layerBlock: GraphicsLayerScope.() -> Unit,
-) : LayoutModifierNode, Modifier.Node() {
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints
-    ): MeasureResult {
-        val placeable = measurable.measure(constraints)
-        return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(0, 0, layerBlock = layerBlock)
+    override fun ContentDrawScope.draw() {
+        if (needToSetSize) {
+            zoomState.setLayoutSize(size)
+            needToSetSize = false
         }
+        withTransform({
+            translate(left = zoomState.offsetX, top = zoomState.offsetY)
+            scale(zoomState.scale)
+        }) {
+            this@draw.drawContent()
+        }
+    }
+
+    override fun onMeasureResultChanged() {
+        needToSetSize = true
+    }
+
+    fun update(zoomState: ZoomState) {
+        this.zoomState = zoomState
+        needToSetSize = true
     }
 }
 
@@ -322,20 +324,10 @@ private class ZoomableNode(
     var canConsume = false
     val connection = object : NestedScrollConnection{}
     val dispatcher = NestedScrollDispatcher()
+    val drawModifier = delegate(DrawZoomedContentModifierNode(zoomState))
 
     init {
         delegate(nestedScrollModifierNode(connection, dispatcher))
-        delegate(OnSizeChangedModifierNode { size ->
-            zoomState.setLayoutSize(size.toSize())
-        })
-    }
-
-    val graphicsLayerModifier = delegate(BlockGraphicsLayerModifier { layerBlock() })
-    val layerBlock: GraphicsLayerScope.() -> Unit = {
-        scaleX = zoomState.scale
-        scaleY = zoomState.scale
-        translationX = zoomState.offsetX
-        translationY = zoomState.offsetY
     }
 
     fun update(
@@ -344,11 +336,13 @@ private class ZoomableNode(
         onTap: (position: Offset) -> Unit,
         onDoubleTap: suspend (position: Offset) -> Unit,
     ) {
-        this.zoomState = zoomState
+        if (this.zoomState != zoomState) {
+            this.zoomState = zoomState
+            drawModifier.update(zoomState)
+        }
         this.enableOneFingerZoom = enableOneFingerZoom
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
-        graphicsLayerModifier.layerBlock = { layerBlock() }
     }
 
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
