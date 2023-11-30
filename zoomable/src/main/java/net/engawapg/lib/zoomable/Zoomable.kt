@@ -24,26 +24,32 @@ import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.nestedscroll.nestedScrollModifierNode
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.node.DelegatingNode
+import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.PointerInputModifierNode
+import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
@@ -246,64 +252,140 @@ fun Modifier.zoomable(
     enableOneFingerZoom: Boolean = true,
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit = { position -> zoomState.toggleScale(2.5f, position) },
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo {
+): Modifier = this then ZoomableElement(
+    zoomState,
+    enableOneFingerZoom,
+    onTap,
+    onDoubleTap,
+)
+
+private data class ZoomableElement(
+    val zoomState: ZoomState,
+    val enableOneFingerZoom: Boolean,
+    val onTap: (position: Offset) -> Unit,
+    val onDoubleTap: suspend (position: Offset) -> Unit,
+): ModifierNodeElement<ZoomableNode>() {
+    override fun create(): ZoomableNode = ZoomableNode(
+        zoomState,
+        enableOneFingerZoom,
+        onTap,
+        onDoubleTap,
+    )
+
+    override fun update(node: ZoomableNode) {
+        node.update(
+            zoomState,
+            enableOneFingerZoom,
+            onTap,
+            onDoubleTap,
+        )
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
         name = "zoomable"
         properties["zoomState"] = zoomState
+        properties["enableOneFingerZoom"] = enableOneFingerZoom
+        properties["onTap"] = onTap
+        properties["onDoubleTap"] = onDoubleTap
     }
-) {
-    val scope = rememberCoroutineScope()
-    val connection = remember { object : NestedScrollConnection{} }
-    val dispatcher = remember { NestedScrollDispatcher() }
+}
+
+private class ZoomableNode(
+    var zoomState: ZoomState,
+    var enableOneFingerZoom: Boolean,
+    var onTap: (position: Offset) -> Unit,
+    var onDoubleTap: suspend (position: Offset) -> Unit,
+): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var canConsume = false
-    Modifier
-        .onSizeChanged { size ->
-            zoomState.setLayoutSize(size.toSize())
+    val connection = object : NestedScrollConnection{}
+    val dispatcher = NestedScrollDispatcher()
+    var measuredSize = Size.Zero
+
+    init {
+        delegate(nestedScrollModifierNode(connection, dispatcher))
+    }
+
+    fun update(
+        zoomState: ZoomState,
+        enableOneFingerZoom: Boolean,
+        onTap: (position: Offset) -> Unit,
+        onDoubleTap: suspend (position: Offset) -> Unit,
+    ) {
+        if (this.zoomState != zoomState) {
+            zoomState.setLayoutSize(measuredSize)
+            this.zoomState = zoomState
         }
-        .nestedScroll(connection, dispatcher)
-        .pointerInput(zoomState) {
-            detectTransformGestures(
-                onGestureStart = { zoomState.startGesture() },
-                onGesture = { centroid, pan, zoom, timeMillis ->
-                    canConsume = zoomState.canConsumeGesture(pan = pan, zoom = zoom)
-                    if (canConsume) {
-                        scope.launch {
-                            zoomState.applyGesture(
-                                pan = pan,
-                                zoom = zoom,
-                                position = centroid,
-                                timeMillis = timeMillis,
-                            )
-                        }
-                    } else {
-                        dispatcher.dispatchPostScroll(Offset.Zero, pan, NestedScrollSource.Drag)
+        this.enableOneFingerZoom = enableOneFingerZoom
+        this.onTap = onTap
+        this.onDoubleTap = onDoubleTap
+    }
+
+    val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
+        detectTransformGestures(
+            onGestureStart = { zoomState.startGesture() },
+            onGesture = { centroid, pan, zoom, timeMillis ->
+                canConsume = zoomState.canConsumeGesture(pan = pan, zoom = zoom)
+                if (canConsume) {
+                    coroutineScope.launch {
+                        zoomState.applyGesture(
+                            pan = pan,
+                            zoom = zoom,
+                            position = centroid,
+                            timeMillis = timeMillis,
+                        )
                     }
-                },
-                onGestureEnd = { dragVelocity ->
-                    scope.launch {
-                        zoomState.endGesture()
+                } else {
+                    dispatcher.dispatchPostScroll(Offset.Zero, pan, NestedScrollSource.Drag)
+                }
+            },
+            onGestureEnd = { dragVelocity ->
+                coroutineScope.launch {
+                    zoomState.endGesture()
+                }
+                if (!canConsume) {
+                    dispatcher.coroutineScope.launch {
+                        dispatcher.dispatchPostFling(Velocity.Zero, dragVelocity)
                     }
-                    if (!canConsume) {
-                        dispatcher.coroutineScope.launch {
-                            dispatcher.dispatchPostFling(Velocity.Zero, dragVelocity)
-                        }
-                    }
-                },
-                onTap = onTap,
-                onDoubleTap = { position ->
-                    scope.launch {
-                        onDoubleTap(position)
-                    }
-                },
-                enableOneFingerZoom = enableOneFingerZoom,
-            )
+                }
+            },
+            onTap = onTap,
+            onDoubleTap = { position ->
+                coroutineScope.launch {
+                    onDoubleTap(position)
+                }
+            },
+            enableOneFingerZoom = enableOneFingerZoom,
+        )
+    })
+
+    override fun onPointerEvent(
+        pointerEvent: PointerEvent,
+        pass: PointerEventPass,
+        bounds: IntSize
+    ) {
+        pointerInputNode.onPointerEvent(pointerEvent, pass, bounds)
+    }
+
+    override fun onCancelPointerInput() {
+        pointerInputNode.onCancelPointerInput()
+    }
+
+    override fun MeasureScope.measure(
+        measurable: Measurable,
+        constraints: Constraints
+    ): MeasureResult {
+        val placeable = measurable.measure(constraints)
+        measuredSize = IntSize(placeable.measuredWidth, placeable.measuredHeight).toSize()
+        zoomState.setLayoutSize(measuredSize)
+        return layout(placeable.width, placeable.height) {
+            placeable.placeWithLayer(x = 0, y = 0) {
+                scaleX = zoomState.scale
+                scaleY = zoomState.scale
+                translationX = zoomState.offsetX
+                translationY = zoomState.offsetY
+            }
         }
-        .graphicsLayer {
-            scaleX = zoomState.scale
-            scaleY = zoomState.scale
-            translationX = zoomState.offsetX
-            translationY = zoomState.offsetY
-        }
+    }
 }
 
 /**
