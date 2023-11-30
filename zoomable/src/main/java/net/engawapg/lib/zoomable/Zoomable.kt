@@ -290,43 +290,20 @@ private data class ZoomableElement(
     }
 }
 
-private class GraphicsLayerModifierNode(
-    var zoomState: ZoomState,
-) : LayoutModifierNode, Modifier.Node() {
-    var size = Size.Zero
-
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints
-    ): MeasureResult {
-        val placeable = measurable.measure(constraints)
-        size = IntSize(placeable.measuredWidth, placeable.measuredHeight).toSize()
-        zoomState.setLayoutSize(size)
-        return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(x = 0, y = 0) {
-                scaleX = zoomState.scale
-                scaleY = zoomState.scale
-                translationX = zoomState.offsetX
-                translationY = zoomState.offsetY
-            }
-        }
-    }
-
-    fun update(zoomState: ZoomState) {
-        this.zoomState = zoomState
-        zoomState.setLayoutSize(size)
-    }
-}
-
 private class ZoomableNode(
     var zoomState: ZoomState,
     var enableOneFingerZoom: Boolean,
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset) -> Unit,
-): PointerInputModifierNode, DelegatingNode() {
+): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var canConsume = false
     val connection = object : NestedScrollConnection{}
     val dispatcher = NestedScrollDispatcher()
+    var measuredSize = Size.Zero
+
+    init {
+        delegate(nestedScrollModifierNode(connection, dispatcher))
+    }
 
     fun update(
         zoomState: ZoomState,
@@ -335,19 +312,13 @@ private class ZoomableNode(
         onDoubleTap: suspend (position: Offset) -> Unit,
     ) {
         if (this.zoomState != zoomState) {
+            zoomState.setLayoutSize(measuredSize)
             this.zoomState = zoomState
-            graphicsLayerNode.update(zoomState)
         }
         this.enableOneFingerZoom = enableOneFingerZoom
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
     }
-
-    init {
-        delegate(nestedScrollModifierNode(connection, dispatcher))
-    }
-
-    val graphicsLayerNode = delegate(GraphicsLayerModifierNode(zoomState))
 
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
         detectTransformGestures(
@@ -397,6 +368,23 @@ private class ZoomableNode(
 
     override fun onCancelPointerInput() {
         pointerInputNode.onCancelPointerInput()
+    }
+
+    override fun MeasureScope.measure(
+        measurable: Measurable,
+        constraints: Constraints
+    ): MeasureResult {
+        val placeable = measurable.measure(constraints)
+        measuredSize = IntSize(placeable.measuredWidth, placeable.measuredHeight).toSize()
+        zoomState.setLayoutSize(measuredSize)
+        return layout(placeable.width, placeable.height) {
+            placeable.placeWithLayer(x = 0, y = 0) {
+                scaleX = zoomState.scale
+                scaleY = zoomState.scale
+                translationX = zoomState.offsetX
+                translationY = zoomState.offsetY
+            }
+        }
     }
 }
 
