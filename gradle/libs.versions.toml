@@ -4,7 +4,7 @@ composeCompiler = "1.5.4"
 composeMaterial3 = "1.1.2"
 
 kotlin = "1.9.20"
-androidGradle = "8.1.4"
+androidGradle = "8.2.0"
 
 coil = "2.5.0"
 accompanist = "0.32.0"
