@@ -201,7 +201,7 @@ private class TouchSlop(private val threshold: Float) {
 
         zoom *= event.calculateZoom()
         pan += event.calculatePan()
-        val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = false)
+        val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = true)
         val panMotion = pan.getDistance()
         _isPast = zoomMotion > threshold || panMotion > threshold
 
