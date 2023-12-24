@@ -94,7 +94,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
             val zoomChange = event.calculateZoom()
             val panChange = event.calculatePan()
             if (zoomChange != 1f || panChange != Offset.Zero) {
-                val centroid = event.calculateCentroid(useCurrent = false)
+                val centroid = event.calculateCentroid(useCurrent = true)
                 val timeMillis = event.changes[0].uptimeMillis
                 onGesture(centroid, panChange, zoomChange, timeMillis)
             }
@@ -127,7 +127,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                         val panChange = event.calculatePan()
                         val zoomChange = 1f + panChange.y * 0.004f
                         if (zoomChange != 1f) {
-                            val centroid = event.calculateCentroid(useCurrent = false)
+                            val centroid = event.calculateCentroid(useCurrent = true)
                             val timeMillis = event.changes[0].uptimeMillis
                             onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
                         }
@@ -228,7 +228,7 @@ private class TouchSlop(private val threshold: Float) {
 
         zoom *= event.calculateZoom()
         pan += event.calculatePan()
-        val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = false)
+        val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = true)
         val panMotion = pan.getDistance()
         _isPast = zoomMotion > threshold || panMotion > threshold
 
