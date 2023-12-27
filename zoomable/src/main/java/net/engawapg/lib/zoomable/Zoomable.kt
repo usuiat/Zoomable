@@ -21,7 +21,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
-import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.ui.Modifier
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.launch
-import kotlin.math.abs
 
 /**
  * Customized transform gesture detector.
@@ -214,7 +212,6 @@ private fun PointerEvent.consumePositionChanges() {
  * value, it is judged to be a swipe or zoom gesture.
  */
 private class TouchSlop(private val threshold: Float) {
-    private var zoom = 1f
     private var pan = Offset.Zero
     private var _isPast = false
 
@@ -229,11 +226,9 @@ private class TouchSlop(private val threshold: Float) {
             return true
         }
 
-        zoom *= event.calculateZoom()
         pan += event.calculatePan()
-        val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = true)
         val panMotion = pan.getDistance()
-        _isPast = zoomMotion > threshold || panMotion > threshold
+        _isPast = event.changes.size > 1 || panMotion > threshold
 
         return _isPast
     }
