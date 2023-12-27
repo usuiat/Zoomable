@@ -11,7 +11,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import net.engawapg.lib.zoomable.ZoomableDefaults
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 
@@ -27,7 +26,6 @@ fun AndroidxHorizontalPagerSample() {
     val pagerState = rememberPagerState { resources.size }
     HorizontalPager(
         state = pagerState,
-        pageNestedScrollConnection = ZoomableDefaults.pageNestedScrollConnection,
         modifier = Modifier.fillMaxSize()
     ) { page ->
         val painter = painterResource(id = resources[page])
@@ -63,7 +61,6 @@ fun AndroidxVerticalPagerSample() {
     val pagerState = rememberPagerState { resources.size }
     VerticalPager(
         state = pagerState,
-        pageNestedScrollConnection = ZoomableDefaults.pageNestedScrollConnection,
         modifier = Modifier.fillMaxSize()
     ) { page ->
         val painter = painterResource(id = resources[page])
