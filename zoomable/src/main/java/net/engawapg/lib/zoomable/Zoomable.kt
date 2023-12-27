@@ -81,9 +81,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
     var hasMoved = false
     var isMultiTouch = false
     var isLongPressed = false
-    val touchSlop = TouchSlop(viewConfiguration.touchSlop)
-    forEachPointerEventUntilReleased { event ->
-        if (touchSlop.isPast(event)) {
+    forEachPointerEventUntilReleased { event, isTouchSlopPast ->
+        if (isTouchSlopPast) {
             val zoomChange = event.calculateZoom()
             val panChange = event.calculatePan()
             if (zoomChange != 1f || panChange != Offset.Zero) {
@@ -115,9 +114,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
         } else {
             var isDoubleTap = true
             var secondUp: PointerInputChange = secondDown
-            val secondTouchSlop = TouchSlop(viewConfiguration.touchSlop)
-            forEachPointerEventUntilReleased { event ->
-                if (secondTouchSlop.isPast(event)) {
+            forEachPointerEventUntilReleased { event, isTouchSlopPast ->
+                if (isTouchSlopPast) {
                     if (enableOneFingerZoom) {
                         val panChange = event.calculatePan()
                         val zoomChange = 1f + panChange.y * 0.004f
@@ -156,15 +154,26 @@ private suspend fun PointerInputScope.detectTransformGestures(
  * @param action Callback function that will be called every PointerEvents occur.
  */
 private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
-    action: (PointerEvent) -> Unit,
+    action: (event: PointerEvent, isTouchSlopPast: Boolean) -> Unit,
 ) {
+    val touchSlop = TouchSlop(viewConfiguration.touchSlop)
     do {
-        val event = awaitPointerEvent()
-        if (event.changes.fastAny { it.isConsumed }) {
+        val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
+        if (mainEvent.changes.fastAny { it.isConsumed }) {
             break
         }
-        action(event)
-    } while (event.changes.fastAny { it.pressed })
+
+        val isTouchSlopPast = touchSlop.isPast(mainEvent)
+        action(mainEvent, isTouchSlopPast)
+        if (isTouchSlopPast) {
+            continue
+        }
+
+        val finalEvent = awaitPointerEvent(pass = PointerEventPass.Final)
+        if (finalEvent.changes.fastAny { it.isConsumed }) {
+            break
+        }
+    } while (mainEvent.changes.fastAny { it.pressed })
 }
 
 /**
