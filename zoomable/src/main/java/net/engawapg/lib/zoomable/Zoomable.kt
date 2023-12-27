@@ -66,7 +66,8 @@ import kotlin.math.abs
  * vertical scrolling.
  */
 private suspend fun PointerInputScope.detectTransformGestures(
-    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
+    canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
     onTap: (position: Offset) -> Unit = {},
@@ -88,8 +89,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
             if (zoomChange != 1f || panChange != Offset.Zero) {
                 val centroid = event.calculateCentroid(useCurrent = true)
                 val timeMillis = event.changes[0].uptimeMillis
-                val canConsume = onGesture(centroid, panChange, zoomChange, timeMillis)
-                if (canConsume) {
+                if (canConsumeGesture(panChange, zoomChange)) {
+                    onGesture(centroid, panChange, zoomChange, timeMillis)
                     event.consumePositionChanges()
                 }
             }
@@ -123,8 +124,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
                         if (zoomChange != 1f) {
                             val centroid = event.calculateCentroid(useCurrent = true)
                             val timeMillis = event.changes[0].uptimeMillis
-                            val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                            if (canConsume) {
+                            if (canConsumeGesture(Offset.Zero, zoomChange)) {
+                                onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
                                 event.consumePositionChanges()
                             }
                         }
@@ -289,7 +290,6 @@ private class ZoomableNode(
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset) -> Unit,
 ): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
-    var canConsume = false
     var measuredSize = Size.Zero
 
     fun update(
@@ -310,19 +310,18 @@ private class ZoomableNode(
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
         detectTransformGestures(
             onGestureStart = { zoomState.startGesture() },
+            canConsumeGesture = { pan, zoom ->
+                zoomState.canConsumeGesture(pan = pan, zoom = zoom)
+            },
             onGesture = { centroid, pan, zoom, timeMillis ->
-                canConsume = zoomState.canConsumeGesture(pan = pan, zoom = zoom)
-                if (canConsume) {
-                    coroutineScope.launch {
-                        zoomState.applyGesture(
-                            pan = pan,
-                            zoom = zoom,
-                            position = centroid,
-                            timeMillis = timeMillis,
-                        )
-                    }
+                coroutineScope.launch {
+                    zoomState.applyGesture(
+                        pan = pan,
+                        zoom = zoom,
+                        position = centroid,
+                        timeMillis = timeMillis,
+                    )
                 }
-                canConsume
             },
             onGestureEnd = {
                 coroutineScope.launch {
