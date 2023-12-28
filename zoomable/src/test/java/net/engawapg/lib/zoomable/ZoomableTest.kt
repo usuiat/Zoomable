@@ -25,7 +25,10 @@ import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class ZoomableTest {
 
     @get:Rule
