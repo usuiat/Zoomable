@@ -54,8 +54,8 @@ import kotlinx.coroutines.launch
  * A caller of this function can choose if the pointer events will be consumed.
  * And the caller can implement [onGestureStart] and [onGestureEnd] event.
  *
- * @param onGesture If this lambda returns true, the pointer events will be consumed. If it returns
- * false, the pointer events will not be consumed.
+ * @param canConsumeGesture Lambda that asks the caller whether the gesture can be consumed.
+ * @param onGesture This lambda is called when [canConsumeGesture] returns true.
  * @param onGestureStart This lambda is called when a gesture starts.
  * @param onGestureEnd This lambda is called when a gesture ends.
  * @param onTap will be called when single tap is detected.
@@ -227,6 +227,7 @@ private class TouchSlop(private val threshold: Float) {
         }
 
         if (event.changes.size > 1) {
+            // If there are two or more fingers, we determine the touch slop is past immediately.
             _isPast = true
         } else {
             pan += event.calculatePan()
