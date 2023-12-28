@@ -226,9 +226,12 @@ private class TouchSlop(private val threshold: Float) {
             return true
         }
 
-        pan += event.calculatePan()
-        val panMotion = pan.getDistance()
-        _isPast = event.changes.size > 1 || panMotion > threshold
+        if (event.changes.size > 1) {
+            _isPast = true
+        } else {
+            pan += event.calculatePan()
+            _isPast = pan.getDistance() > threshold
+        }
 
         return _isPast
     }
