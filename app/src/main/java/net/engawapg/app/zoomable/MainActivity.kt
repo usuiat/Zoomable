@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +57,10 @@ fun AppScreen() {
     )
 
     Column {
+        var onTapMessage by remember { mutableStateOf("")}
+        val onTap = { point: Offset ->
+            onTapMessage = "Tapped @(${point.x}, ${point.y})"
+        }
         ScrollableTabRow(
             selectedTabIndex = tabIndex,
         ) {
@@ -74,14 +79,17 @@ fun AppScreen() {
                 .clipToBounds()
         ) {
             when (tabTitles[tabIndex]) {
-                "Sync Image" -> SyncImageSample()
-                "Async Image" -> AsyncImageSample()
-                "Text" -> TextSample()
-                "HorizontalPager\n(Accompanist)" -> AccompanistHorizontalPagerSample()
-                "VerticalPager\n(Accompanist)" -> AccompanistVerticalPagerSample()
-                "HorizontalPager\n(Androidx)" -> AndroidxHorizontalPagerSample()
-                "VerticalPager\n(Androidx)" -> AndroidxVerticalPagerSample()
+                "Sync Image" -> SyncImageSample(onTap)
+                "Async Image" -> AsyncImageSample(onTap)
+                "Text" -> TextSample(onTap)
+                "HorizontalPager\n(Accompanist)" -> AccompanistHorizontalPagerSample(onTap)
+                "VerticalPager\n(Accompanist)" -> AccompanistVerticalPagerSample(onTap)
+                "HorizontalPager\n(Androidx)" -> AndroidxHorizontalPagerSample(onTap)
+                "VerticalPager\n(Androidx)" -> AndroidxVerticalPagerSample(onTap)
             }
         }
+        Text(
+            text = onTapMessage
+        )
     }
 }

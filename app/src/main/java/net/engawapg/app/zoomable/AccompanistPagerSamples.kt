@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -33,7 +34,7 @@ import net.engawapg.lib.zoomable.zoomable
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun AccompanistHorizontalPagerSample() {
+fun AccompanistHorizontalPagerSample(onTap: (Offset) -> Unit) {
     val resources = listOf(R.drawable.bird1, R.drawable.bird2, R.drawable.bird3)
     Box(
         modifier = Modifier.fillMaxSize()
@@ -52,7 +53,10 @@ fun AccompanistHorizontalPagerSample() {
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
-                    .zoomable(zoomState)
+                    .zoomable(
+                        zoomState = zoomState,
+                        onTap = onTap
+                    ),
             )
             // Reset zoom state when the page is moved out of the window.
             val isVisible by remember {
@@ -83,7 +87,7 @@ fun AccompanistHorizontalPagerSample() {
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun AccompanistVerticalPagerSample() {
+fun AccompanistVerticalPagerSample(onTap: (Offset) -> Unit) {
     val resources = listOf(R.drawable.shoebill1, R.drawable.shoebill2, R.drawable.shoebill3)
     Box(
         modifier = Modifier.fillMaxSize()
@@ -102,7 +106,10 @@ fun AccompanistVerticalPagerSample() {
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
-                    .zoomable(zoomState)
+                    .zoomable(
+                        zoomState = zoomState,
+                        onTap = onTap
+                    ),
             )
             // Reset zoom state when the page is moved out of the window.
             val isVisible by remember {
