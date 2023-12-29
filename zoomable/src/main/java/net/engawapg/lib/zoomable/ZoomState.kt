@@ -139,46 +139,35 @@ class ZoomState(
         launch { _offsetY.snapTo(0f) }
     }
 
-    private var shouldConsumeEvent: Boolean? = null
     private val velocityTracker = VelocityTracker()
 
     internal fun startGesture() {
-        shouldConsumeEvent = null
         velocityTracker.resetTracking()
     }
 
-    internal fun canConsumeGesture(pan: Offset, zoom: Float): Boolean {
-        return shouldConsumeEvent ?: run {
-            var consume = true
-            if (zoom == 1f) { // One finger gesture
-                if (scale == 1f) {  // Not zoomed
-                    consume = false
-                } else {
-                    val ratio = (abs(pan.x) / abs(pan.y))
-                    if (ratio > 3) {   // Horizontal drag
-                        if ((pan.x < 0) && (_offsetX.value == _offsetX.lowerBound)) {
-                            // Drag R to L when right edge of the content is shown.
-                            consume = false
-                        }
-                        if ((pan.x > 0) && (_offsetX.value == _offsetX.upperBound)) {
-                            // Drag L to R when left edge of the content is shown.
-                            consume = false
-                        }
-                    } else if (ratio < 0.33) { // Vertical drag
-                        if ((pan.y < 0) && (_offsetY.value == _offsetY.lowerBound)) {
-                            // Drag bottom to top when bottom edge of the content is shown.
-                            consume = false
-                        }
-                        if ((pan.y > 0) && (_offsetY.value == _offsetY.upperBound)) {
-                            // Drag top to bottom when top edge of the content is shown.
-                            consume = false
-                        }
-                    }
-                }
+    internal fun willChangeOffset(pan: Offset): Boolean {
+        var willChange = true
+        val ratio = (abs(pan.x) / abs(pan.y))
+        if (ratio > 3) {   // Horizontal drag
+            if ((pan.x < 0) && (_offsetX.value == _offsetX.lowerBound)) {
+                // Drag R to L when right edge of the content is shown.
+                willChange = false
             }
-            shouldConsumeEvent = consume
-            consume
+            if ((pan.x > 0) && (_offsetX.value == _offsetX.upperBound)) {
+                // Drag L to R when left edge of the content is shown.
+                willChange = false
+            }
+        } else if (ratio < 0.33) { // Vertical drag
+            if ((pan.y < 0) && (_offsetY.value == _offsetY.lowerBound)) {
+                // Drag bottom to top when bottom edge of the content is shown.
+                willChange = false
+            }
+            if ((pan.y > 0) && (_offsetY.value == _offsetY.upperBound)) {
+                // Drag top to bottom when top edge of the content is shown.
+                willChange = false
+            }
         }
+        return willChange
     }
 
     internal suspend fun applyGesture(
