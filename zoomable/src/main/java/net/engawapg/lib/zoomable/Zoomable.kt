@@ -223,7 +223,7 @@ private class TouchSlop(private val threshold: Float) {
      */
     fun isPast(event: PointerEvent): Boolean {
         if (_isPast) {
-            return false
+            return true
         }
 
         if (event.changes.size > 1) {
