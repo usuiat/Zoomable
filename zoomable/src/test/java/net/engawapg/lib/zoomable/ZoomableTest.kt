@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +29,48 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@Composable
+fun ZoomableContent() {
+    val painter = painterResource(id = android.R.drawable.ic_dialog_info)
+    val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+    Image(
+        painter = painter,
+        contentDescription = "image",
+        contentScale = ContentScale.Fit,
+        modifier = Modifier
+            .fillMaxSize()
+            .zoomable(zoomState)
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ZoomablePagerContent(
+    scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
+) {
+    val pagerState = rememberPagerState { 2 }
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics { testTag = "pager" }
+    ) { page ->
+        val painter = painterResource(id = android.R.drawable.ic_dialog_info)
+        val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+        Image(
+            painter = painter,
+            contentDescription = "image$page",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxSize()
+                .zoomable(
+                    zoomState = zoomState,
+                    scrollGesturePropagation = scrollGesturePropagation,
+                )
+        )
+    }
+}
+
 @RunWith(RobolectricTestRunner::class)
 class ZoomableTest {
 
@@ -36,18 +79,7 @@ class ZoomableTest {
 
     @Test
     fun zoomable_pinch_zoomed() {
-        composeTestRule.setContent {
-            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
-            Image(
-                painter = painter,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zoomable(zoomState)
-            )
-        }
+        composeTestRule.setContent { ZoomableContent() }
 
         val node = composeTestRule.onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
@@ -65,18 +97,7 @@ class ZoomableTest {
 
     @Test
     fun zoomable_tapAndSwipe_zoomed() {
-        composeTestRule.setContent {
-            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
-            Image(
-                painter = painter,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zoomable(zoomState)
-            )
-        }
+        composeTestRule.setContent { ZoomableContent() }
 
         val node = composeTestRule.onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
@@ -95,20 +116,7 @@ class ZoomableTest {
 
     @Test
     fun zoomable_doubleTap_zoomed() {
-        composeTestRule.setContent {
-            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
-            Image(
-                painter = painter,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zoomable(
-                        zoomState = zoomState,
-                    )
-            )
-        }
+        composeTestRule.setContent { ZoomableContent() }
 
         val node = composeTestRule.onNodeWithContentDescription("image")
         val bounds0 = node.fetchSemanticsNode().boundsInRoot
@@ -127,7 +135,6 @@ class ZoomableTest {
         assert(bounds2.size == bounds0.size)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Test
     fun zoomable_on_pager_zoomAfterSwipePage_zoomed() {
         /*
@@ -135,26 +142,7 @@ class ZoomableTest {
         We ran into a problem with Compose 1.5 where zooming did not work after swiping a
         HorizontalPager page and then returning to the initial page.
          */
-        composeTestRule.setContent {
-            val pagerState = rememberPagerState { 2 }
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize().semantics { testTag = "pager" }
-            ) { page ->
-                val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-                val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
-                Image(
-                    painter = painter,
-                    contentDescription = "image$page",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zoomable(
-                            zoomState = zoomState,
-                        )
-                )
-            }
-        }
+        composeTestRule.setContent { ZoomablePagerContent() }
 
         var image= composeTestRule.onNodeWithContentDescription("image0")
         image.assertIsDisplayed()
@@ -221,5 +209,38 @@ class ZoomableTest {
         composeTestRule.mainClock.advanceTimeBy(1000L)
         assert(count == 1)
         assert(positionAtCallback == positionTapped)
+    }
+
+    @Test
+    fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() {
+        composeTestRule.setContent {
+            ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.ContentEdge)
+        }
+
+        val image0= composeTestRule.onNodeWithContentDescription("image0")
+        image0.performTouchInput { doubleClick() }
+        composeTestRule.waitForIdle()
+        image0.performTouchInput { swipeLeft() }
+        composeTestRule.waitForIdle()
+        image0.performTouchInput { swipeLeft() }
+
+        val image1 = composeTestRule.onNodeWithContentDescription("image1")
+        image1.assertIsDisplayed()
+    }
+
+    @Test
+    fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() {
+        composeTestRule.setContent {
+            ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
+        }
+
+        val image0= composeTestRule.onNodeWithContentDescription("image0")
+        image0.performTouchInput { doubleClick() }
+        composeTestRule.waitForIdle()
+        image0.performTouchInput { swipeLeft() }
+        composeTestRule.waitForIdle()
+        image0.performTouchInput { swipeLeft() }
+
+        image0.assertIsDisplayed()
     }
 }
