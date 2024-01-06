@@ -13,7 +13,7 @@ accompanist = "0.32.0"
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
 android-library = { id = "com.android.library", version.ref = "androidGradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.26.0" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.27.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.10" }
 
 [libraries]
