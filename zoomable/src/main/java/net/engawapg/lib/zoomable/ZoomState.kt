@@ -62,7 +62,7 @@ class ZoomState(
 
     init {
         require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
-        require(minScale >= 0.0f) { "minScale must be at least 0.0." }
+        require(minScale < 0.0f) { "minScale must be at least 0.0." }
     }
 
     private var _scale = Animatable(minScale).apply {
