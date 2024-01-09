@@ -21,8 +21,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.exponentialDecay
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -48,15 +48,24 @@ import kotlin.math.abs
  */
 @Stable
 class ZoomState(
-    @FloatRange(from = 1.0) private val maxScale: Float = 5f,
+    @FloatRange(from = 1.0) val maxScale: Float = 5f,
+    @FloatRange(from = 0.0) val minScale: Float = 1f,
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) {
+
+    constructor(
+        @FloatRange(from = 1.0) maxScale: Float = 5f,
+        contentSize: Size = Size.Zero,
+        velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
+    ) : this(maxScale, 1f, contentSize, velocityDecay)
+
     init {
         require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
+        require(minScale >= 0.0f) { "minScale must be at least 0.0." }
     }
 
-    private var _scale = Animatable(1f).apply {
+    private var _scale = Animatable(minScale).apply {
         updateBounds(0.9f, maxScale)
     }
 
@@ -132,7 +141,7 @@ class ZoomState(
      * Reset the scale and the offsets.
      */
     suspend fun reset() = coroutineScope {
-        launch { _scale.snapTo(1f) }
+        launch { _scale.snapTo(minScale) }
         _offsetX.updateBounds(0f, 0f)
         launch { _offsetX.snapTo(0f) }
         _offsetY.updateBounds(0f, 0f)
@@ -194,7 +203,7 @@ class ZoomState(
             _scale.snapTo(newScale)
         }
 
-        if (zoom == 1f) {
+        if (zoom == minScale) {
             velocityTracker.addPosition(timeMillis, position)
         } else {
             velocityTracker.resetTracking()
@@ -215,7 +224,7 @@ class ZoomState(
         position: Offset,
         animationSpec: AnimationSpec<Float> = spring(),
     ) = coroutineScope {
-        val newScale = targetScale.coerceIn(1f, maxScale)
+        val newScale = targetScale.coerceIn(minScale, maxScale)
         val newOffset = calculateNewOffset(newScale, position, Offset.Zero)
         val newBounds = calculateNewBounds(newScale)
 
@@ -283,9 +292,9 @@ class ZoomState(
             }
         }
 
-        if (_scale.value < 1f) {
+        if (_scale.value < minScale) {
             launch {
-                _scale.animateTo(1f)
+                _scale.animateTo(minScale)
             }
         }
     }
@@ -319,8 +328,9 @@ class ZoomState(
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
-                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
-                        .coerceIn(minimumValue = -boundY, maximumValue = boundY)
+                    val fixedTargetOffsetY =
+                        ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
+                            .coerceIn(minimumValue = -boundY, maximumValue = boundY)
                     _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
                 },
                 async {
@@ -403,6 +413,33 @@ fun rememberZoomState(
     @FloatRange(from = 1.0) maxScale: Float = 5f,
     contentSize: Size = Size.Zero,
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
+) = rememberZoomState(
+    maxScale = maxScale,
+    minScale = 1f,
+    contentSize = contentSize,
+    velocityDecay = velocityDecay
+)
+
+/**
+ * Creates a [ZoomState] that is remembered across compositions.
+ *
+ * @param maxScale The maximum scale of the content.
+ * @param minScale The minimum scale of the content.
+ * @param contentSize Size of content (i.e. image size.) If Zero, the composable layout size will
+ * be used as content size.
+ * @param velocityDecay The decay animation spec for fling behaviour.
+ */
+@Composable
+fun rememberZoomState(
+    @FloatRange(from = 1.0) maxScale: Float = 5f,
+    @FloatRange(from = 0.0) minScale: Float = 1f,
+    contentSize: Size = Size.Zero,
+    velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) = remember {
-    ZoomState(maxScale, contentSize, velocityDecay)
+    ZoomState(
+        maxScale = maxScale,
+        minScale = minScale,
+        contentSize = contentSize,
+        velocityDecay = velocityDecay
+    )
 }
