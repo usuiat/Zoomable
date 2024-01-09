@@ -47,6 +47,8 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.launch
+import net.engawapg.lib.zoomable.ZoomableDefaults.DefaultEnabled
+import net.engawapg.lib.zoomable.ZoomableDefaults.defaultZoomOnDoubleTap
 
 /**
  * Customized transform gesture detector.
@@ -274,27 +276,15 @@ fun Modifier.zoomable(
     enableOneFingerZoom: Boolean = true,
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit = { position, level ->
-        when (level) {
-            DoubleTapZoomLevel.Min -> {
-                zoomState.changeScale(zoomState.minScale, position)
-            }
-
-            DoubleTapZoomLevel.Mid -> {
-                zoomState.changeScale((zoomState.maxScale - zoomState.minScale) / 2, position)
-            }
-
-            DoubleTapZoomLevel.Max -> {
-                zoomState.changeScale(zoomState.maxScale, position)
-            }
-        }
-    },
+    onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit = zoomState.defaultZoomOnDoubleTap,
+    enabled: (Float, Offset) -> Boolean = DefaultEnabled
 ): Modifier = this then ZoomableElement(
     zoomState,
     enableOneFingerZoom,
     scrollGesturePropagation,
     onTap,
-    onDoubleTap
+    onDoubleTap,
+    enabled
 )
 
 /**
@@ -307,23 +297,25 @@ fun Modifier.zoomable(
  * composable element.
  * @param onTap will be called when single tap is detected on the element.
  * @param onDoubleTap will be called when double tap is detected on the element. This is a suspend
- * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
- * 2.5f with animation.
+ * function and called in a coroutine scope.
  */
 fun Modifier.zoomable(
     zoomState: ZoomState,
     enableOneFingerZoom: Boolean = true,
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: suspend (position: Offset) -> Unit
-): Modifier = zoomable(
+    onDoubleTap: suspend (position: Offset) -> Unit,
+    enabled: (Float, Offset) -> Boolean = DefaultEnabled
+): Modifier = this.zoomable(
     zoomState = zoomState,
     enableOneFingerZoom = enableOneFingerZoom,
     scrollGesturePropagation = scrollGesturePropagation,
-    onTap = onTap
-) { position, _ ->
-    onDoubleTap(position)
-}
+    onTap = onTap,
+    onDoubleTap = { position, _ ->
+        onDoubleTap(position)
+    },
+    enabled = enabled
+)
 
 private data class ZoomableElement(
     val zoomState: ZoomState,
@@ -331,13 +323,15 @@ private data class ZoomableElement(
     val scrollGesturePropagation: ScrollGesturePropagation,
     val onTap: (position: Offset) -> Unit,
     val onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit,
+    val enabled: (Float, Offset) -> Boolean
 ) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
         enableOneFingerZoom,
         scrollGesturePropagation,
         onTap,
-        onDoubleTap
+        onDoubleTap,
+        enabled
     )
 
     override fun update(node: ZoomableNode) {
@@ -347,6 +341,7 @@ private data class ZoomableElement(
             scrollGesturePropagation,
             onTap,
             onDoubleTap,
+            enabled
         )
     }
 
@@ -365,7 +360,8 @@ private class ZoomableNode(
     var enableOneFingerZoom: Boolean,
     var scrollGesturePropagation: ScrollGesturePropagation,
     var onTap: (position: Offset) -> Unit,
-    var onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit
+    var onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit,
+    var enabled: (Float, Offset) -> Boolean
 ): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
@@ -375,6 +371,7 @@ private class ZoomableNode(
         scrollGesturePropagation: ScrollGesturePropagation,
         onTap: (position: Offset) -> Unit,
         onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit,
+        enabled: (Float, Offset) -> Boolean
     ) {
         if (this.zoomState != zoomState) {
             zoomState.setLayoutSize(measuredSize)
@@ -384,6 +381,7 @@ private class ZoomableNode(
         this.scrollGesturePropagation = scrollGesturePropagation
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
+        this.enabled = enabled
     }
 
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
@@ -393,7 +391,7 @@ private class ZoomableNode(
                 zoomState.startGesture()
             },
             canConsumeGesture = { pan, zoom ->
-                canConsumeGesture(pan, zoom)
+                canConsumeGesture(pan, zoom) && enabled(zoom, pan)
             },
             onGesture = { centroid, pan, zoom, timeMillis ->
                 coroutineScope.launch {
