@@ -5,7 +5,7 @@ import androidx.compose.ui.geometry.Offset
 object ZoomableDefaults {
 
     val ZoomState.defaultZoomOnDoubleTap: suspend (position: Offset) -> Unit
-        get() = { position -> toggleScale(targetScale = 3f, position = position) }
+        get() = { position -> toggleScale(targetScale = maxScale, position = position) }
 
     val ZoomState.threeLevelZoomOnDoubleTap: suspend (position: Offset) -> Unit
         get() = { position ->
