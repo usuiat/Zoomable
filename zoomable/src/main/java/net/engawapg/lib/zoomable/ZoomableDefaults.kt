@@ -7,7 +7,7 @@ object ZoomableDefaults {
     val ZoomState.defaultZoomOnDoubleTap: suspend (position: Offset) -> Unit
         get() = { position -> toggleScale(targetScale = 3f, position = position) }
 
-    val ZoomState.threeLevelDoubleTap: suspend (position: Offset) -> Unit
+    val ZoomState.threeLevelZoomOnDoubleTap: suspend (position: Offset) -> Unit
         get() = { position ->
             val scale = scale
             val minScale = minScale
