@@ -277,14 +277,16 @@ fun Modifier.zoomable(
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit = zoomState.defaultZoomOnDoubleTap,
-    enabled: (Float, Offset) -> Boolean = DefaultEnabled
+    enabled: (Float, Offset) -> Boolean = DefaultEnabled,
+    clipToBounds: Boolean = true
 ): Modifier = this then ZoomableElement(
     zoomState,
     enableOneFingerZoom,
     scrollGesturePropagation,
     onTap,
     onDoubleTap,
-    enabled
+    enabled,
+    clipToBounds
 )
 
 /**
@@ -305,7 +307,8 @@ fun Modifier.zoomable(
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit,
-    enabled: (Float, Offset) -> Boolean = DefaultEnabled
+    enabled: (Float, Offset) -> Boolean = DefaultEnabled,
+    clipToBounds: Boolean = true
 ): Modifier = this.zoomable(
     zoomState = zoomState,
     enableOneFingerZoom = enableOneFingerZoom,
@@ -314,7 +317,8 @@ fun Modifier.zoomable(
     onDoubleTap = { position, _ ->
         onDoubleTap(position)
     },
-    enabled = enabled
+    enabled = enabled,
+    clipToBounds = clipToBounds
 )
 
 private data class ZoomableElement(
@@ -323,7 +327,8 @@ private data class ZoomableElement(
     val scrollGesturePropagation: ScrollGesturePropagation,
     val onTap: (position: Offset) -> Unit,
     val onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit,
-    val enabled: (Float, Offset) -> Boolean
+    val enabled: (Float, Offset) -> Boolean,
+    val clipToBounds: Boolean
 ) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
@@ -331,7 +336,8 @@ private data class ZoomableElement(
         scrollGesturePropagation,
         onTap,
         onDoubleTap,
-        enabled
+        enabled,
+        clipToBounds
     )
 
     override fun update(node: ZoomableNode) {
@@ -341,7 +347,8 @@ private data class ZoomableElement(
             scrollGesturePropagation,
             onTap,
             onDoubleTap,
-            enabled
+            enabled,
+            clipToBounds
         )
     }
 
@@ -361,7 +368,8 @@ private class ZoomableNode(
     var scrollGesturePropagation: ScrollGesturePropagation,
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit,
-    var enabled: (Float, Offset) -> Boolean
+    var enabled: (Float, Offset) -> Boolean,
+    var clipToBounds: Boolean
 ): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
@@ -371,7 +379,8 @@ private class ZoomableNode(
         scrollGesturePropagation: ScrollGesturePropagation,
         onTap: (position: Offset) -> Unit,
         onDoubleTap: suspend (position: Offset, level: DoubleTapZoomLevel) -> Unit,
-        enabled: (Float, Offset) -> Boolean
+        enabled: (Float, Offset) -> Boolean,
+        clipToBounds: Boolean
     ) {
         if (this.zoomState != zoomState) {
             zoomState.setLayoutSize(measuredSize)
@@ -382,6 +391,7 @@ private class ZoomableNode(
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
         this.enabled = enabled
+        this.clipToBounds = clipToBounds
     }
 
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
@@ -474,6 +484,7 @@ private class ZoomableNode(
                 scaleY = zoomState.scale
                 translationX = zoomState.offsetX
                 translationY = zoomState.offsetY
+                clip = clipToBounds
             }
         }
     }
