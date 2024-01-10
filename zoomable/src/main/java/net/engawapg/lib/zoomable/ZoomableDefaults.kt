@@ -12,7 +12,7 @@ object ZoomableDefaults {
                 }
 
                 DoubleTapZoomLevel.Mid -> {
-                    changeScale((maxScale - minScale) / 2, position)
+                    changeScale((maxScale - minScale) / 2f, position)
                 }
 
                 DoubleTapZoomLevel.Max -> {

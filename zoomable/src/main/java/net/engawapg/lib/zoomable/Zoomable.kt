@@ -423,10 +423,11 @@ private class ZoomableNode(
                 val scale = zoomState.scale
                 val minScale = zoomState.minScale
                 val maxScale = zoomState.maxScale
+                val midScale = (maxScale - minScale) / 2f
 
                 val level = when (scale) {
-                    in minScale..<(maxScale / 2) -> DoubleTapZoomLevel.Mid
-                    in (maxScale / 2)..<maxScale -> DoubleTapZoomLevel.Max
+                    in minScale..<midScale -> DoubleTapZoomLevel.Mid
+                    in midScale..<maxScale -> DoubleTapZoomLevel.Max
                     else -> DoubleTapZoomLevel.Min
                 }
                 coroutineScope.launch {
