@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @Composable
-fun ZoomableContent() {
+fun ZoomableContent(zoomEnabled: Boolean = true) {
     val painter = painterResource(id = android.R.drawable.ic_dialog_info)
     val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
     Image(
@@ -39,7 +39,10 @@ fun ZoomableContent() {
         contentScale = ContentScale.Fit,
         modifier = Modifier
             .fillMaxSize()
-            .zoomable(zoomState)
+            .zoomable(
+                zoomState = zoomState,
+                zoomEnabled = zoomEnabled,
+            )
     )
 }
 
@@ -242,5 +245,26 @@ class ZoomableTest {
         image0.performTouchInput { swipeLeft() }
 
         image0.assertIsDisplayed()
+    }
+
+    @Test
+    fun pinch_gesture_does_not_work_when_zoom_is_disabled() {
+        composeTestRule.setContent {
+            ZoomableContent(zoomEnabled = false)
+        }
+
+        val node = composeTestRule.onNodeWithContentDescription("image")
+        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        node.performTouchInput {
+            pinch(
+                start0 = center + Offset(-100f, 0f),
+                end0 = center + Offset(-200f, 0f),
+                start1 = center + Offset(+100f, 0f),
+                end1 = center + Offset(+200f, 0f),
+            )
+        }
+
+        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        assert(boundsAfter == boundsBefore)
     }
 }

@@ -260,6 +260,8 @@ enum class ScrollGesturePropagation {
  * Modifier function that make the content zoomable.
  *
  * @param zoomState A [ZoomState] object.
+ * @param zoomEnabled specifies if zoom behaviour is enabled or disabled. Even if this is false,
+ * [onTap] and [onDoubleTap] will be called.
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  * @param scrollGesturePropagation specifies when scroll gestures are propagated to the parent
@@ -271,12 +273,14 @@ enum class ScrollGesturePropagation {
  */
 fun Modifier.zoomable(
     zoomState: ZoomState,
+    zoomEnabled: Boolean = true,
     enableOneFingerZoom: Boolean = true,
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: suspend (position: Offset) -> Unit = { position -> zoomState.toggleScale(2.5f, position) },
+    onDoubleTap: suspend (position: Offset) -> Unit = { position -> if (zoomEnabled) zoomState.toggleScale(2.5f, position) },
 ): Modifier = this then ZoomableElement(
     zoomState,
+    zoomEnabled,
     enableOneFingerZoom,
     scrollGesturePropagation,
     onTap,
@@ -285,6 +289,7 @@ fun Modifier.zoomable(
 
 private data class ZoomableElement(
     val zoomState: ZoomState,
+    val zoomEnabled: Boolean,
     val enableOneFingerZoom: Boolean,
     val scrollGesturePropagation: ScrollGesturePropagation,
     val onTap: (position: Offset) -> Unit,
@@ -292,6 +297,7 @@ private data class ZoomableElement(
 ): ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
+        zoomEnabled,
         enableOneFingerZoom,
         scrollGesturePropagation,
         onTap,
@@ -301,6 +307,7 @@ private data class ZoomableElement(
     override fun update(node: ZoomableNode) {
         node.update(
             zoomState,
+            zoomEnabled,
             enableOneFingerZoom,
             scrollGesturePropagation,
             onTap,
@@ -311,6 +318,7 @@ private data class ZoomableElement(
     override fun InspectorInfo.inspectableProperties() {
         name = "zoomable"
         properties["zoomState"] = zoomState
+        properties["zoomEnabled"] = zoomEnabled
         properties["enableOneFingerZoom"] = enableOneFingerZoom
         properties["scrollGesturePropagation"] = scrollGesturePropagation
         properties["onTap"] = onTap
@@ -320,6 +328,7 @@ private data class ZoomableElement(
 
 private class ZoomableNode(
     var zoomState: ZoomState,
+    var zoomEnabled: Boolean,
     var enableOneFingerZoom: Boolean,
     var scrollGesturePropagation: ScrollGesturePropagation,
     var onTap: (position: Offset) -> Unit,
@@ -329,6 +338,7 @@ private class ZoomableNode(
 
     fun update(
         zoomState: ZoomState,
+        zoomEnabled: Boolean,
         enableOneFingerZoom: Boolean,
         scrollGesturePropagation: ScrollGesturePropagation,
         onTap: (position: Offset) -> Unit,
@@ -338,6 +348,7 @@ private class ZoomableNode(
             zoomState.setLayoutSize(measuredSize)
             this.zoomState = zoomState
         }
+        this.zoomEnabled = zoomEnabled
         this.enableOneFingerZoom = enableOneFingerZoom
         this.scrollGesturePropagation = scrollGesturePropagation
         this.onTap = onTap
@@ -351,16 +362,18 @@ private class ZoomableNode(
                 zoomState.startGesture()
             },
             canConsumeGesture = { pan, zoom ->
-                canConsumeGesture(pan, zoom)
+                zoomEnabled && canConsumeGesture(pan, zoom)
             },
             onGesture = { centroid, pan, zoom, timeMillis ->
-                coroutineScope.launch {
-                    zoomState.applyGesture(
-                        pan = pan,
-                        zoom = zoom,
-                        position = centroid,
-                        timeMillis = timeMillis,
-                    )
+                if (zoomEnabled) {
+                    coroutineScope.launch {
+                        zoomState.applyGesture(
+                            pan = pan,
+                            zoom = zoom,
+                            position = centroid,
+                            timeMillis = timeMillis,
+                        )
+                    }
                 }
             },
             onGestureEnd = {
