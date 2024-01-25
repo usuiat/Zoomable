@@ -7,7 +7,7 @@ kotlin = "1.9.21"
 androidGradle = "8.2.2"
 
 coil = "2.5.0"
-accompanist = "0.32.0"
+accompanist = "0.34.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
