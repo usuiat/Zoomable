@@ -4,16 +4,16 @@ compose = "1.6.0-beta03"
 composeMaterial3 = "1.1.2"
 
 kotlin = "1.9.21"
-androidGradle = "8.2.0"
+androidGradle = "8.2.2"
 
 coil = "2.5.0"
-accompanist = "0.32.0"
+accompanist = "0.34.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
 android-library = { id = "com.android.library", version.ref = "androidGradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.26.0" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.27.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.10" }
 
 [libraries]
