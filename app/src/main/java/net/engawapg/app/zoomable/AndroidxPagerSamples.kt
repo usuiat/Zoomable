@@ -9,6 +9,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import net.engawapg.lib.zoomable.rememberZoomState
@@ -21,7 +22,7 @@ import net.engawapg.lib.zoomable.zoomable
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AndroidxHorizontalPagerSample() {
+fun AndroidxHorizontalPagerSample(onTap: (Offset) -> Unit = {}) {
     val resources = listOf(R.drawable.duck1, R.drawable.duck2, R.drawable.duck3)
     val pagerState = rememberPagerState { resources.size }
     HorizontalPager(
@@ -36,7 +37,10 @@ fun AndroidxHorizontalPagerSample() {
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .fillMaxSize()
-                .zoomable(zoomState)
+                .zoomable(
+                    zoomState = zoomState,
+                    onTap = onTap,
+                )
         )
 
         // Reset zoom state when the page is moved out of the window.
@@ -56,7 +60,7 @@ fun AndroidxHorizontalPagerSample() {
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AndroidxVerticalPagerSample() {
+fun AndroidxVerticalPagerSample(onTap: (Offset) -> Unit) {
     val resources = listOf(R.drawable.eagle1, R.drawable.eagle2, R.drawable.eagle3)
     val pagerState = rememberPagerState { resources.size }
     VerticalPager(
@@ -71,7 +75,10 @@ fun AndroidxVerticalPagerSample() {
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .fillMaxSize()
-                .zoomable(zoomState)
+                .zoomable(
+                    zoomState = zoomState,
+                    onTap = onTap
+                ),
         )
 
         // Reset zoom state when the page is moved out of the window.

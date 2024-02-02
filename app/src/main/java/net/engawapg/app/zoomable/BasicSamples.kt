@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -20,7 +21,7 @@ import net.engawapg.lib.zoomable.zoomable
  * [Modifier.zoomable] modifies an [Image] composable which shows a resource image.
  */
 @Composable
-fun SyncImageSample() {
+fun SyncImageSample(onTap: (Offset) -> Unit) {
     val painter = painterResource(id = R.drawable.penguin)
 //    val painter = painterResource(id = R.drawable.grid)   // for debug
     val zoomState = rememberZoomState(
@@ -32,7 +33,10 @@ fun SyncImageSample() {
         contentScale = ContentScale.Fit,
         modifier = Modifier
             .fillMaxSize()
-            .zoomable(zoomState),
+            .zoomable(
+                zoomState = zoomState,
+                onTap = onTap
+            ),
     )
 }
 
@@ -43,7 +47,7 @@ fun SyncImageSample() {
  * setContentSize() will be called when the image data is loaded.
  */
 @Composable
-fun AsyncImageSample() {
+fun AsyncImageSample(onTap: (Offset) -> Unit) {
     val zoomState = rememberZoomState()
     AsyncImage(
         model = "https://github.com/usuiat.png",
@@ -54,7 +58,10 @@ fun AsyncImageSample() {
         },
         modifier = Modifier
             .fillMaxSize()
-            .zoomable(zoomState)
+            .zoomable(
+                zoomState = zoomState,
+                onTap = onTap
+            ),
     )
 }
 
@@ -64,13 +71,16 @@ fun AsyncImageSample() {
  * [Modifier.zoomable] modifies [Text] composable.
  */
 @Composable
-fun TextSample() {
+fun TextSample(onTap: (Offset) -> Unit) {
     val zoomState = rememberZoomState()
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .zoomable(zoomState)
+            .zoomable(
+                zoomState = zoomState,
+                onTap = onTap
+            ),
     ) {
         Text(
             text = "This is zoomable text.",

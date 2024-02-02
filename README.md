@@ -122,6 +122,17 @@ zoomable(
 )
 ```
 
+### ScrollGesturePropagation
+
+You can choose when to propagate scroll gestures to the parent Pager composable by specifying `scrollGesturePropagation`.
+
+- `ContentEdge`: Scroll gesture is propagated when the content is scrolled to the edge and attempts to scroll further.
+- `NotZoomed`: Scroll gesture is propagated when the content is not zoomed.
+
+| ![](doc/ScrollGesturePropagation.ContentEdge.gif) | ![](doc/ScrollGesturePropagation.NotZoomed.gif) |
+|---------------------------------------------------|-------------------------------------------------|
+| ContentEdge                                       | NotZoomed                                       |
+
 ## API Reference
 
 [API Reference🔎](https://usuiat.github.io/Zoomable/)
