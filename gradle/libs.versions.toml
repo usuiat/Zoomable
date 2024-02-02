@@ -1,6 +1,6 @@
 [versions]
 composeCompiler = "1.5.7"
-compose = "1.6.0-beta03"
+compose = "1.6.0"
 composeMaterial3 = "1.1.2"
 
 kotlin = "1.9.21"
