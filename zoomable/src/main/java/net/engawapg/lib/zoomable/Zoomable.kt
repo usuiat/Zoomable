@@ -295,6 +295,21 @@ fun Modifier.zoomable(
     onDoubleTap = onDoubleTap,
 )
 
+fun Modifier.snapBackZoomable(
+    zoomState: ZoomState,
+    zoomEnabled: Boolean = true,
+    onTap: (position: Offset) -> Unit = {},
+    onDoubleTap: suspend (position: Offset) -> Unit = {},
+): Modifier = this then ZoomableElement(
+    zoomState = zoomState,
+    zoomEnabled = zoomEnabled,
+    enableOneFingerZoom = false,
+    snapBackEnabled = true,
+    scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,
+    onTap = onTap,
+    onDoubleTap = onDoubleTap,
+)
+
 private data class ZoomableElement(
     val zoomState: ZoomState,
     val zoomEnabled: Boolean,
