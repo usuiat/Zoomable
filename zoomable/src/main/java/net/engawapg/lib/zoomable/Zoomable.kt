@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
  * vertical scrolling.
  */
 private suspend fun PointerInputScope.detectTransformGestures(
+    cancelIfZoomCanceled: Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onGestureStart: () -> Unit = {},
@@ -97,6 +98,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
             isMultiTouch = true
         }
         firstUp = event.changes[0]
+        val cancelGesture = cancelIfZoomCanceled && isMultiTouch && event.changes.size == 1
+        !cancelGesture
     }
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
@@ -132,6 +135,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                     isDoubleTap = false
                 }
                 secondUp = event.changes[0]
+                true
             }
 
             if (secondUp.uptimeMillis - secondDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
@@ -152,7 +156,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
  * @param action Callback function that will be called every PointerEvents occur.
  */
 private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
-    action: (event: PointerEvent, isTouchSlopPast: Boolean) -> Unit,
+    action: (event: PointerEvent, isTouchSlopPast: Boolean) -> Boolean,
 ) {
     val touchSlop = TouchSlop(viewConfiguration.touchSlop)
     do {
@@ -162,7 +166,10 @@ private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
         }
 
         val isTouchSlopPast = touchSlop.isPast(mainEvent)
-        action(mainEvent, isTouchSlopPast)
+        val canContinue = action(mainEvent, isTouchSlopPast)
+        if (!canContinue) {
+            break
+        }
         if (isTouchSlopPast) {
             continue
         }
@@ -279,18 +286,35 @@ fun Modifier.zoomable(
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit = { position -> if (zoomEnabled) zoomState.toggleScale(2.5f, position) },
 ): Modifier = this then ZoomableElement(
-    zoomState,
-    zoomEnabled,
-    enableOneFingerZoom,
-    scrollGesturePropagation,
-    onTap,
-    onDoubleTap,
+    zoomState = zoomState,
+    zoomEnabled = zoomEnabled,
+    enableOneFingerZoom = enableOneFingerZoom,
+    snapBackEnabled = false,
+    scrollGesturePropagation = scrollGesturePropagation,
+    onTap = onTap,
+    onDoubleTap = onDoubleTap,
+)
+
+fun Modifier.snapBackZoomable(
+    zoomState: ZoomState,
+    zoomEnabled: Boolean = true,
+    onTap: (position: Offset) -> Unit = {},
+    onDoubleTap: suspend (position: Offset) -> Unit = {},
+): Modifier = this then ZoomableElement(
+    zoomState = zoomState,
+    zoomEnabled = zoomEnabled,
+    enableOneFingerZoom = false,
+    snapBackEnabled = true,
+    scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,
+    onTap = onTap,
+    onDoubleTap = onDoubleTap,
 )
 
 private data class ZoomableElement(
     val zoomState: ZoomState,
     val zoomEnabled: Boolean,
     val enableOneFingerZoom: Boolean,
+    val snapBackEnabled: Boolean,
     val scrollGesturePropagation: ScrollGesturePropagation,
     val onTap: (position: Offset) -> Unit,
     val onDoubleTap: suspend (position: Offset) -> Unit,
@@ -299,6 +323,7 @@ private data class ZoomableElement(
         zoomState,
         zoomEnabled,
         enableOneFingerZoom,
+        snapBackEnabled,
         scrollGesturePropagation,
         onTap,
         onDoubleTap,
@@ -309,6 +334,7 @@ private data class ZoomableElement(
             zoomState,
             zoomEnabled,
             enableOneFingerZoom,
+            snapBackEnabled,
             scrollGesturePropagation,
             onTap,
             onDoubleTap,
@@ -320,6 +346,7 @@ private data class ZoomableElement(
         properties["zoomState"] = zoomState
         properties["zoomEnabled"] = zoomEnabled
         properties["enableOneFingerZoom"] = enableOneFingerZoom
+        properties["snapBackEnabled"] = snapBackEnabled
         properties["scrollGesturePropagation"] = scrollGesturePropagation
         properties["onTap"] = onTap
         properties["onDoubleTap"] = onDoubleTap
@@ -330,6 +357,7 @@ private class ZoomableNode(
     var zoomState: ZoomState,
     var zoomEnabled: Boolean,
     var enableOneFingerZoom: Boolean,
+    var snapBackEnabled: Boolean,
     var scrollGesturePropagation: ScrollGesturePropagation,
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset) -> Unit,
@@ -340,6 +368,7 @@ private class ZoomableNode(
         zoomState: ZoomState,
         zoomEnabled: Boolean,
         enableOneFingerZoom: Boolean,
+        snapBackEnabled: Boolean,
         scrollGesturePropagation: ScrollGesturePropagation,
         onTap: (position: Offset) -> Unit,
         onDoubleTap: suspend (position: Offset) -> Unit,
@@ -351,12 +380,14 @@ private class ZoomableNode(
         this.zoomEnabled = zoomEnabled
         this.enableOneFingerZoom = enableOneFingerZoom
         this.scrollGesturePropagation = scrollGesturePropagation
+        this.snapBackEnabled = snapBackEnabled
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
     }
 
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
         detectTransformGestures(
+            cancelIfZoomCanceled = snapBackEnabled,
             onGestureStart = {
                 resetConsumeGesture()
                 zoomState.startGesture()
@@ -378,7 +409,11 @@ private class ZoomableNode(
             },
             onGestureEnd = {
                 coroutineScope.launch {
-                    zoomState.endGesture()
+                    if (snapBackEnabled || zoomState.scale < 1f) {
+                        zoomState.changeScale(1f, Offset.Zero)
+                    } else {
+                        zoomState.startFling()
+                    }
                 }
             },
             onTap = onTap,
