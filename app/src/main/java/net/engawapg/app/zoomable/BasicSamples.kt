@@ -1,5 +1,6 @@
 package net.engawapg.app.zoomable
 
+import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -22,21 +23,21 @@ import net.engawapg.lib.zoomable.zoomable
  */
 @Composable
 fun SyncImageSample(onTap: (Offset) -> Unit) {
-    val painter = painterResource(id = R.drawable.penguin)
-//    val painter = painterResource(id = R.drawable.grid)   // for debug
-    val zoomState = rememberZoomState(
-        contentSize = painter.intrinsicSize,
-    )
-    Image(
-        painter = painter,
-        contentDescription = "Zoomable image",
-        contentScale = ContentScale.Fit,
+    val zoomState = rememberZoomState()
+    AndroidView(
         modifier = Modifier
-            .fillMaxSize()
             .zoomable(
                 zoomState = zoomState,
-                onTap = onTap
+                enableOneFingerZoom = false,
             ),
+        factory = {
+            CustomView(it).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
     )
 }
 
