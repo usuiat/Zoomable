@@ -79,7 +79,10 @@ private suspend fun PointerInputScope.detectTransformGestures(
     var hasMoved = false
     var isMultiTouch = false
     var isLongPressed = false
-    forEachPointerEventUntilReleased { event, isTouchSlopPast ->
+    var isCanceled = false
+    forEachPointerEventUntilReleased(
+        onCancel = { isCanceled = true },
+    ) { event, isTouchSlopPast ->
         if (isTouchSlopPast) {
             val zoomChange = event.calculateZoom()
             val panChange = event.calculatePan()
@@ -103,7 +106,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
         isLongPressed = true
     }
 
-    val isTap = !hasMoved && !isMultiTouch && !isLongPressed
+    val isTap = !hasMoved && !isMultiTouch && !isLongPressed && !isCanceled
     // Vertical scrolling following a double tap is treated as a zoom gesture.
     if (isTap) {
         val secondDown = awaitSecondDown(firstUp)
@@ -111,8 +114,11 @@ private suspend fun PointerInputScope.detectTransformGestures(
             onTap(firstUp.position)
         } else {
             var isDoubleTap = true
+            var isSecondCanceled = false
             var secondUp: PointerInputChange = secondDown
-            forEachPointerEventUntilReleased { event, isTouchSlopPast ->
+            forEachPointerEventUntilReleased(
+                onCancel = { isSecondCanceled = true }
+            ) { event, isTouchSlopPast ->
                 if (isTouchSlopPast) {
                     if (enableOneFingerZoom) {
                         val panChange = event.calculatePan()
@@ -138,7 +144,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                 isDoubleTap = false
             }
 
-            if (isDoubleTap) {
+            if (isDoubleTap && !isSecondCanceled) {
                 onDoubleTap(secondUp.position)
             }
         }
@@ -152,6 +158,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
  * @param action Callback function that will be called every PointerEvents occur.
  */
 private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
+    onCancel: () -> Unit,
     action: (event: PointerEvent, isTouchSlopPast: Boolean) -> Unit,
 ) {
     val touchSlop = TouchSlop(viewConfiguration.touchSlop)
@@ -169,6 +176,7 @@ private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
 
         val finalEvent = awaitPointerEvent(pass = PointerEventPass.Final)
         if (finalEvent.changes.fastAny { it.isConsumed }) {
+            onCancel()
             break
         }
     } while (mainEvent.changes.fastAny { it.pressed })
