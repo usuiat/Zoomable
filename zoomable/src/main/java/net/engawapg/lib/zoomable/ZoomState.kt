@@ -270,7 +270,7 @@ class ZoomState(
         return Rect(-boundX, -boundY, boundX, boundY)
     }
 
-    internal suspend fun endGesture() = coroutineScope {
+    internal suspend fun startFling() = coroutineScope {
         val velocity = velocityTracker.calculateVelocity()
         if (velocity.x != 0f) {
             launch {
@@ -280,12 +280,6 @@ class ZoomState(
         if (velocity.y != 0f) {
             launch {
                 _offsetY.animateDecay(velocity.y, velocityDecay)
-            }
-        }
-
-        if (_scale.value < 1f) {
-            launch {
-                _scale.animateTo(1f)
             }
         }
     }

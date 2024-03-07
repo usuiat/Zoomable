@@ -267,4 +267,39 @@ class ZoomableTest {
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
         assert(boundsAfter == boundsBefore)
     }
+
+    @Test
+    fun snapBackZoomable_can_zoom_image_during_gesture_and_snap_back_after_gesture() {
+        composeTestRule.setContent {
+            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
+            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+            Image(
+                painter = painter,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .snapBackZoomable(
+                        zoomState = zoomState,
+                    )
+            )
+        }
+
+        val node = composeTestRule.onNodeWithContentDescription("image")
+        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        node.performTouchInput {
+            down(0, center + Offset(-100f, 0f))
+            down(1, center + Offset(+100f, 0f))
+            moveTo(0, center + Offset(-200f, 0f))
+            moveTo(1, center + Offset(+200f, 0f))
+        }
+        val boundsInGesture = node.fetchSemanticsNode().boundsInRoot
+        node.performTouchInput {
+            up(0)
+            up(1)
+        }
+        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        assert(boundsInGesture.width > boundsBefore.width && boundsInGesture.height > boundsBefore.height)
+        assert(boundsAfter.width == boundsBefore.width && boundsAfter.height == boundsBefore.height)
+    }
 }
