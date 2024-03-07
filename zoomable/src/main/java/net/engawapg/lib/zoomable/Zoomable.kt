@@ -159,6 +159,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
 /**
  * Invoke action for each PointerEvent until all pointers are released.
  *
+ * @param onCancel Callback function that will be called if PointerEvents is consumed by other composable.
  * @param action Callback function that will be called every PointerEvents occur.
  */
 private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
