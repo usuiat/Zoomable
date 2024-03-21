@@ -1,5 +1,5 @@
 [versions]
-composeCompiler = "1.5.8"
+composeCompiler = "1.5.11"
 compose = "1.7.0-alpha05"
 composeMaterial3 = "1.2.1"
 
