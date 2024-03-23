@@ -293,7 +293,12 @@ fun Modifier.zoomable(
     enableOneFingerZoom: Boolean = true,
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: suspend (position: Offset) -> Unit = { position -> if (zoomEnabled) zoomState.toggleScale(2.5f, position) },
+    onDoubleTap: suspend (position: Offset) -> Unit = { position ->
+        if (zoomEnabled) zoomState.toggleScale(
+            5f,
+            position
+        )
+    },
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
     zoomEnabled = zoomEnabled,
@@ -327,26 +332,26 @@ private data class ZoomableElement(
     val scrollGesturePropagation: ScrollGesturePropagation,
     val onTap: (position: Offset) -> Unit,
     val onDoubleTap: suspend (position: Offset) -> Unit,
-): ModifierNodeElement<ZoomableNode>() {
+) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
-        zoomState,
-        zoomEnabled,
-        enableOneFingerZoom,
-        snapBackEnabled,
-        scrollGesturePropagation,
-        onTap,
-        onDoubleTap,
+        zoomState = zoomState,
+        zoomEnabled = zoomEnabled,
+        enableOneFingerZoom = enableOneFingerZoom,
+        snapBackEnabled = snapBackEnabled,
+        scrollGesturePropagation = scrollGesturePropagation,
+        onTap = onTap,
+        onDoubleTap = onDoubleTap,
     )
 
     override fun update(node: ZoomableNode) {
         node.update(
-            zoomState,
-            zoomEnabled,
-            enableOneFingerZoom,
-            snapBackEnabled,
-            scrollGesturePropagation,
-            onTap,
-            onDoubleTap,
+            zoomState = zoomState,
+            zoomEnabled = zoomEnabled,
+            enableOneFingerZoom = enableOneFingerZoom,
+            snapBackEnabled = snapBackEnabled,
+            scrollGesturePropagation = scrollGesturePropagation,
+            onTap = onTap,
+            onDoubleTap = onDoubleTap,
         )
     }
 
@@ -370,7 +375,7 @@ private class ZoomableNode(
     var scrollGesturePropagation: ScrollGesturePropagation,
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset) -> Unit,
-): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
+) : PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
     fun update(
@@ -394,46 +399,48 @@ private class ZoomableNode(
         this.onDoubleTap = onDoubleTap
     }
 
-    val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
-        detectTransformGestures(
-            cancelIfZoomCanceled = snapBackEnabled,
-            onGestureStart = {
-                resetConsumeGesture()
-                zoomState.startGesture()
-            },
-            canConsumeGesture = { pan, zoom ->
-                zoomEnabled && canConsumeGesture(pan, zoom)
-            },
-            onGesture = { centroid, pan, zoom, timeMillis ->
-                if (zoomEnabled) {
+    val pointerInputNode = delegate(
+        SuspendingPointerInputModifierNode {
+            detectTransformGestures(
+                cancelIfZoomCanceled = snapBackEnabled,
+                onGestureStart = {
+                    resetConsumeGesture()
+                    zoomState.startGesture()
+                },
+                canConsumeGesture = { pan, zoom ->
+                    zoomEnabled && canConsumeGesture(pan, zoom)
+                },
+                onGesture = { centroid, pan, zoom, timeMillis ->
+                    if (zoomEnabled) {
+                        coroutineScope.launch {
+                            zoomState.applyGesture(
+                                pan = pan,
+                                zoom = zoom,
+                                position = centroid,
+                                timeMillis = timeMillis,
+                            )
+                        }
+                    }
+                },
+                onGestureEnd = {
                     coroutineScope.launch {
-                        zoomState.applyGesture(
-                            pan = pan,
-                            zoom = zoom,
-                            position = centroid,
-                            timeMillis = timeMillis,
-                        )
+                        if (snapBackEnabled || zoomState.scale < 1f) {
+                            zoomState.changeScale(1f, Offset.Zero)
+                        } else {
+                            zoomState.startFling()
+                        }
                     }
-                }
-            },
-            onGestureEnd = {
-                coroutineScope.launch {
-                    if (snapBackEnabled || zoomState.scale < 1f) {
-                        zoomState.changeScale(1f, Offset.Zero)
-                    } else {
-                        zoomState.startFling()
+                },
+                onTap = onTap,
+                onDoubleTap = { position ->
+                    coroutineScope.launch {
+                        onDoubleTap(position)
                     }
-                }
-            },
-            onTap = onTap,
-            onDoubleTap = { position ->
-                coroutineScope.launch {
-                    onDoubleTap(position)
-                }
-            },
-            enableOneFingerZoom = enableOneFingerZoom,
-        )
-    })
+                },
+                enableOneFingerZoom = enableOneFingerZoom,
+            )
+        }
+    )
 
     private var consumeGesture: Boolean? = null
 
@@ -499,6 +506,6 @@ suspend fun ZoomState.toggleScale(
     position: Offset,
     animationSpec: AnimationSpec<Float> = spring(),
 ) {
-    val newScale = if (scale == 1f) targetScale else 1f
+    val newScale = if (scale == minScale) targetScale else minScale
     changeScale(newScale, position, animationSpec)
 }
