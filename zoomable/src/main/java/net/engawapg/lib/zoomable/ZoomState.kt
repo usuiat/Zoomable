@@ -48,7 +48,7 @@ import kotlin.math.abs
  */
 @Stable
 class ZoomState(
-    @FloatRange(from = 1.0) private val maxScale: Float = 5f,
+    @FloatRange(from = 1.0) val maxScale: Float = 5f,
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
 ) {
