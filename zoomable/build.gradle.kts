@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.vanniktech.maven.publish)
     alias(libs.plugins.dokka)
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 kotlin {
@@ -37,17 +38,17 @@ kotlin {
     }
 
     sourceSets {
+        commonMain.dependencies {
+            implementation(compose.foundation)
+            implementation(compose.runtime)
+            implementation(compose.ui)
+            implementation(compose.uiUtil)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
         androidMain.dependencies {
-            implementation(libs.compose.animation.core)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.ui.util)
-
             implementation(libs.androidx.core)
         }
         invokeWhenCreated("androidDebug") {
@@ -92,9 +93,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    buildFeatures {
-        compose = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
