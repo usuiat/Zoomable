@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+
 /*
  * Copyright 2022 usuiat
  *
@@ -16,9 +18,58 @@
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.vanniktech.maven.publish)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.kotlin.multiplatform)
+}
+
+kotlin {
+    androidTarget { publishLibraryVariants("release") }
+
+    targets.all {
+        compilations.all {
+            kotlinOptions.let {
+                if (it is KotlinJvmOptions) {
+                    it.jvmTarget = "1.8"
+                }
+            }
+        }
+    }
+
+    sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        androidMain.dependencies {
+            implementation(libs.compose.animation.core)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.ui.util)
+
+            implementation(libs.androidx.core)
+        }
+        invokeWhenCreated("androidDebug") {
+            dependencies {
+                implementation(libs.compose.ui.test.manifest)
+            }
+        }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.compose.ui.test.junit4)
+
+                implementation(libs.junit)
+                implementation(libs.robolectric)
+            }
+        }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.test.ext)
+                implementation(libs.androidx.test.espresso)
+            }
+        }
+    }
 }
 
 android {
@@ -42,9 +93,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     buildFeatures {
         compose = true
     }
@@ -58,30 +106,12 @@ android {
     }
 }
 
-dependencies {
-    implementation(libs.compose.animation.core)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.util)
-    testImplementation(libs.compose.ui.test.junit4)
-    debugImplementation(libs.compose.ui.test.manifest)
-
-    implementation(libs.androidx.core)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.robolectric)
-    androidTestImplementation(libs.androidx.test.ext)
-    androidTestImplementation(libs.androidx.test.espresso)
-}
-
 tasks.dokkaHtml.configure {
     outputDirectory.set(file("$rootDir/docs"))
     val versionName = rootProject.properties["VERSION_NAME"]!!.toString()
     moduleVersion.set(versionName)
     dokkaSourceSets {
-        named("main") {
+        named("androidMain") {
             noAndroidSdkLink.set(false)
         }
     }
