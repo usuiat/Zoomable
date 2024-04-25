@@ -7,7 +7,8 @@ jetbrains-compose = "1.6.2"
 kotlin = "1.9.23"
 androidGradle = "8.3.2"
 
-coil = "2.6.0"
+coil = "3.0.0-alpha06"
+ktor = "2.3.9"
 accompanist = "0.34.0"
 
 [plugins]
@@ -40,7 +41,10 @@ androidx-test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
+
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 
 junit = "junit:junit:4.13.2"
 kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0"

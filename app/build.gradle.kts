@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 kotlin {
@@ -34,14 +35,15 @@ kotlin {
     }
 
     sourceSets {
+        commonMain.dependencies {
+            implementation(compose.ui)
+            implementation(compose.components.uiToolingPreview)
+            implementation(compose.material3)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
         androidMain.dependencies {
-            implementation(libs.compose.ui)
-            implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.compose.material3)
-
             implementation(project(path = ":zoomable"))
 
             implementation(libs.androidx.core)
@@ -52,6 +54,9 @@ kotlin {
             implementation(libs.accompanist.pager.indicators)
 
             implementation(libs.coil.compose)
+            implementation(libs.coil.network)
+
+            implementation(libs.ktor.client.okhttp)
         }
         val androidUnitTest by getting {
             dependencies {
