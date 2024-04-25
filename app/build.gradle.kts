@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+
 /*
  * Copyright 2022 usuiat
  *
@@ -16,7 +18,59 @@
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.multiplatform)
+}
+
+kotlin {
+    androidTarget()
+    targets.all {
+        compilations.all {
+            kotlinOptions.let {
+                if (it is KotlinJvmOptions) {
+                    it.jvmTarget = "1.8"
+                }
+            }
+        }
+    }
+
+    sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+        androidMain.dependencies {
+            implementation(libs.compose.ui)
+            implementation(libs.compose.ui.tooling.preview)
+            implementation(libs.compose.material3)
+
+            implementation(project(path = ":zoomable"))
+
+            implementation(libs.androidx.core)
+            implementation(libs.androidx.lifecycle)
+            implementation(libs.androidx.activity)
+
+            implementation(libs.accompanist.pager)
+            implementation(libs.accompanist.pager.indicators)
+
+            implementation(libs.coil.compose)
+        }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.junit)
+            }
+        }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.test.ext)
+                implementation(libs.androidx.test.espresso)
+            }
+        }
+        invokeWhenCreated("androidDebug") {
+            dependencies {
+                implementation(libs.compose.ui.tooling)
+                implementation(libs.compose.ui.test.manifest)
+            }
+        }
+    }
 }
 
 android {
@@ -46,9 +100,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     buildFeatures {
         compose = true
     }
@@ -60,26 +111,4 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-}
-
-dependencies {
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.material3)
-    debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.compose.ui.test.manifest)
-
-    implementation(project(path = ":zoomable"))
-
-    implementation(libs.androidx.core)
-    implementation(libs.androidx.lifecycle)
-    implementation(libs.androidx.activity)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext)
-    androidTestImplementation(libs.androidx.test.espresso)
-
-    implementation(libs.accompanist.pager)
-    implementation(libs.accompanist.pager.indicators)
-
-    implementation(libs.coil.compose)
 }
