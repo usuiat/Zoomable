@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -29,6 +28,8 @@ import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Composable
 fun ZoomableContent(zoomEnabled: Boolean = true) {
@@ -96,7 +97,7 @@ class ZoomableTest: PlatformZoomableTest() {
                 )
             }
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-        assert(boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        assertTrue((boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height))
     }
 
     @Test
@@ -115,7 +116,7 @@ class ZoomableTest: PlatformZoomableTest() {
         }
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
         println("bounds=$boundsAfter")
-        assert(boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        assertTrue((boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height))
     }
 
     @Test
@@ -129,14 +130,14 @@ class ZoomableTest: PlatformZoomableTest() {
             doubleClick(center)
         }
         val bounds1 = node.fetchSemanticsNode().boundsInRoot
-        assert((bounds1.width / bounds0.width) == 2.5f)
-        assert((bounds1.height / bounds0.height) == 2.5f)
+        assertTrue((bounds1.width / bounds0.width) == 2.5f)
+        assertTrue((bounds1.height / bounds0.height) == 2.5f)
 
         node.performTouchInput {
             doubleClick(center)
         }
         val bounds2 = node.fetchSemanticsNode().boundsInRoot
-        assert(bounds2.size == bounds0.size)
+        assertEquals(bounds2.size, bounds0.size)
     }
 
     @Test
@@ -176,7 +177,7 @@ class ZoomableTest: PlatformZoomableTest() {
         so instead we check that Top and Right are negative numbers.
          */
         val bounds = image.getUnclippedBoundsInRoot()
-        assert(bounds.left < 0.dp && bounds.top < 0.dp)
+        assertTrue(bounds.left < 0.dp && bounds.top < 0.dp)
     }
 
     @Test
@@ -211,8 +212,8 @@ class ZoomableTest: PlatformZoomableTest() {
         // Wait manually because automatic synchronization does not work well.
         // I think the wait process to determine if it is a double-tap is judged to be idle.
         mainClock.advanceTimeBy(1000L)
-        assert(count == 1)
-        assert(positionAtCallback == positionTapped)
+        assertTrue(count == 1)
+        assertEquals(positionAtCallback, positionTapped)
     }
 
     @Test
@@ -266,7 +267,7 @@ class ZoomableTest: PlatformZoomableTest() {
         }
 
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-        assert(boundsAfter == boundsBefore)
+        assertEquals(boundsAfter, boundsBefore)
     }
 
     @Test
@@ -300,7 +301,7 @@ class ZoomableTest: PlatformZoomableTest() {
             up(1)
         }
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-        assert(boundsInGesture.width > boundsBefore.width && boundsInGesture.height > boundsBefore.height)
-        assert(boundsAfter.width == boundsBefore.width && boundsAfter.height == boundsBefore.height)
+        assertTrue(boundsInGesture.width > boundsBefore.width && boundsInGesture.height > boundsBefore.height)
+        assertTrue(boundsAfter.width == boundsBefore.width && boundsAfter.height == boundsBefore.height)
     }
 }
