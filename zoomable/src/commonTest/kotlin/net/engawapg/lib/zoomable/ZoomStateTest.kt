@@ -4,10 +4,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 
 class ZoomStateTest {
 
@@ -25,9 +25,8 @@ class ZoomStateTest {
 
     @Test
     fun zoomState_maxScale_099_throwException() {
-        assertThrows(
-            "maxScale must be at least 1.0.",
-            IllegalArgumentException::class.java
+        assertFailsWith<IllegalArgumentException>(
+            "maxScale must be at least 1.0."
         ) {
             ZoomState(maxScale = 0.99f)
         }
@@ -183,10 +182,7 @@ class ZoomStateTest {
     }
 }
 
-@RunWith(Parameterized::class)
-class ZoomStateTestPanWillChangeOffset(
-    private val testCase: TestCase
-) {
+class ZoomStateTestPanWillChangeOffset {
     data class TestCase(
         val name: String,
         val zoomPosition: Offset,
@@ -198,63 +194,89 @@ class ZoomStateTestPanWillChangeOffset(
 
     companion object {
         val rect = Rect(Offset.Zero, Size(100f, 100f))
-
-        @JvmStatic
-        @Parameterized.Parameters(name = "{0}")
-        fun testCases() = listOf(
-            TestCase(
-                name = "Pan right from right edge will change offset",
-                zoomPosition = rect.centerRight,
-                pan = Offset(1f, 0f),
-                expected = true,
-            ),
-            TestCase(
-                name = "Pan right from left edge will not change offset",
-                zoomPosition = rect.centerLeft,
-                pan = Offset(1f, 0f),
-                expected = false,
-            ),
-            TestCase(
-                name = "Pan left from left edge will change offset",
-                zoomPosition = rect.centerLeft,
-                pan = Offset(-1f, 0f),
-                expected = true,
-            ),
-            TestCase(
-                name = "Pan left from right edge will not change offset",
-                zoomPosition = rect.centerRight,
-                pan = Offset(-1f, 0f),
-                expected = false,
-            ),
-            TestCase(
-                name = "Pan up from top edge will change offset",
-                zoomPosition = rect.topCenter,
-                pan = Offset(0f, -1f),
-                expected = true,
-            ),
-            TestCase(
-                name = "Pan up from bottom edge will not change offset",
-                zoomPosition = rect.bottomCenter,
-                pan = Offset(0f, -1f),
-                expected = false,
-            ),
-            TestCase(
-                name = "Pan down from bottom edge will change offset",
-                zoomPosition = rect.bottomCenter,
-                pan = Offset(0f, 1f),
-                expected = true,
-            ),
-            TestCase(
-                name = "Pan down from top edge will not change offset",
-                zoomPosition = rect.topCenter,
-                pan = Offset(0f, 1f),
-                expected = false,
-            ),
-        )
     }
 
     @Test
-    fun test_if_pan_from_edge_changes_offset() = runTest {
+    fun pan_right_from_right_edge_will_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan right from right edge will change offset",
+            zoomPosition = rect.centerRight,
+            pan = Offset(1f, 0f),
+            expected = true,
+        )
+    )
+
+    @Test
+    fun pan_right_from_left_edge_will_not_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan right from left edge will not change offset",
+            zoomPosition = rect.centerLeft,
+            pan = Offset(1f, 0f),
+            expected = false,
+        ),
+    )
+
+    @Test
+    fun pan_left_from_left_edge_will_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan left from left edge will change offset",
+            zoomPosition = rect.centerLeft,
+            pan = Offset(-1f, 0f),
+            expected = true,
+        )
+    )
+
+    @Test
+    fun pan_left_from_right_edge_will_not_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan left from right edge will not change offset",
+            zoomPosition = rect.centerRight,
+            pan = Offset(-1f, 0f),
+            expected = false,
+        )
+    )
+
+    @Test
+    fun pan_up_from_top_edge_will_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan up from top edge will change offset",
+            zoomPosition = rect.topCenter,
+            pan = Offset(0f, -1f),
+            expected = true,
+        )
+    )
+
+    @Test
+    fun pan_up_from_bottom_edge_will_not_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan up from bottom edge will not change offset",
+            zoomPosition = rect.bottomCenter,
+            pan = Offset(0f, -1f),
+            expected = false,
+        )
+    )
+
+    @Test
+    fun pan_down_from_bottom_edge_will_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan down from bottom edge will change offset",
+            zoomPosition = rect.bottomCenter,
+            pan = Offset(0f, 1f),
+            expected = true,
+        )
+    )
+
+    @Test
+    fun pan_down_from_top_edge_will_not_change_offset() = runTestCase(
+        TestCase(
+            name = "Pan down from top edge will not change offset",
+            zoomPosition = rect.topCenter,
+            pan = Offset(0f, 1f),
+            expected = false,
+        )
+    )
+
+    private fun runTestCase(testCase: TestCase) = runTest {
         val zoomState = ZoomState(contentSize = rect.size)
         zoomState.setLayoutSize(rect.size)
         zoomState.applyGesture(Offset.Zero, 2f, testCase.zoomPosition, 0)
