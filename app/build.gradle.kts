@@ -24,6 +24,7 @@ plugins {
 
 kotlin {
     androidTarget()
+
     targets.all {
         compilations.all {
             kotlinOptions.let {
@@ -38,6 +39,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.components.resources)
             implementation(compose.material3)
         }
         commonTest.dependencies {

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -26,16 +25,25 @@ import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import zoomable.app.generated.resources.Res
+import zoomable.app.generated.resources.bird1
+import zoomable.app.generated.resources.bird2
+import zoomable.app.generated.resources.bird3
+import zoomable.app.generated.resources.shoebill1
+import zoomable.app.generated.resources.shoebill2
+import zoomable.app.generated.resources.shoebill3
 
 /**
  * Sample that shows a zoomable images on [HorizontalPager].
  *
  * We call reset() to reset scale and offset when an image is moved out of the windows.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalResourceApi::class)
 @Composable
 fun AccompanistHorizontalPagerSample(onTap: (Offset) -> Unit) {
-    val resources = listOf(R.drawable.bird1, R.drawable.bird2, R.drawable.bird3)
+    val resources = listOf(Res.drawable.bird1, Res.drawable.bird2, Res.drawable.bird3)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -45,7 +53,7 @@ fun AccompanistHorizontalPagerSample(onTap: (Offset) -> Unit) {
             count = resources.size,
             state = pagerState,
         ) {page ->
-            val painter = painterResource(id = resources[page])
+            val painter = painterResource(resource = resources[page])
             val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
             Image(
                 painter = painter,
@@ -85,10 +93,10 @@ fun AccompanistHorizontalPagerSample(onTap: (Offset) -> Unit) {
  *
  * We call reset() to reset scale and offset when an image is moved out of the windows.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalResourceApi::class)
 @Composable
 fun AccompanistVerticalPagerSample(onTap: (Offset) -> Unit) {
-    val resources = listOf(R.drawable.shoebill1, R.drawable.shoebill2, R.drawable.shoebill3)
+    val resources = listOf(Res.drawable.shoebill1, Res.drawable.shoebill2, Res.drawable.shoebill3)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -98,7 +106,7 @@ fun AccompanistVerticalPagerSample(onTap: (Offset) -> Unit) {
             count = resources.size,
             state = pagerState,
         ) {page ->
-            val painter = painterResource(id = resources[page])
+            val painter = painterResource(resource = resources[page])
             val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
             Image(
                 painter = painter,

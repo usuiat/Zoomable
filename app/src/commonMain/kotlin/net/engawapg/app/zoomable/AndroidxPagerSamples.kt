@@ -11,25 +11,33 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import zoomable.app.generated.resources.Res
+import zoomable.app.generated.resources.duck1
+import zoomable.app.generated.resources.duck2
+import zoomable.app.generated.resources.duck3
+import zoomable.app.generated.resources.eagle1
+import zoomable.app.generated.resources.eagle2
+import zoomable.app.generated.resources.eagle3
 
 /**
  * Sample that shows a zoomable images on [HorizontalPager].
  *
  * We call reset() to reset scale and offset when an image is moved out of the windows.
  */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 fun AndroidxHorizontalPagerSample(onTap: (Offset) -> Unit = {}) {
-    val resources = listOf(R.drawable.duck1, R.drawable.duck2, R.drawable.duck3)
+    val resources = listOf(Res.drawable.duck1, Res.drawable.duck2, Res.drawable.duck3)
     val pagerState = rememberPagerState { resources.size }
     HorizontalPager(
         state = pagerState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
-        val painter = painterResource(id = resources[page])
+        val painter = painterResource(resource = resources[page])
         val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
         Image(
             painter = painter,
@@ -58,16 +66,16 @@ fun AndroidxHorizontalPagerSample(onTap: (Offset) -> Unit = {}) {
  *
  * We call reset() to reset scale and offset when an image is moved out of the windows.
  */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 fun AndroidxVerticalPagerSample(onTap: (Offset) -> Unit) {
-    val resources = listOf(R.drawable.eagle1, R.drawable.eagle2, R.drawable.eagle3)
+    val resources = listOf(Res.drawable.eagle1, Res.drawable.eagle2, Res.drawable.eagle3)
     val pagerState = rememberPagerState { resources.size }
     VerticalPager(
         state = pagerState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
-        val painter = painterResource(id = resources[page])
+        val painter = painterResource(resource = resources[page])
         val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
         Image(
             painter = painter,

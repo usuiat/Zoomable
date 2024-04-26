@@ -9,20 +9,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import coil3.compose.AsyncImage
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import zoomable.app.generated.resources.Res
+import zoomable.app.generated.resources.penguin
 
 /**
  * Sample that shows a zoomable image synchronously.
  *
  * [Modifier.zoomable] modifies an [Image] composable which shows a resource image.
  */
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SyncImageSample(onTap: (Offset) -> Unit) {
-    val painter = painterResource(id = R.drawable.penguin)
+    val painter = painterResource(resource = Res.drawable.penguin)
 //    val painter = painterResource(id = R.drawable.grid)   // for debug
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
