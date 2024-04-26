@@ -35,8 +35,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.lang.Float.max
 import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * A state object that manage scale and offset.
