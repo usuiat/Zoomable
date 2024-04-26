@@ -26,6 +26,7 @@ plugins {
 
 kotlin {
     androidTarget { publishLibraryVariants("release") }
+    jvm("desktop")
 
     targets.all {
         compilations.all {
@@ -43,6 +44,8 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.ui)
             implementation(compose.uiUtil)
+
+            implementation(libs.androidx.annotation)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

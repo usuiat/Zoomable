@@ -1,4 +1,8 @@
+@file:Suppress("OPT_IN_USAGE")
+
+import com.android.build.gradle.internal.ide.kmp.KotlinAndroidSourceSetMarker.Companion.android
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 /*
  * Copyright 2022 usuiat
@@ -24,6 +28,7 @@ plugins {
 
 kotlin {
     androidTarget()
+    jvm("desktop")
 
     targets.all {
         compilations.all {
@@ -35,19 +40,39 @@ kotlin {
         }
     }
 
+    applyDefaultHierarchyTemplate {
+        sourceSetTrees(KotlinSourceSetTree.main, KotlinSourceSetTree.test)
+        common {
+            group("nonAndroid") {
+                withJvm()
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
+            implementation(project(path = ":zoomable"))
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.components.resources)
             implementation(compose.material3)
+
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
-        androidMain.dependencies {
-            implementation(project(path = ":zoomable"))
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
 
+                implementation(libs.kotlinx.coroutines.swing)
+
+                implementation(libs.ktor.client.okhttp)
+            }
+        }
+        androidMain.dependencies {
             implementation(libs.androidx.core)
             implementation(libs.androidx.lifecycle)
             implementation(libs.androidx.activity)
@@ -55,10 +80,9 @@ kotlin {
             implementation(libs.accompanist.pager)
             implementation(libs.accompanist.pager.indicators)
 
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network)
-
             implementation(libs.ktor.client.okhttp)
+
+            implementation(libs.kotlinx.coroutines.android)
         }
         val androidUnitTest by getting {
             dependencies {
@@ -77,6 +101,12 @@ kotlin {
                 implementation(libs.compose.ui.test.manifest)
             }
         }
+    }
+}
+
+compose {
+    desktop.application {
+        mainClass = "net.engawapg.app.zoomable.MainKt"
     }
 }
 

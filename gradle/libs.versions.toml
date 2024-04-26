@@ -9,6 +9,7 @@ androidGradle = "8.3.2"
 
 coil = "3.0.0-alpha06"
 ktor = "2.3.9"
+kotlinx-coroutine = "1.8.0"
 accompanist = "0.34.0"
 
 [plugins]
@@ -32,6 +33,7 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
 
+androidx-annotation = "androidx.annotation:annotation:1.8.0-beta02"
 androidx-activity = "androidx.activity:activity-compose:1.8.2"
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
@@ -46,6 +48,9 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "c
 
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutine" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutine" }
+
 junit = "junit:junit:4.13.2"
-kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0"
 robolectric = "org.robolectric:robolectric:4.12.1"
