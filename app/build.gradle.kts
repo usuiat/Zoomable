@@ -1,6 +1,6 @@
 @file:Suppress("OPT_IN_USAGE")
 
-import com.android.build.gradle.internal.ide.kmp.KotlinAndroidSourceSetMarker.Companion.android
+import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
@@ -97,7 +97,7 @@ kotlin {
         }
         invokeWhenCreated("androidDebug") {
             dependencies {
-                implementation(libs.compose.ui.tooling)
+                implementation(compose.uiTooling)
                 implementation(libs.compose.ui.test.manifest)
             }
         }

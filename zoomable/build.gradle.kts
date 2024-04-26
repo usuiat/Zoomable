@@ -1,4 +1,6 @@
+import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 /*
  * Copyright 2022 usuiat
@@ -28,6 +30,15 @@ kotlin {
     androidTarget { publishLibraryVariants("release") }
     jvm("desktop")
 
+    applyDefaultHierarchyTemplate {
+        sourceSetTrees(KotlinSourceSetTree.main, KotlinSourceSetTree.test)
+        common {
+            group("nonAndroid") {
+                withJvm()
+            }
+        }
+    }
+
     targets.all {
         compilations.all {
             kotlinOptions.let {
@@ -49,7 +60,13 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+
             implementation(libs.kotlinx.coroutines.test)
+
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+
+            implementation(compose("org.jetbrains.compose.material:material-icons-core"))
         }
         androidMain.dependencies {
             implementation(libs.androidx.core)
@@ -61,8 +78,8 @@ kotlin {
         }
         val androidUnitTest by getting {
             dependencies {
-                implementation(libs.compose.ui.test.junit4)
-
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTestJUnit4)
                 implementation(libs.junit)
                 implementation(libs.robolectric)
             }
@@ -71,6 +88,11 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.test.ext)
                 implementation(libs.androidx.test.espresso)
+            }
+        }
+        val desktopTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
             }
         }
     }

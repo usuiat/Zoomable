@@ -5,36 +5,38 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pinch
+import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.swipe
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.unit.dp
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import kotlin.test.Test
 
 @Composable
 fun ZoomableContent(zoomEnabled: Boolean = true) {
-    val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-    val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+
+    val icon = Icons.Default.Info
+    val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
     Image(
-        painter = painter,
+        imageVector = icon,
         contentDescription = "image",
         contentScale = ContentScale.Fit,
         modifier = Modifier
@@ -58,10 +60,10 @@ fun ZoomablePagerContent(
             .fillMaxSize()
             .semantics { testTag = "pager" }
     ) { page ->
-        val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-        val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+        val icon = Icons.Default.Info
+        val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
         Image(
-            painter = painter,
+            imageVector = icon,
             contentDescription = "image$page",
             contentScale = ContentScale.Fit,
             modifier = Modifier
@@ -74,17 +76,16 @@ fun ZoomablePagerContent(
     }
 }
 
-@RunWith(RobolectricTestRunner::class)
-class ZoomableTest {
+expect open class PlatformZoomableTest()
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+@OptIn(ExperimentalTestApi::class)
+class ZoomableTest: PlatformZoomableTest() {
 
     @Test
-    fun zoomable_pinch_zoomed() {
-        composeTestRule.setContent { ZoomableContent() }
+    fun zoomable_pinch_zoomed() = runComposeUiTest {
+       setContent { ZoomableContent() }
 
-        val node = composeTestRule.onNodeWithContentDescription("image")
+        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
         node.performTouchInput {
                 pinch(
@@ -99,10 +100,10 @@ class ZoomableTest {
     }
 
     @Test
-    fun zoomable_tapAndSwipe_zoomed() {
-        composeTestRule.setContent { ZoomableContent() }
+    fun zoomable_tapAndSwipe_zoomed() = runComposeUiTest {
+        setContent { ZoomableContent() }
 
-        val node = composeTestRule.onNodeWithContentDescription("image")
+        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
         println("bounds=$boundsBefore")
         node.performTouchInput {
@@ -118,10 +119,10 @@ class ZoomableTest {
     }
 
     @Test
-    fun zoomable_doubleTap_zoomed() {
-        composeTestRule.setContent { ZoomableContent() }
+    fun zoomable_doubleTap_zoomed() = runComposeUiTest {
+        setContent { ZoomableContent() }
 
-        val node = composeTestRule.onNodeWithContentDescription("image")
+        val node = onNodeWithContentDescription("image")
         val bounds0 = node.fetchSemanticsNode().boundsInRoot
 
         node.performTouchInput {
@@ -139,27 +140,27 @@ class ZoomableTest {
     }
 
     @Test
-    fun zoomable_on_pager_zoomAfterSwipePage_zoomed() {
+    fun zoomable_on_pager_zoomAfterSwipePage_zoomed() = runComposeUiTest {
         /*
         This function tests that zooming works after page swipes.
         We ran into a problem with Compose 1.5 where zooming did not work after swiping a
         HorizontalPager page and then returning to the initial page.
          */
-        composeTestRule.setContent { ZoomablePagerContent() }
+        setContent { ZoomablePagerContent() }
 
-        var image= composeTestRule.onNodeWithContentDescription("image0")
+        var image= onNodeWithContentDescription("image0")
         image.assertIsDisplayed()
         image.performTouchInput {
             swipeLeft()
         }
 
-        image = composeTestRule.onNodeWithContentDescription("image1")
+        image = onNodeWithContentDescription("image1")
         image.assertIsDisplayed()
         image.performTouchInput {
             swipeRight()
         }
 
-        image = composeTestRule.onNodeWithContentDescription("image0")
+        image = onNodeWithContentDescription("image0")
         image.assertIsDisplayed()
         image.performTouchInput {
             pinch(
@@ -179,16 +180,16 @@ class ZoomableTest {
     }
 
     @Test
-    fun zoomable_tap_calledOnTap() {
+    fun zoomable_tap_calledOnTap() = runComposeUiTest {
         var count = 0
         var positionAtCallback: Offset = Offset.Unspecified
         var positionTapped: Offset = Offset.Zero
-        composeTestRule.mainClock.autoAdvance = false
-        composeTestRule.setContent {
-            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+        mainClock.autoAdvance = false
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
             Image(
-                painter = painter,
+                imageVector = icon,
                 contentDescription = "image",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
@@ -203,57 +204,57 @@ class ZoomableTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription("image").performTouchInput {
+        onNodeWithContentDescription("image").performTouchInput {
             positionTapped = center
             click(positionTapped)
         }
         // Wait manually because automatic synchronization does not work well.
         // I think the wait process to determine if it is a double-tap is judged to be idle.
-        composeTestRule.mainClock.advanceTimeBy(1000L)
+        mainClock.advanceTimeBy(1000L)
         assert(count == 1)
         assert(positionAtCallback == positionTapped)
     }
 
     @Test
-    fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() {
-        composeTestRule.setContent {
+    fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() = runComposeUiTest{
+        setContent {
             ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.ContentEdge)
         }
 
-        val image0= composeTestRule.onNodeWithContentDescription("image0")
+        val image0 = onNodeWithContentDescription("image0")
         image0.performTouchInput { doubleClick() }
-        composeTestRule.waitForIdle()
+        waitForIdle()
         image0.performTouchInput { swipeLeft() }
-        composeTestRule.waitForIdle()
+        waitForIdle()
         image0.performTouchInput { swipeLeft() }
 
-        val image1 = composeTestRule.onNodeWithContentDescription("image1")
+        val image1 = onNodeWithContentDescription("image1")
         image1.assertIsDisplayed()
     }
 
     @Test
-    fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() {
-        composeTestRule.setContent {
+    fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() = runComposeUiTest {
+        setContent {
             ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
         }
 
-        val image0= composeTestRule.onNodeWithContentDescription("image0")
+        val image0= onNodeWithContentDescription("image0")
         image0.performTouchInput { doubleClick() }
-        composeTestRule.waitForIdle()
+        waitForIdle()
         image0.performTouchInput { swipeLeft() }
-        composeTestRule.waitForIdle()
+        waitForIdle()
         image0.performTouchInput { swipeLeft() }
 
         image0.assertIsDisplayed()
     }
 
     @Test
-    fun pinch_gesture_does_not_work_when_zoom_is_disabled() {
-        composeTestRule.setContent {
+    fun pinch_gesture_does_not_work_when_zoom_is_disabled() = runComposeUiTest {
+        setContent {
             ZoomableContent(zoomEnabled = false)
         }
 
-        val node = composeTestRule.onNodeWithContentDescription("image")
+        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
         node.performTouchInput {
             pinch(
@@ -269,12 +270,12 @@ class ZoomableTest {
     }
 
     @Test
-    fun snapBackZoomable_can_zoom_image_during_gesture_and_snap_back_after_gesture() {
-        composeTestRule.setContent {
-            val painter = painterResource(id = android.R.drawable.ic_dialog_info)
-            val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+    fun snapBackZoomable_can_zoom_image_during_gesture_and_snap_back_after_gesture() = runComposeUiTest {
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
             Image(
-                painter = painter,
+                imageVector = icon,
                 contentDescription = "image",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
@@ -285,7 +286,7 @@ class ZoomableTest {
             )
         }
 
-        val node = composeTestRule.onNodeWithContentDescription("image")
+        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
         node.performTouchInput {
             down(0, center + Offset(-100f, 0f))
