@@ -1,6 +1,5 @@
 @file:Suppress("OPT_IN_USAGE")
 
-import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
@@ -136,9 +135,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    buildFeatures {
-        compose = true
     }
     packagingOptions {
         resources {
