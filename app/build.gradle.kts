@@ -1,8 +1,3 @@
-@file:Suppress("OPT_IN_USAGE")
-
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-
 /*
  * Copyright 2022 usuiat
  *
@@ -18,6 +13,11 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@file:Suppress("OPT_IN_USAGE")
+
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.android.application)
