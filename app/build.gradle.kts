@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-@file:Suppress("OPT_IN_USAGE")
-
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
