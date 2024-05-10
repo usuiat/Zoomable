@@ -40,5 +40,5 @@ accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pa
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 junit = "junit:junit:4.13.2"
-kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0"
+kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1"
 robolectric = "org.robolectric:robolectric:4.12.1"
