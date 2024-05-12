@@ -5,10 +5,15 @@ jetbrains-compose = "1.6.2"
 kotlin = "1.9.23"
 androidGradle = "8.3.2"
 
+android-compileSdk = "34"
+android-targetSdk = "34"
+android-minSdk = "21"
+
 coil = "3.0.0-alpha06"
 ktor = "2.3.9"
 kotlinx-coroutine = "1.8.0"
 accompanist = "0.34.0"
+androidx-activityCompose = "1.9.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
@@ -28,6 +33,9 @@ androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
 androidx-test-ext = "androidx.test.ext:junit:1.1.5"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
@@ -36,6 +44,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
 
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutine" }
