@@ -15,7 +15,7 @@ import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import zoomable.composeapp.generated.resources.*
+import zoomable_root.composeapp.generated.resources.*
 
 /**
  * Sample that shows a zoomable image synchronously.
