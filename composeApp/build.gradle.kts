@@ -14,40 +14,28 @@
  * limitations under the License.
  */
 
-import org.jetbrains.compose.compose
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.vanniktech.maven.publish)
-    alias(libs.plugins.dokka)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
 }
 
 kotlin {
-    androidTarget { publishLibraryVariants("release") }
+    androidTarget()
+
     jvm("desktop")
 
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "zoomable"
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
             isStatic = true
-        }
-    }
-
-    applyDefaultHierarchyTemplate {
-        sourceSetTrees(KotlinSourceSetTree.main, KotlinSourceSetTree.test)
-        common {
-            group("nonAndroid") {
-                withJvm()
-                withIos()
-            }
         }
     }
 
@@ -63,37 +51,42 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.foundation)
-            implementation(compose.runtime)
+            implementation(project(path = ":zoomable"))
             implementation(compose.ui)
-            implementation(compose.uiUtil)
+            implementation(compose.components.uiToolingPreview)
+            implementation(compose.components.resources)
+            implementation(compose.material3)
 
-            implementation(libs.androidx.annotation)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
 
-            implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.kotlinx.coroutines.swing)
 
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
-
-            implementation(compose("org.jetbrains.compose.material:material-icons-core"))
+                implementation(libs.ktor.client.okhttp)
+            }
         }
         androidMain.dependencies {
             implementation(libs.androidx.core)
-        }
-        invokeWhenCreated("androidDebug") {
-            dependencies {
-                implementation(libs.compose.ui.test.manifest)
-            }
+            implementation(libs.androidx.lifecycle)
+            implementation(libs.androidx.activity)
+
+            implementation(libs.accompanist.pager)
+            implementation(libs.accompanist.pager.indicators)
+
+            implementation(libs.ktor.client.okhttp)
+
+            implementation(libs.kotlinx.coroutines.android)
         }
         val androidUnitTest by getting {
             dependencies {
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.uiTestJUnit4)
                 implementation(libs.junit)
-                implementation(libs.robolectric)
             }
         }
         val androidInstrumentedTest by getting {
@@ -102,49 +95,60 @@ kotlin {
                 implementation(libs.androidx.test.espresso)
             }
         }
-        val desktopTest by getting {
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        invokeWhenCreated("androidDebug") {
             dependencies {
-                implementation(compose.desktop.currentOs)
+                implementation(compose.uiTooling)
+                implementation(libs.compose.ui.test.manifest)
             }
         }
     }
 }
 
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "net.engawapg.app.zoomable"
+            packageVersion = "1.0.0"
+        }
+    }
+}
+
 android {
-    namespace = "net.engawapg.lib.zoomable"
+    namespace = "net.engawapg.app.zoomable"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
+        applicationId = "net.engawapg.app.zoomable"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode =  1
+        versionName = "1.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),"proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
-}
-
-tasks.dokkaHtml.configure {
-    outputDirectory.set(file("$rootDir/docs"))
-    val versionName = rootProject.properties["VERSION_NAME"]!!.toString()
-    moduleVersion.set(versionName)
-    dokkaSourceSets {
-        named("commonMain") {
-            noAndroidSdkLink.set(false)
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
