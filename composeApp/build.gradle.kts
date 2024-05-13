@@ -16,7 +16,6 @@
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.android.application)
@@ -53,12 +52,10 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(path = ":zoomable"))
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
-            implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.components.resources)
+            implementation(compose.material3)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
@@ -110,6 +107,18 @@ kotlin {
     }
 }
 
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "net.engawapg.app.zoomable"
+            packageVersion = "1.0.0"
+        }
+    }
+}
+
 android {
     namespace = "net.engawapg.app.zoomable"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -140,18 +149,6 @@ android {
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "net.engawapg.app.zoomable"
-            packageVersion = "1.0.0"
         }
     }
 }

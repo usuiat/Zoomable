@@ -13,7 +13,6 @@ coil = "3.0.0-alpha06"
 ktor = "2.3.9"
 kotlinx-coroutine = "1.8.0"
 accompanist = "0.34.0"
-androidx-activityCompose = "1.9.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
@@ -33,9 +32,6 @@ androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
 androidx-test-ext = "androidx.test.ext:junit:1.1.5"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
