@@ -6,7 +6,7 @@ composeMaterial3 = "1.2.1"
 kotlin = "1.9.23"
 androidGradle = "8.5.1"
 
-coil = "2.6.0"
+coil = "2.7.0"
 accompanist = "0.34.0"
 
 [plugins]
