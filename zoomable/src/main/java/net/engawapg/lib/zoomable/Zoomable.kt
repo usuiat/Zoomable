@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 2022 usuiat
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
  * @param onGestureEnd This lambda is called when a gesture ends.
  * @param onTap will be called when single tap is detected.
  * @param onDoubleTap will be called when double tap is detected.
+ * @param onLongPress will be called when long press is detected.
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  */
@@ -71,6 +72,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     onGestureEnd: () -> Unit = {},
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
+    onLongPress: (position: Offset) -> Unit = {},  // Add long press callback
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
@@ -105,12 +107,15 @@ private suspend fun PointerInputScope.detectTransformGestures(
         !cancelGesture
     }
 
+    // 检查是否为长按手势
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
         isLongPressed = true
+        if (!hasMoved && !isMultiTouch && !isCanceled) {
+            onLongPress(firstUp.position)
+        }
     }
 
     val isTap = !hasMoved && !isMultiTouch && !isLongPressed && !isCanceled
-    // Vertical scrolling following a double tap is treated as a zoom gesture.
     if (isTap) {
         val secondDown = awaitSecondDown(firstUp)
         if (secondDown == null) {
@@ -286,6 +291,7 @@ enum class ScrollGesturePropagation {
  * @param onDoubleTap will be called when double tap is detected on the element. This is a suspend
  * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
  * 2.5f with animation.
+ * @param onLongPress will be called when long press is detected on the element.
  */
 fun Modifier.zoomable(
     zoomState: ZoomState,
@@ -294,6 +300,7 @@ fun Modifier.zoomable(
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit = { position -> if (zoomEnabled) zoomState.toggleScale(2.5f, position) },
+    onLongPress: (position: Offset) -> Unit = {}, // Add onLongPress parameter
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
     zoomEnabled = zoomEnabled,
@@ -302,6 +309,7 @@ fun Modifier.zoomable(
     scrollGesturePropagation = scrollGesturePropagation,
     onTap = onTap,
     onDoubleTap = onDoubleTap,
+    onLongPress = onLongPress, // Pass onLongPress
 )
 
 fun Modifier.snapBackZoomable(
@@ -309,6 +317,7 @@ fun Modifier.snapBackZoomable(
     zoomEnabled: Boolean = true,
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: suspend (position: Offset) -> Unit = {},
+    onLongPress: (position: Offset) -> Unit = {}, // Add onLongPress parameter
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
     zoomEnabled = zoomEnabled,
@@ -317,6 +326,7 @@ fun Modifier.snapBackZoomable(
     scrollGesturePropagation = ScrollGesturePropagation.NotZoomed,
     onTap = onTap,
     onDoubleTap = onDoubleTap,
+    onLongPress = onLongPress, // Pass onLongPress
 )
 
 private data class ZoomableElement(
@@ -327,6 +337,7 @@ private data class ZoomableElement(
     val scrollGesturePropagation: ScrollGesturePropagation,
     val onTap: (position: Offset) -> Unit,
     val onDoubleTap: suspend (position: Offset) -> Unit,
+    val onLongPress: (position: Offset) -> Unit, // Add onLongPress parameter
 ): ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
@@ -336,6 +347,7 @@ private data class ZoomableElement(
         scrollGesturePropagation,
         onTap,
         onDoubleTap,
+        onLongPress, // Pass onLongPress
     )
 
     override fun update(node: ZoomableNode) {
@@ -347,6 +359,7 @@ private data class ZoomableElement(
             scrollGesturePropagation,
             onTap,
             onDoubleTap,
+            onLongPress, // Pass onLongPress
         )
     }
 
@@ -359,6 +372,7 @@ private data class ZoomableElement(
         properties["scrollGesturePropagation"] = scrollGesturePropagation
         properties["onTap"] = onTap
         properties["onDoubleTap"] = onDoubleTap
+        properties["onLongPress"] = onLongPress // Add to properties
     }
 }
 
@@ -370,6 +384,7 @@ private class ZoomableNode(
     var scrollGesturePropagation: ScrollGesturePropagation,
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset) -> Unit,
+    var onLongPress: (position: Offset) -> Unit,  // Add long press callback
 ): PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
@@ -381,6 +396,7 @@ private class ZoomableNode(
         scrollGesturePropagation: ScrollGesturePropagation,
         onTap: (position: Offset) -> Unit,
         onDoubleTap: suspend (position: Offset) -> Unit,
+        onLongPress: (position: Offset) -> Unit, // Add onLongPress parameter
     ) {
         if (this.zoomState != zoomState) {
             zoomState.setLayoutSize(measuredSize)
@@ -392,6 +408,7 @@ private class ZoomableNode(
         this.snapBackEnabled = snapBackEnabled
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
+        this.onLongPress = onLongPress // Update onLongPress
     }
 
     val pointerInputNode = delegate(SuspendingPointerInputModifierNode {
@@ -431,6 +448,7 @@ private class ZoomableNode(
                     onDoubleTap(position)
                 }
             },
+            onLongPress = onLongPress,  // Passing long press callback
             enableOneFingerZoom = enableOneFingerZoom,
         )
     })
