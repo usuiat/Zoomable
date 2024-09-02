@@ -2,6 +2,8 @@ package net.engawapg.lib.zoomable
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -212,6 +214,39 @@ class ZoomableTest {
         composeTestRule.mainClock.advanceTimeBy(1000L)
         assert(count == 1)
         assert(positionAtCallback == positionTapped)
+    }
+
+    @Test
+    fun tap_gesture_works_even_if_parent_composable_has_clickable_modifier() {
+        var zoomableClickCount = 0
+        var parentClickCount = 0
+        composeTestRule.mainClock.autoAdvance = false
+        composeTestRule.setContent {
+            Box(modifier = Modifier.clickable { parentClickCount++ }) {
+                val painter = painterResource(id = android.R.drawable.ic_dialog_info)
+                val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+                Image(
+                    painter = painter,
+                    contentDescription = "image",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zoomable(
+                            zoomState = zoomState,
+                            onTap = { zoomableClickCount = 1 },
+                        )
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("image").performTouchInput {
+            click(center)
+        }
+        // Wait manually because automatic synchronization does not work well.
+        // I think the wait process to determine if it is a double-tap is judged to be idle.
+        composeTestRule.mainClock.advanceTimeBy(1000L)
+        assert(zoomableClickCount == 1)
+        assert(parentClickCount == 0)
     }
 
     @Test
