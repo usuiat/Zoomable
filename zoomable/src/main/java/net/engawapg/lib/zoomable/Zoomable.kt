@@ -73,6 +73,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
+    firstDown.consume()
     onGestureStart()
 
     var firstUp: PointerInputChange = firstDown
@@ -113,6 +114,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
         if (secondDown == null) {
             onTap(firstUp.position)
         } else {
+            secondDown.consume()
             var isDoubleTap = true
             var isSecondCanceled = false
             var secondUp: PointerInputChange = secondDown
@@ -166,6 +168,7 @@ private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
     do {
         val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
         if (mainEvent.changes.fastAny { it.isConsumed }) {
+            onCancel()
             break
         }
 
