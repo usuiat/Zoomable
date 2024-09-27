@@ -175,6 +175,7 @@ private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
     do {
         val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
         if (mainEvent.changes.fastAny { it.isConsumed }) {
+            onCancel()
             break
         }
 
