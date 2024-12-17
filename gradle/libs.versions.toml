@@ -37,7 +37,7 @@ accompanist-pager = { module = "com.google.accompanist:accompanist-pager", versi
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
 
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
