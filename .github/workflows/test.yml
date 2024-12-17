@@ -1,4 +1,4 @@
-name: Perform tests a
+name: Perform tests
 
 on:
   pull_request:
@@ -18,6 +18,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+
+      - name: Verify gradle dependencies
+        run: ./gradlew --refresh-dependencies dependencies
 
       - name: Run tests
         run: ./gradlew zoomable:testDebugUnitTest
