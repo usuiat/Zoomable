@@ -1,4 +1,4 @@
-name: Perform tests
+name: Perform tests a
 
 on:
   pull_request:
