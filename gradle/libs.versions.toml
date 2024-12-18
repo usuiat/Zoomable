@@ -1,8 +1,8 @@
 [versions]
 compose = "1.7.0-alpha06"
-jetbrains-compose = "1.6.2"
+jetbrains-compose = "1.7.1"
 
-kotlin = "1.9.23"
+kotlin = "2.1.0"
 androidGradle = "8.3.2"
 
 android-compileSdk = "34"
@@ -22,6 +22,7 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [libraries]
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }

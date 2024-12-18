@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.jetbrains.compose) apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.vanniktech.maven.publish)
     alias(libs.plugins.dokka)
 }
