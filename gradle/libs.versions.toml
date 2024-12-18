@@ -9,7 +9,7 @@ android-compileSdk = "34"
 android-targetSdk = "34"
 android-minSdk = "21"
 
-coil = "3.0.0-alpha06"
+coil = "3.0.4"
 ktor = "2.3.9"
 kotlinx-coroutine = "1.8.0"
 accompanist = "0.34.0"
@@ -37,7 +37,7 @@ accompanist-pager = { module = "com.google.accompanist:accompanist-pager", versi
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
 
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
