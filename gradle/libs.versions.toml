@@ -10,7 +10,7 @@ android-targetSdk = "34"
 android-minSdk = "21"
 
 coil = "3.0.4"
-ktor = "2.3.9"
+ktor = "2.3.13"
 kotlinx-coroutine = "1.8.0"
 accompanist = "0.34.0"
 
