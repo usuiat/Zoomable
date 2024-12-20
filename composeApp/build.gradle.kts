@@ -70,7 +70,7 @@ kotlin {
 
                 implementation(libs.kotlinx.coroutines.swing)
 
-                implementation(libs.ktor.client.okhttp)
+                implementation(libs.ktor.client.java)
             }
         }
         androidMain.dependencies {
@@ -81,7 +81,7 @@ kotlin {
             implementation(libs.accompanist.pager)
             implementation(libs.accompanist.pager.indicators)
 
-            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.android)
 
             implementation(libs.kotlinx.coroutines.android)
         }
