@@ -12,7 +12,6 @@ android-minSdk = "21"
 coil = "3.0.4"
 ktor = "3.0.3"
 kotlinx-coroutine = "1.8.0"
-accompanist = "0.34.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
@@ -33,9 +32,6 @@ androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
 androidx-test-ext = "androidx.test.ext:junit:1.1.5"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
-
-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }

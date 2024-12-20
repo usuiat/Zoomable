@@ -77,12 +77,7 @@ kotlin {
             implementation(libs.androidx.core)
             implementation(libs.androidx.lifecycle)
             implementation(libs.androidx.activity)
-
-            implementation(libs.accompanist.pager)
-            implementation(libs.accompanist.pager.indicators)
-
             implementation(libs.ktor.client.android)
-
             implementation(libs.kotlinx.coroutines.android)
         }
         val androidUnitTest by getting {
