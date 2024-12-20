@@ -3,7 +3,7 @@ compose = "1.7.0-alpha06"
 jetbrains-compose = "1.7.3"
 
 kotlin = "2.1.0"
-androidGradle = "8.3.2"
+androidGradle = "8.7.3"
 
 android-compileSdk = "34"
 android-targetSdk = "34"
