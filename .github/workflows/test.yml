@@ -23,4 +23,4 @@ jobs:
         run: ./gradlew :composeApp:assembleDebug
 
       - name: Run tests
-        run: ./gradlew zoomable:testDebugUnitTest
+        run: ./gradlew :zoomable:testDebugUnitTest
