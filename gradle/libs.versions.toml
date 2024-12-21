@@ -11,7 +11,7 @@ android-minSdk = "21"
 
 coil = "3.0.4"
 ktor = "3.0.3"
-kotlinx-coroutine = "1.8.0"
+kotlinx-coroutine = "1.10.1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
