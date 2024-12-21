@@ -100,7 +100,6 @@ kotlin {
         val androidInstrumentedTest by getting {
             dependencies {
                 implementation(libs.androidx.test.ext)
-                implementation(libs.androidx.test.espresso)
             }
         }
         val desktopTest by getting {

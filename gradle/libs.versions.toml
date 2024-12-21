@@ -31,7 +31,6 @@ androidx-activity = "androidx.activity:activity-compose:1.8.2"
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
 androidx-test-ext = "androidx.test.ext:junit:1.1.5"
-androidx-test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
