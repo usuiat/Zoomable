@@ -22,7 +22,7 @@ jobs:
         run: ./gradlew :composeApp:assembleDebug
 
       - name: Check lint
-        run: ./gradlew lint
+        run: ./gradlew lint -PwarningsAsErrors=true
 
   unit_tests:
     name: Unit tests
