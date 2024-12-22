@@ -1,17 +1,19 @@
 [versions]
-compose = "1.7.0-alpha06"
+compose = "1.7.6"
 jetbrains-compose = "1.7.3"
 
 kotlin = "2.1.0"
 androidGradle = "8.7.3"
 
-android-compileSdk = "34"
-android-targetSdk = "34"
+android-compileSdk = "35"
+android-targetSdk = "35"
 android-minSdk = "21"
 
 coil = "3.0.4"
 ktor = "3.0.3"
 kotlinx-coroutine = "1.10.1"
+
+dokka = "2.0.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
@@ -19,7 +21,7 @@ android-library = { id = "com.android.library", version.ref = "androidGradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
-dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
@@ -27,10 +29,9 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
 
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
-androidx-activity = "androidx.activity:activity-compose:1.8.2"
-androidx-core = "androidx.core:core-ktx:1.12.0"
-androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
-androidx-test-ext = "androidx.test.ext:junit:1.1.5"
+androidx-activity = "androidx.activity:activity-compose:1.9.3"
+androidx-core = "androidx.core:core-ktx:1.15.0"
+androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.8.7"
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
@@ -44,4 +45,4 @@ kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutine" }
 
 junit = "junit:junit:4.13.2"
-robolectric = "org.robolectric:robolectric:4.12.1"
+robolectric = "org.robolectric:robolectric:4.14.1"
