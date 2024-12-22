@@ -30,7 +30,6 @@ androidx-annotation = "androidx.annotation:annotation:1.9.1"
 androidx-activity = "androidx.activity:activity-compose:1.9.3"
 androidx-core = "androidx.core:core-ktx:1.15.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.8.7"
-androidx-test-ext = "androidx.test.ext:junit:1.1.5"
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
