@@ -133,13 +133,14 @@ android {
     }
 }
 
-tasks.dokkaHtml.configure {
-    outputDirectory.set(file("$rootDir/docs"))
-    val versionName = rootProject.properties["VERSION_NAME"]!!.toString()
-    moduleVersion.set(versionName)
-    dokkaSourceSets {
-        named("commonMain") {
-            noAndroidSdkLink.set(false)
-        }
+dokka {
+    dokkaSourceSets.commonMain {
+        enableAndroidDocumentationLink = true
+    }
+    pluginsConfiguration.html {
+        moduleVersion = rootProject.properties["VERSION_NAME"]!!.toString()
+    }
+    dokkaPublications.html {
+        outputDirectory = file("$rootDir/docs")
     }
 }
