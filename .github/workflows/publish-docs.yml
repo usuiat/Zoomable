@@ -18,7 +18,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Generate docs
-        run: ./gradlew dokkaHtml
+        run: ./gradlew dokkaGeneratePublicationHtml
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
