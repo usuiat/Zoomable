@@ -97,11 +97,6 @@ kotlin {
                 implementation(libs.robolectric)
             }
         }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(libs.androidx.test.ext)
-            }
-        }
         val desktopTest by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)

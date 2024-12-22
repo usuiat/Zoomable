@@ -85,11 +85,6 @@ kotlin {
                 implementation(libs.junit)
             }
         }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(libs.androidx.test.ext)
-            }
-        }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
