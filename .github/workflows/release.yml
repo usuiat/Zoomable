@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v[1-9]+.[0-9]+.[0-9]+(-.+)?
+
+jobs:
+  maven_central:
+    name: Publish and release to maven central
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Publish and release
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
