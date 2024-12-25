@@ -38,6 +38,10 @@ Zoomable also can be used in conjunction with `HorizontalPager` and `VerticalPag
 |Desktop| ⚠️ Experimental<br />Only double-tap zoom is available.<br />Touch gestures and mouse gestures are not available.|
 |Web| 🚫  Not supported|
 
+## API Reference
+
+[API Reference🔎](https://usuiat.github.io/Zoomable/)
+
 ## Usage
 
 ### Download
@@ -138,9 +142,12 @@ You can choose when to propagate scroll gestures to the parent Pager composable 
 |---------------------------------------------------|-------------------------------------------------|
 | ContentEdge                                       | NotZoomed                                       |
 
-## API Reference
+### Snap Back Zoom
 
-[API Reference🔎](https://usuiat.github.io/Zoomable/)
+`Modifier.snapBackZoomable` allows you to zoom an image with a pinch gesture and automatically return it to its original size when you release your finger.
+You can easily achieve Instagram-like behavior.
+
+<img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />
 
 ## Samples
 
