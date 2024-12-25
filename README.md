@@ -2,7 +2,7 @@
 
 Zoomable is a Compose Multiplatform library that enables the content zoomable by pinch gesture, by double-tap, or by double-tap and drag gesture.
 
-| ![](doc/penguin.gif) | ![](doc/double-tap.gif) | ![](doc/single_finger_gesture.gif) |
+| <img width="150" alt="Pinch" src="./doc/penguin.gif" /> | <img width="150" alt="Double-tap" src="./doc/double-tap.gif" /> | <img width="150" alt="Double-tap and drag" src="./doc/single_finger_gesture.gif" /> |
 |----------------------|-------------------------|------------------------------------|
 | Pinch                | Double-tap              | Double-tap and drag                |
 
@@ -138,7 +138,7 @@ You can choose when to propagate scroll gestures to the parent Pager composable 
 - `ContentEdge`: Scroll gesture is propagated when the content is scrolled to the edge and attempts to scroll further.
 - `NotZoomed`: Scroll gesture is propagated when the content is not zoomed.
 
-| ![](doc/ScrollGesturePropagation.ContentEdge.gif) | ![](doc/ScrollGesturePropagation.NotZoomed.gif) |
+| <img width="150" alt="ScrollGesturePropagation.ContentEdge" src="./doc/ScrollGesturePropagation.ContentEdge.gif" /> | <img width="150" alt="ScrollGesturePropagation.NotZoomed" src="./doc/ScrollGesturePropagation.NotZoomed.gif" /> |
 |---------------------------------------------------|-------------------------------------------------|
 | ContentEdge                                       | NotZoomed                                       |
 
