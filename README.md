@@ -29,6 +29,15 @@ Zoomable can be used with
 
 Zoomable also can be used in conjunction with `HorizontalPager` and `VerticalPager`.
 
+## Platforms
+
+|Platform|Support|
+|--|--|
+|Android| ✅ Supported|
+|iOS| ✅ Supported|
+|Desktop| ⚠️ Experimental<br />Only double-tap zoom is available.<br />Touch gestures and mouse gestures are not available.|
+|Web| 🚫  Not supported|
+
 ## Usage
 
 ### Download
