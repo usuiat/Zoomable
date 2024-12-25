@@ -19,4 +19,10 @@ jobs:
           distribution: 'adopt'
 
       - name: Publish and release
+        env:
+          mavenCentralUsername: ${{ secrets.MAVENCENTRALUSERNAME }}
+          mavenCentralPassword: ${{ secrets.MAVENCENTRALPASSWORD }}
+          signingInMemoryKey: ${{ secrets.SIGNINGINMEMORYKEY }}
+          signingInMemoryKeyId: ${{ secrets.SIGNINGINMEMORYKEYID }}
+          signingInMemoryKeyPassword: ${{ secrets.SIGNINGINMEMORYKEYPASSWORD }}
         run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
