@@ -276,7 +276,7 @@ enum class ScrollGesturePropagation {
 }
 
 /**
- * Modifier function that make the content zoomable.
+ * A modifier function that allows content to be zoomable.
  *
  * @param zoomState A [ZoomState] object.
  * @param zoomEnabled specifies if zoom behaviour is enabled or disabled. Even if this is false,
@@ -307,6 +307,17 @@ fun Modifier.zoomable(
     onDoubleTap = onDoubleTap,
 )
 
+/**
+ * A modifier function that allows content to be zoomable and automatically return to its original size when the finger is released.
+ *
+ * @param zoomState A [ZoomState] object.
+ * @param zoomEnabled specifies if zoom behaviour is enabled or disabled. Even if this is false,
+ * [onTap] and [onDoubleTap] will be called.
+ * @param onTap will be called when single tap is detected on the element.
+ * @param onDoubleTap will be called when double tap is detected on the element. This is a suspend
+ * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
+ * 2.5f with animation.
+ */
 fun Modifier.snapBackZoomable(
     zoomState: ZoomState,
     zoomEnabled: Boolean = true,

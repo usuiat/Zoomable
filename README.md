@@ -1,9 +1,8 @@
 # Zoomable
 
-Zoomable is an android library working with Jetpack Compose.
-It enables the content zoomable by pinch gesture, by double-tap, or by double-tap and drag gesture.
+Zoomable is a Compose Multiplatform library that enables the content zoomable by pinch gesture, by double-tap, or by double-tap and drag gesture.
 
-| ![](doc/penguin.gif) | ![](doc/double-tap.gif) | ![](doc/single_finger_gesture.gif) |
+| <img width="150" alt="Pinch" src="./doc/penguin.gif" /> | <img width="150" alt="Double-tap" src="./doc/double-tap.gif" /> | <img width="150" alt="Double-tap and drag" src="./doc/single_finger_gesture.gif" /> |
 |----------------------|-------------------------|------------------------------------|
 | Pinch                | Double-tap              | Double-tap and drag                |
 
@@ -28,10 +27,20 @@ Zoomable can be used with
 - any composable components such as `Image`, `Text`, etc.
 - asynchronous image composable such as coil's `AsyncImage`.
 
-Zoomable also can be used in conjunction with
+Zoomable also can be used in conjunction with `HorizontalPager` and `VerticalPager`.
 
-- Accompanist's `HorizontalPager` and `VerticalPager`.
-- Androidx's `HorizontalPager` and `VerticalPager` introduced in Compose v1.4.0.
+## Platforms
+
+|Platform|Support|
+|--|--|
+|Android| ✅ Supported|
+|iOS| ✅ Supported|
+|Desktop| ⚠️ Experimental<br />Only double-tap zoom is available.<br />Touch gestures and mouse gestures are not available.|
+|Web| 🚫  Not supported|
+
+## API Reference
+
+[API Reference🔎](https://usuiat.github.io/Zoomable/)
 
 ## Usage
 
@@ -129,23 +138,25 @@ You can choose when to propagate scroll gestures to the parent Pager composable 
 - `ContentEdge`: Scroll gesture is propagated when the content is scrolled to the edge and attempts to scroll further.
 - `NotZoomed`: Scroll gesture is propagated when the content is not zoomed.
 
-| ![](doc/ScrollGesturePropagation.ContentEdge.gif) | ![](doc/ScrollGesturePropagation.NotZoomed.gif) |
+| <img width="150" alt="ScrollGesturePropagation.ContentEdge" src="./doc/ScrollGesturePropagation.ContentEdge.gif" /> | <img width="150" alt="ScrollGesturePropagation.NotZoomed" src="./doc/ScrollGesturePropagation.NotZoomed.gif" /> |
 |---------------------------------------------------|-------------------------------------------------|
 | ContentEdge                                       | NotZoomed                                       |
 
-## API Reference
+### Snap Back Zoom
 
-[API Reference🔎](https://usuiat.github.io/Zoomable/)
+`Modifier.snapBackZoomable` allows you to zoom an image with a pinch gesture and automatically return it to its original size when you release your finger.
+You can easily achieve Instagram-like behavior.
+
+<img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />
 
 ## Samples
 
-You can try sample [app](https://github.com/usuiat/Zoomable/tree/main/app) that contains following samples.
+You can try [sample app](./composeApp/) that contains following samples.
 
 - Standard Image composable
 - Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library
 - Text
-- Image on `HorizontalPager` and `VerticalPager` of [Accompanist](https://google.github.io/accompanist/pager/) library
-- Image on `HorizontalPager` and `VerticalPager` of [Androidx compose foundation package](https://developer.android.com/reference/kotlin/androidx/compose/foundation/pager/package-summary)
+- Image on `HorizontalPager` and `VerticalPager`
 
 ## Lisence
 
@@ -162,14 +173,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-## Legal Notices
-
-In the sample application, we use open source software:
-
-- [Accompanist](https://google.github.io/accompanist/) (https://www.apache.org/licenses/LICENSE-2.0)
-- [Coil](https://coil-kt.github.io/coil/) (https://www.apache.org/licenses/LICENSE-2.0)
-
-To publish this library, we use open source software:
-
-- [gradle-maven-publish-plugin](https://github.com/vanniktech/gradle-maven-publish-plugin) (https://www.apache.org/licenses/LICENSE-2.0)
