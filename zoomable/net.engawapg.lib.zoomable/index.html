@@ -26,42 +26,85 @@
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async="async"></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
 <script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
 <script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer="defer"></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
 </head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
-                    <a class="library-name--link" href="../../index.html">
-                            zoomable
-                    </a>
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+            <a class="library-name--link" href="../../index.html">
+                    zoomable
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+2.0.0        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active=""
+                        data-filter=":zoomable/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":zoomable/commonMain"
+                                       data-filter=":zoomable/commonMain"/>
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
-            <div class="library-version">
-1.6.2            </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":zoomable:dokkaHtml/release">androidJvm</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                        data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    zoomable
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="package" id="content" pageIds="zoomable::net.engawapg.lib.zoomable////PointingToDeclaration//204486495">
+<div class="main-content" data-page-type="package" id="content" pageIds="zoomable::net.engawapg.lib.zoomable////PointingToDeclaration//-1298956168">
   <div class="breadcrumbs"><a href="../../index.html">zoomable</a><span class="delimiter">/</span><span class="current">net.engawapg.lib.zoomable</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
@@ -71,32 +114,32 @@
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="-1316476767%2FClasslikes%2F204486495" anchor-label="ScrollGesturePropagation" id="-1316476767%2FClasslikes%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+        <div class="table"><a data-name="-1316476767%2FClasslikes%2F-1298956168" anchor-label="ScrollGesturePropagation" id="-1316476767%2FClasslikes%2F-1298956168" data-filterable-set=":zoomable/commonMain"></a>
+          <div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-scroll-gesture-propagation/index.html"><span>Scroll</span><wbr></wbr><span>Gesture</span><wbr></wbr><span><span>Propagation</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1316476767%2FClasslikes%2F204486495"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1316476767%2FClasslikes%2F-1298956168"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph"><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a> defines when <a href="zoomable.html">Modifier.zoomable</a> propagates scroll gestures to the parent composable element.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph"><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a> defines when <a href="zoomable.html">Modifier.zoomable</a> propagates scroll gestures to the parent composable element.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-895049581%2FClasslikes%2F204486495" anchor-label="ZoomState" id="-895049581%2FClasslikes%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+<a data-name="-895049581%2FClasslikes%2F-1298956168" anchor-label="ZoomState" id="-895049581%2FClasslikes%2F-1298956168" data-filterable-set=":zoomable/commonMain"></a>
+          <div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-zoom-state/index.html"><span>Zoom</span><wbr></wbr><span><span>State</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-895049581%2FClasslikes%2F204486495"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-895049581%2FClasslikes%2F-1298956168"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">class </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A state object that manage scale and offset.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Stable.html"><span class="token annotation builtin">Stable</span></a></div></div><span class="token keyword">class </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span><span class="token keyword">val </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A state object that manage scale and offset.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -105,47 +148,62 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-2020638696%2FFunctions%2F204486495" anchor-label="rememberZoomState" id="-2020638696%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+        <div class="table"><a data-name="-2020638696%2FFunctions%2F-1298956168" anchor-label="rememberZoomState" id="-2020638696%2FFunctions%2F-1298956168" data-filterable-set=":zoomable/commonMain"></a>
+          <div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="remember-zoom-state.html"><span>remember</span><wbr></wbr><span>Zoom</span><wbr></wbr><span><span>State</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2020638696%2FFunctions%2F204486495"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2020638696%2FFunctions%2F-1298956168"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="remember-zoom-state.html"><span class="token function">rememberZoomState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a></div><div class="brief "><p class="paragraph">Creates a <a href="-zoom-state/index.html">ZoomState</a> that is remembered across compositions.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="remember-zoom-state.html"><span class="token function">rememberZoomState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/FloatRange.html"><span class="token annotation builtin">FloatRange</span></a><span class="token punctuation">(</span><span>from<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">1.0</span></span></span><wbr></wbr><span class="token punctuation">)</span> </span>maxScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">5.0f</span><span class="token punctuation">, </span></span><span class="parameter ">contentSize<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Size.html">Size</a><span class="token operator"> = </span>Size.Zero<span class="token punctuation">, </span></span><span class="parameter ">velocityDecay<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/DecayAnimationSpec.html">DecayAnimationSpec</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>exponentialDecay()</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a></div><div class="brief "><p class="paragraph">Creates a <a href="-zoom-state/index.html">ZoomState</a> that is remembered across compositions.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1319325944%2FFunctions%2F204486495" anchor-label="toggleScale" id="1319325944%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+<a data-name="1436330556%2FFunctions%2F-1298956168" anchor-label="snapBackZoomable" id="1436330556%2FFunctions%2F-1298956168" data-filterable-set=":zoomable/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="snap-back-zoomable.html"><span>snap</span><wbr></wbr><span>Back</span><wbr></wbr><span><span>Zoomable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1436330556%2FFunctions%2F-1298956168"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a><span class="token punctuation">.</span><a href="snap-back-zoomable.html"><span class="token function">snapBackZoomable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">zoomState<span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">, </span></span><span class="parameter ">zoomEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">onTap<span class="token operator">: </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter ">onDoubleTap<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a></div><div class="brief "><p class="paragraph">A modifier function that allows content to be zoomable and automatically return to its original size when the finger is released.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1319325944%2FFunctions%2F-1298956168" anchor-label="toggleScale" id="1319325944%2FFunctions%2F-1298956168" data-filterable-set=":zoomable/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="toggle-scale.html"><span>toggle</span><wbr></wbr><span><span>Scale</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1319325944%2FFunctions%2F204486495"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1319325944%2FFunctions%2F-1298956168"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">.</span><a href="toggle-scale.html"><span class="token function">toggleScale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">targetScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">, </span></span><span class="parameter ">animationSpec<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/AnimationSpec.html">AnimationSpec</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>spring()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Toggle the scale between <a href="toggle-scale.html">targetScale</a> and 1.0f.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">.</span><a href="toggle-scale.html"><span class="token function">toggleScale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">targetScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">, </span></span><span class="parameter ">animationSpec<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/core/AnimationSpec.html">AnimationSpec</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span><span class="token operator"> = </span>spring()</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Toggle the scale between <a href="toggle-scale.html">targetScale</a> and 1.0f.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2071971687%2FFunctions%2F204486495" anchor-label="zoomable" id="-2071971687%2FFunctions%2F204486495" data-filterable-set=":zoomable:dokkaHtml/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":zoomable:dokkaHtml/release" data-filterable-set=":zoomable:dokkaHtml/release">
+<a data-name="-2071971687%2FFunctions%2F-1298956168" anchor-label="zoomable" id="-2071971687%2FFunctions%2F-1298956168" data-filterable-set=":zoomable/commonMain"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="zoomable.html"><span><span>zoomable</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2071971687%2FFunctions%2F204486495"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2071971687%2FFunctions%2F-1298956168"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a><span class="token punctuation">.</span><a href="zoomable.html"><span class="token function">zoomable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">zoomState<span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">, </span></span><span class="parameter ">zoomEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">enableOneFingerZoom<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">scrollGesturePropagation<span class="token operator">: </span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a><span class="token operator"> = </span>ScrollGesturePropagation.ContentEdge<span class="token punctuation">, </span></span><span class="parameter ">onTap<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter ">onDoubleTap<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span><span class="token keyword"></span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{ position -&gt; if (zoomEnabled) zoomState.toggleScale(2.5f, position) }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a></div><div class="brief "><p class="paragraph">Modifier function that make the content zoomable.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a><span class="token punctuation">.</span><a href="zoomable.html"><span class="token function">zoomable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">zoomState<span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">, </span></span><span class="parameter ">zoomEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">enableOneFingerZoom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">scrollGesturePropagation<span class="token operator">: </span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a><span class="token operator"> = </span>ScrollGesturePropagation.ContentEdge<span class="token punctuation">, </span></span><span class="parameter ">onTap<span class="token operator">: </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}<span class="token punctuation">, </span></span><span class="parameter ">onDoubleTap<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{ position -&gt; if (zoomEnabled) zoomState.toggleScale(2.5f, position) }</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a></div><div class="brief "><p class="paragraph">A modifier function that allows content to be zoomable.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -155,11 +213,16 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
-                class="pull-right"><span>Generated by </span><a
-                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2024 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
