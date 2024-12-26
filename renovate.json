@@ -1,22 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "androidx.test",
-        "com.google.accompanist",
-        "io.coil-kt",
-        "junit",
-        "org.jetbrains.kotlinx:kotlinx-coroutines-test",
-        "com.vanniktech.maven.publish",
-        "org.jetbrains.dokka",
-        "gradle",
-        "actions/"
-      ],
-      "automerge": true
+      "automerge": true,
+      "matchPackageNames": [
+        "/androidx.test/",
+        "/com.google.accompanist/",
+        "/io.coil-kt/",
+        "/junit/",
+        "/org.jetbrains.kotlinx:kotlinx-coroutines-test/",
+        "/com.vanniktech.maven.publish/",
+        "/org.jetbrains.dokka/",
+        "/gradle/",
+        "/actions//"
+      ]
     }
   ]
 }
