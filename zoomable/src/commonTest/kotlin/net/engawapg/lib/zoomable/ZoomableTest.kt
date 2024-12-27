@@ -35,7 +35,6 @@ import kotlin.test.assertTrue
 
 @Composable
 fun ZoomableContent(zoomEnabled: Boolean = true) {
-
     val icon = Icons.Default.Info
     val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
     Image(
@@ -64,7 +63,8 @@ fun ZoomablePagerContent(
             .semantics { testTag = "pager" }
     ) { page ->
         val icon = Icons.Default.Info
-        val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+        val zoomState =
+            rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
         Image(
             imageVector = icon,
             contentDescription = "image$page",
@@ -82,24 +82,26 @@ fun ZoomablePagerContent(
 expect open class PlatformZoomableTest()
 
 @OptIn(ExperimentalTestApi::class)
-class ZoomableTest: PlatformZoomableTest() {
+class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun zoomable_pinch_zoomed() = runComposeUiTest {
-       setContent { ZoomableContent() }
+        setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
         val boundsBefore = node.fetchSemanticsNode().boundsInRoot
         node.performTouchInput {
-                pinch(
-                    start0 = center + Offset(-100f, 0f),
-                    end0 = center + Offset(-200f, 0f),
-                    start1 = center + Offset(+100f, 0f),
-                    end1 = center + Offset(+200f, 0f),
-                )
-            }
+            pinch(
+                start0 = center + Offset(-100f, 0f),
+                end0 = center + Offset(-200f, 0f),
+                start1 = center + Offset(+100f, 0f),
+                end1 = center + Offset(+200f, 0f),
+            )
+        }
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-        assertTrue((boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height))
+        assertTrue(
+            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        )
     }
 
     @Test
@@ -118,7 +120,9 @@ class ZoomableTest: PlatformZoomableTest() {
         }
         val boundsAfter = node.fetchSemanticsNode().boundsInRoot
         println("bounds=$boundsAfter")
-        assertTrue((boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height))
+        assertTrue(
+            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        )
     }
 
     @Test
@@ -151,7 +155,7 @@ class ZoomableTest: PlatformZoomableTest() {
          */
         setContent { ZoomablePagerContent() }
 
-        var image= onNodeWithContentDescription("image0")
+        var image = onNodeWithContentDescription("image0")
         image.assertIsDisplayed()
         image.performTouchInput {
             swipeLeft()
@@ -190,7 +194,8 @@ class ZoomableTest: PlatformZoomableTest() {
         mainClock.autoAdvance = false
         setContent {
             val icon = Icons.Default.Info
-            val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
             Image(
                 imageVector = icon,
                 contentDescription = "image",
@@ -226,7 +231,8 @@ class ZoomableTest: PlatformZoomableTest() {
         setContent {
             Box(modifier = Modifier.clickable { parentClickCount++ }) {
                 val icon = Icons.Default.Info
-                val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+                val zoomState =
+                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
                 Image(
                     imageVector = icon,
                     contentDescription = "image",
@@ -252,37 +258,41 @@ class ZoomableTest: PlatformZoomableTest() {
     }
 
     @Test
-    fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() = runComposeUiTest{
-        setContent {
-            ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.ContentEdge)
+    fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() =
+        runComposeUiTest {
+            setContent {
+                ZoomablePagerContent(
+                    scrollGesturePropagation = ScrollGesturePropagation.ContentEdge
+                )
+            }
+
+            val image0 = onNodeWithContentDescription("image0")
+            image0.performTouchInput { doubleClick() }
+            waitForIdle()
+            image0.performTouchInput { swipeLeft() }
+            waitForIdle()
+            image0.performTouchInput { swipeLeft() }
+
+            val image1 = onNodeWithContentDescription("image1")
+            image1.assertIsDisplayed()
         }
-
-        val image0 = onNodeWithContentDescription("image0")
-        image0.performTouchInput { doubleClick() }
-        waitForIdle()
-        image0.performTouchInput { swipeLeft() }
-        waitForIdle()
-        image0.performTouchInput { swipeLeft() }
-
-        val image1 = onNodeWithContentDescription("image1")
-        image1.assertIsDisplayed()
-    }
 
     @Test
-    fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() = runComposeUiTest {
-        setContent {
-            ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
+    fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() =
+        runComposeUiTest {
+            setContent {
+                ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
+            }
+
+            val image0 = onNodeWithContentDescription("image0")
+            image0.performTouchInput { doubleClick() }
+            waitForIdle()
+            image0.performTouchInput { swipeLeft() }
+            waitForIdle()
+            image0.performTouchInput { swipeLeft() }
+
+            image0.assertIsDisplayed()
         }
-
-        val image0= onNodeWithContentDescription("image0")
-        image0.performTouchInput { doubleClick() }
-        waitForIdle()
-        image0.performTouchInput { swipeLeft() }
-        waitForIdle()
-        image0.performTouchInput { swipeLeft() }
-
-        image0.assertIsDisplayed()
-    }
 
     @Test
     fun pinch_gesture_does_not_work_when_zoom_is_disabled() = runComposeUiTest {
@@ -306,37 +316,43 @@ class ZoomableTest: PlatformZoomableTest() {
     }
 
     @Test
-    fun snapBackZoomable_can_zoom_image_during_gesture_and_snap_back_after_gesture() = runComposeUiTest {
-        setContent {
-            val icon = Icons.Default.Info
-            val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-            Image(
-                imageVector = icon,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .snapBackZoomable(
-                        zoomState = zoomState,
-                    )
+    fun snapBackZoomable_can_zoom_image_during_gesture_and_snap_back_after_gesture() =
+        runComposeUiTest {
+            setContent {
+                val icon = Icons.Default.Info
+                val zoomState =
+                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+                Image(
+                    imageVector = icon,
+                    contentDescription = "image",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .snapBackZoomable(
+                            zoomState = zoomState,
+                        )
+                )
+            }
+
+            val node = onNodeWithContentDescription("image")
+            val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+            node.performTouchInput {
+                down(0, center + Offset(-100f, 0f))
+                down(1, center + Offset(+100f, 0f))
+                moveTo(0, center + Offset(-200f, 0f))
+                moveTo(1, center + Offset(+200f, 0f))
+            }
+            val boundsInGesture = node.fetchSemanticsNode().boundsInRoot
+            node.performTouchInput {
+                up(0)
+                up(1)
+            }
+            val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+            assertTrue(
+                boundsInGesture.width > boundsBefore.width && boundsInGesture.height > boundsBefore.height
+            )
+            assertTrue(
+                boundsAfter.width == boundsBefore.width && boundsAfter.height == boundsBefore.height
             )
         }
-
-        val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
-        node.performTouchInput {
-            down(0, center + Offset(-100f, 0f))
-            down(1, center + Offset(+100f, 0f))
-            moveTo(0, center + Offset(-200f, 0f))
-            moveTo(1, center + Offset(+200f, 0f))
-        }
-        val boundsInGesture = node.fetchSemanticsNode().boundsInRoot
-        node.performTouchInput {
-            up(0)
-            up(1)
-        }
-        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-        assertTrue(boundsInGesture.width > boundsBefore.width && boundsInGesture.height > boundsBefore.height)
-        assertTrue(boundsAfter.width == boundsBefore.width && boundsAfter.height == boundsBefore.height)
-    }
 }
