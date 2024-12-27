@@ -307,8 +307,9 @@ class ZoomState(
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
-                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
-                        .coerceIn(minimumValue = -boundY, maximumValue = boundY)
+                    val fixedTargetOffsetY =
+                        ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
+                            .coerceIn(minimumValue = -boundY, maximumValue = boundY)
                     _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
                 },
                 async {

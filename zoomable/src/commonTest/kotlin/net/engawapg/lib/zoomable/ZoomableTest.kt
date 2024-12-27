@@ -348,11 +348,9 @@ class ZoomableTest : PlatformZoomableTest() {
                 up(1)
             }
             val boundsAfter = node.fetchSemanticsNode().boundsInRoot
-            assertTrue(
-                boundsInGesture.width > boundsBefore.width && boundsInGesture.height > boundsBefore.height
-            )
-            assertTrue(
-                boundsAfter.width == boundsBefore.width && boundsAfter.height == boundsBefore.height
-            )
+            assertTrue(boundsInGesture.width > boundsBefore.width)
+            assertTrue(boundsInGesture.height > boundsBefore.height)
+            assertEquals(boundsAfter.width, boundsBefore.width)
+            assertEquals(boundsAfter.height, boundsBefore.height)
         }
 }

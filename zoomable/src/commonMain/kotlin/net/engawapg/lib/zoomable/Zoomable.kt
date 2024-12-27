@@ -146,7 +146,8 @@ private suspend fun PointerInputScope.detectTransformGestures(
                 true
             }
 
-            if (secondUp.uptimeMillis - secondDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
+            val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
+            if (secondPressedTime > viewConfiguration.longPressTimeoutMillis) {
                 isDoubleTap = false
             }
 
@@ -232,7 +233,7 @@ private fun PointerEvent.consumePositionChanges() {
  */
 private class TouchSlop(private val threshold: Float) {
     private var pan = Offset.Zero
-    private var _isPast = false
+    private var past = false
 
     /**
      * Judge the touch slop is past.
@@ -241,19 +242,19 @@ private class TouchSlop(private val threshold: Float) {
      * @return True if the accumulated zoom or pan exceeds the threshold.
      */
     fun isPast(event: PointerEvent): Boolean {
-        if (_isPast) {
+        if (past) {
             return true
         }
 
         if (event.changes.size > 1) {
             // If there are two or more fingers, we determine the touch slop is past immediately.
-            _isPast = true
+            past = true
         } else {
             pan += event.calculatePan()
-            _isPast = pan.getDistance() > threshold
+            past = pan.getDistance() > threshold
         }
 
-        return _isPast
+        return past
     }
 }
 
