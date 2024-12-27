@@ -15,7 +15,13 @@ import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import zoomable_root.composeapp.generated.resources.*
+import zoomable_root.composeapp.generated.resources.Res
+import zoomable_root.composeapp.generated.resources.duck1
+import zoomable_root.composeapp.generated.resources.duck2
+import zoomable_root.composeapp.generated.resources.duck3
+import zoomable_root.composeapp.generated.resources.eagle1
+import zoomable_root.composeapp.generated.resources.eagle2
+import zoomable_root.composeapp.generated.resources.eagle3
 
 /**
  * Sample that shows a zoomable images on [HorizontalPager].
