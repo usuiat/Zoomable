@@ -16,6 +16,7 @@
 
 import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
@@ -102,6 +103,9 @@ kotlin {
                 implementation(compose.desktop.currentOs)
             }
         }
+    }
+    compilerOptions {
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
     }
 }
 
