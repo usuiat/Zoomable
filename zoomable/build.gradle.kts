@@ -105,8 +105,10 @@ kotlin {
         }
     }
     compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        languageVersion = KotlinVersion.KOTLIN_2_0
+        apiVersion = KotlinVersion.KOTLIN_2_0
     }
+    coreLibrariesVersion = "2.0.21"
 }
 
 android {
