@@ -1,0 +1,12 @@
+[*.{kt,kts}]
+ktlint_code_style = android_studio
+ktlint_standard_trailing-comma-on-call-site = disabled
+ij_kotlin_allow_trailing_comma = true
+ktlint_standard_filename=disabled
+ktlint_standard_function-naming=disabled
+
+[composeApp/build/**/*]
+ktlint = disabled
+
+[zoomable/build/**/*]
+ktlint = disabled

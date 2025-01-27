@@ -21,8 +21,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.exponentialDecay
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -31,12 +31,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import kotlin.math.abs
+import kotlin.math.max
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.abs
-import kotlin.math.max
 
 /**
  * A state object that manage scale and offset.
@@ -148,7 +148,7 @@ class ZoomState(
     internal fun willChangeOffset(pan: Offset): Boolean {
         var willChange = true
         val ratio = (abs(pan.x) / abs(pan.y))
-        if (ratio > 3) {   // Horizontal drag
+        if (ratio > 3) { // Horizontal drag
             if ((pan.x < 0) && (_offsetX.value == _offsetX.lowerBound)) {
                 // Drag R to L when right edge of the content is shown.
                 willChange = false
@@ -174,7 +174,7 @@ class ZoomState(
         pan: Offset,
         zoom: Float,
         position: Offset,
-        timeMillis: Long
+        timeMillis: Long,
     ) = coroutineScope {
         val newScale = (scale * zoom).coerceIn(0.9f, maxScale)
         val newOffset = calculateNewOffset(newScale, position, pan)
@@ -238,11 +238,7 @@ class ZoomState(
         }
     }
 
-    private fun calculateNewOffset(
-        newScale: Float,
-        position: Offset,
-        pan: Offset,
-    ): Offset {
+    private fun calculateNewOffset(newScale: Float, position: Offset, pan: Offset): Offset {
         val size = fitContentSize * scale
         val newSize = fitContentSize * newScale
         val deltaWidth = newSize.width - size.width
@@ -261,9 +257,7 @@ class ZoomState(
         return Offset(x, y)
     }
 
-    private fun calculateNewBounds(
-        newScale: Float,
-    ): Rect {
+    private fun calculateNewBounds(newScale: Float): Rect {
         val newSize = fitContentSize * newScale
         val boundX = max((newSize.width - layoutSize.width), 0f) * 0.5f
         val boundY = max((newSize.height - layoutSize.height), 0f) * 0.5f
@@ -313,8 +307,9 @@ class ZoomState(
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
-                    val fixedTargetOffsetY = ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
-                        .coerceIn(minimumValue = -boundY, maximumValue = boundY)
+                    val fixedTargetOffsetY =
+                        ((fitContentSize.height / 2 - offset.y * fitContentSizeFactor) * scale)
+                            .coerceIn(minimumValue = -boundY, maximumValue = boundY)
                     _offsetY.animateTo(fixedTargetOffsetY, animationSpec)
                 },
                 async {
@@ -346,7 +341,6 @@ class ZoomState(
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
     ) = coroutineScope {
-
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
 

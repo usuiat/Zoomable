@@ -15,9 +15,7 @@ import androidx.compose.runtime.remember
 internal val LocalThemeIsDark = compositionLocalOf { mutableStateOf(true) }
 
 @Composable
-internal fun ZoomableTheme(
-    content: @Composable () -> Unit
-) {
+internal fun ZoomableTheme(content: @Composable () -> Unit) {
     val systemIsDark = isSystemInDarkTheme()
     val isDarkState = remember(systemIsDark) { mutableStateOf(systemIsDark) }
     CompositionLocalProvider(

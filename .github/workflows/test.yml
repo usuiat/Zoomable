@@ -28,6 +28,9 @@ jobs:
       - name: Check lint
         run: ./gradlew lint
 
+      - name: Check ktlint
+        run: ./gradlew ktlintCheck
+
   unit_tests:
     name: Unit tests
     runs-on: ubuntu-latest
