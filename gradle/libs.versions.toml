@@ -1,5 +1,5 @@
 [versions]
-compose = "1.7.6"
+compose = "1.7.8"
 jetbrains-compose = "1.7.3"
 
 kotlin = "2.1.10"
