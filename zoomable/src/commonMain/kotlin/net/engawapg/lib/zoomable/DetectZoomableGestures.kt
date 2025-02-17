@@ -106,9 +106,6 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
                     }
                     isDoubleTap = false
                 }
-                if (event.changes.size > 1) {
-                    isDoubleTap = false
-                }
                 secondUp = event.changes[0]
                 true
             }
