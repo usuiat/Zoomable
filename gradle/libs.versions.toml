@@ -2,14 +2,14 @@
 jetbrains-compose = "1.7.3"
 compose = "1.7.6"
 
-kotlin = "2.1.0"
-androidGradle = "8.7.3"
+kotlin = "2.1.10"
+androidGradle = "8.8.1"
 
 android-compileSdk = "35"
 android-targetSdk = "35"
 android-minSdk = "21"
 
-coil = "3.0.4"
+coil = "3.1.0"
 ktor = "3.0.3"
 kotlinx-coroutine = "1.10.1"
 
