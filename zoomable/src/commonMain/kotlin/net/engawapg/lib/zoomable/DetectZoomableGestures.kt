@@ -70,7 +70,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         }
         firstUp = event.changes[0]
         val cancelGesture = cancelIfZoomCanceled && isMultiTouch && event.changes.count { it.pressed } == 1
-        !cancelGesture
+        cancelGesture
     }
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
@@ -110,7 +110,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
                 isDoubleTap = false
             }
             secondUp = event.changes[0]
-            true
+            false
         }
 
         val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
@@ -144,8 +144,8 @@ private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
         }
 
         val isTouchSlopPast = touchSlop.isPast(mainEvent)
-        val canContinue = action(mainEvent, isTouchSlopPast)
-        if (!canContinue) {
+        val doBreak = action(mainEvent, isTouchSlopPast)
+        if (doBreak) {
             break
         }
         if (isTouchSlopPast) {
