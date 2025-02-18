@@ -173,27 +173,28 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun double_tap_gesture_should_be_judged_as_double_tap_if_one_finger_zoom_is_disabled() = runComposeUiTest {
-        var doubleTapResult = 0
-        var tapResult = 0
-        val target = pointerInputContent {
-            detectZoomableGestures(
-                cancelIfZoomCanceled = false,
-                canConsumeGesture = { _, _ -> true },
-                onGesture = { _, _, _, _ -> },
-                onTap = { tapResult++ },
-                onDoubleTap = { doubleTapResult++ },
-                enableOneFingerZoom = false
-            )
-        }
+    fun double_tap_gesture_should_be_judged_as_double_tap_if_one_finger_zoom_is_disabled() =
+        runComposeUiTest {
+            var doubleTapResult = 0
+            var tapResult = 0
+            val target = pointerInputContent {
+                detectZoomableGestures(
+                    cancelIfZoomCanceled = false,
+                    canConsumeGesture = { _, _ -> true },
+                    onGesture = { _, _, _, _ -> },
+                    onTap = { tapResult++ },
+                    onDoubleTap = { doubleTapResult++ },
+                    enableOneFingerZoom = false
+                )
+            }
 
-        target.performGesture {
-            doubleClick()
-        }
+            target.performGesture {
+                doubleClick()
+            }
 
-        assertEquals(1, doubleTapResult)
-        assertEquals(0, tapResult)
-    }
+            assertEquals(1, doubleTapResult)
+            assertEquals(0, tapResult)
+        }
 
     @Test
     fun tap_and_drag_gesture_should_be_judged_as_zoom() = runComposeUiTest {
@@ -205,7 +206,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
                 onTap = { tapResult++ },
                 onDoubleTap = { doubleTapResult++ }
             )
@@ -231,7 +235,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
                 onTap = { tapResult++ },
                 onDoubleTap = { doubleTapResult++ },
                 enableOneFingerZoom = false
@@ -280,7 +287,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
                 onDoubleTap = { doubleTapResult++ }
             )
         }
@@ -401,7 +411,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
             )
         }
 
@@ -436,7 +449,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = true,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
             )
         }
 
@@ -544,7 +560,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
                 onDoubleTap = { doubleTapResult++ },
                 onTap = { tapResult++ }
             )
@@ -573,39 +592,43 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun gesture_should_be_canceled_if_event_is_consumed_by_parent_before_touch_slop_is_past() = runComposeUiTest {
-        var panResult = Offset.Zero
-        var zoomResult = 1f
-        val target = nestedPointerInputContent(
-            eventOnParent = { event ->
-                event.changes.filter { it.positionChanged() }.forEach { it.consume() }
+    fun gesture_should_be_canceled_if_event_is_consumed_by_parent_before_touch_slop_is_past() =
+        runComposeUiTest {
+            var panResult = Offset.Zero
+            var zoomResult = 1f
+            val target = nestedPointerInputContent(
+                eventOnParent = { event ->
+                    event.changes.filter { it.positionChanged() }.forEach { it.consume() }
+                }
+            ) {
+                detectZoomableGestures(
+                    cancelIfZoomCanceled = false,
+                    canConsumeGesture = { _, _ -> true },
+                    onGesture = { _, pan, zoom, _ ->
+                        panResult += pan
+                        zoomResult *= zoom
+                    },
+                )
             }
-        ) {
-            detectZoomableGestures(
-                cancelIfZoomCanceled = false,
-                canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
-            )
+
+            target.performGesture {
+                down(center)
+                moveBy(Offset(viewConfiguration.touchSlop / 2f, 0f))
+                moveBy(Offset(50f, 0f))
+                up()
+
+                down(center)
+                up()
+                advanceEventTime(viewConfiguration.doubleTapDelay)
+                down(center)
+                moveBy(Offset(0f, viewConfiguration.touchSlop / 2f))
+                moveBy(Offset(0f, 100f))
+                up()
+            }
+
+            assertEquals(Offset.Zero, panResult)
+            assertEquals(1f, zoomResult)
         }
-
-        target.performGesture {
-            down(center)
-            moveBy(Offset(viewConfiguration.touchSlop / 2f, 0f))
-            moveBy(Offset(50f, 0f))
-            up()
-
-            down(center)
-            up()
-            advanceEventTime(viewConfiguration.doubleTapDelay)
-            down(center)
-            moveBy(Offset(0f, viewConfiguration.touchSlop / 2f))
-            moveBy(Offset(0f, 100f))
-            up()
-        }
-
-        assertEquals(Offset.Zero, panResult)
-        assertEquals(1f, zoomResult)
-    }
 
     @Test
     fun event_should_be_consumed_if_allowed() = runComposeUiTest {
@@ -620,7 +643,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> true },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
             )
         }
 
@@ -648,7 +674,10 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             detectZoomableGestures(
                 cancelIfZoomCanceled = false,
                 canConsumeGesture = { _, _ -> false },
-                onGesture = { _, pan, zoom, _ -> panResult += pan; zoomResult *= zoom },
+                onGesture = { _, pan, zoom, _ ->
+                    panResult += pan
+                    zoomResult *= zoom
+                },
             )
         }
 

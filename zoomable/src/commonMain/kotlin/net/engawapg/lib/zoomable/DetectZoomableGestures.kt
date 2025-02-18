@@ -69,7 +69,9 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
             isMultiTouch = true
         }
         firstUp = event.changes[0]
-        val cancelGesture = cancelIfZoomCanceled && isMultiTouch && event.changes.count { it.pressed } == 1
+        val cancelGesture = cancelIfZoomCanceled &&
+            isMultiTouch &&
+            event.changes.count { it.pressed } == 1
         cancelGesture
     }
 
