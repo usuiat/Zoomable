@@ -77,47 +77,49 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         isLongPressed = true
     }
 
-    val isTap = !hasMoved && !isMultiTouch && !isLongPressed && !isCanceled
+    if (hasMoved || isMultiTouch || isLongPressed || isCanceled) {
+        onGestureEnd()
+        return@awaitEachGesture
+    }
+
     // Vertical scrolling following a double tap is treated as a zoom gesture.
-    if (isTap) {
-        val secondDown = awaitSecondDown(firstUp)
-        if (secondDown == null) {
-            onTap(firstUp.position)
-        } else {
-            secondDown.consume()
-            var isDoubleTap = true
-            var isSecondCanceled = false
-            var secondUp: PointerInputChange = secondDown
-            forEachPointerEventUntilReleased(
-                onCancel = { isSecondCanceled = true }
-            ) { event, isTouchSlopPast ->
-                if (isTouchSlopPast) {
-                    if (enableOneFingerZoom) {
-                        val panChange = event.calculatePan()
-                        val zoomChange = 1f + panChange.y * 0.004f
-                        if (zoomChange != 1f) {
-                            val centroid = event.calculateCentroid(useCurrent = true)
-                            val timeMillis = event.changes[0].uptimeMillis
-                            if (canConsumeGesture(Offset.Zero, zoomChange)) {
-                                onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                                event.consumePositionChanges()
-                            }
+    val secondDown = awaitSecondDown(firstUp)
+    if (secondDown == null) {
+        onTap(firstUp.position)
+    } else {
+        secondDown.consume()
+        var isDoubleTap = true
+        var isSecondCanceled = false
+        var secondUp: PointerInputChange = secondDown
+        forEachPointerEventUntilReleased(
+            onCancel = { isSecondCanceled = true }
+        ) { event, isTouchSlopPast ->
+            if (isTouchSlopPast) {
+                if (enableOneFingerZoom) {
+                    val panChange = event.calculatePan()
+                    val zoomChange = 1f + panChange.y * 0.004f
+                    if (zoomChange != 1f) {
+                        val centroid = event.calculateCentroid(useCurrent = true)
+                        val timeMillis = event.changes[0].uptimeMillis
+                        if (canConsumeGesture(Offset.Zero, zoomChange)) {
+                            onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
+                            event.consumePositionChanges()
                         }
                     }
-                    isDoubleTap = false
                 }
-                secondUp = event.changes[0]
-                true
-            }
-
-            val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
-            if (secondPressedTime > viewConfiguration.longPressTimeoutMillis) {
                 isDoubleTap = false
             }
+            secondUp = event.changes[0]
+            true
+        }
 
-            if (isDoubleTap && !isSecondCanceled) {
-                onDoubleTap(secondUp.position)
-            }
+        val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
+        if (secondPressedTime > viewConfiguration.longPressTimeoutMillis) {
+            isDoubleTap = false
+        }
+
+        if (isDoubleTap && !isSecondCanceled) {
+            onDoubleTap(secondUp.position)
         }
     }
     onGestureEnd()
