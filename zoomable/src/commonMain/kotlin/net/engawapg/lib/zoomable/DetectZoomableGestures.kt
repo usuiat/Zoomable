@@ -64,9 +64,6 @@ private suspend fun AwaitPointerEventScope.detectGesture(
 ) {
     val startTimeMillis = currentEvent.changes[0].uptimeMillis
     var hasMoved = false
-    var isMultiTouch = false
-    var isLongPressed = false
-
     var event = awaitTouchSlop() ?: return
     while (event.isPressed) {
         val zoomChange = event.calculateZoom()
@@ -80,21 +77,16 @@ private suspend fun AwaitPointerEventScope.detectGesture(
             }
         }
         hasMoved = true
-        if (event.changes.count { it.pressed } > 1) {
-            isMultiTouch = true
-        }
-        if (cancelIfZoomCanceled && isMultiTouch && event.changes.count { it.pressed } == 1) {
+        if (cancelIfZoomCanceled && event.isPointerReducedToOne) {
             break
         }
         event = awaitEvent() ?: return
     }
-    val firstUp = event.changes[0]
-
-    if (firstUp.uptimeMillis - startTimeMillis > viewConfiguration.longPressTimeoutMillis) {
-        isLongPressed = true
+    if (hasMoved) {
+        return
     }
-
-    if (hasMoved || isMultiTouch || isLongPressed) {
+    val firstUp = event.changes[0]
+    if (firstUp.uptimeMillis - startTimeMillis > viewConfiguration.longPressTimeoutMillis) {
         return
     }
 
@@ -126,10 +118,9 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         event = awaitEvent() ?: return
     }
     val secondUp = event.changes[0]
-
     val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
     if (secondPressedTime > viewConfiguration.longPressTimeoutMillis) {
-        isDoubleTap = false
+        return
     }
 
     if (isDoubleTap) {
@@ -171,6 +162,9 @@ private suspend fun AwaitPointerEventScope.awaitEvent(): PointerEvent? {
 
 private val PointerEvent.isPressed
     get() = changes.fastAny { it.pressed }
+
+private val PointerEvent.isPointerReducedToOne
+    get() = changes.count { it.previousPressed } > 1 && changes.count { it.pressed } == 1
 
 /**
  * Await second down or timeout from first up
