@@ -43,7 +43,27 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     val firstDown = awaitFirstDown(requireUnconsumed = false)
     firstDown.consume()
     onGestureStart()
+    detectGesture(
+        firstDown = firstDown,
+        cancelIfZoomCanceled = cancelIfZoomCanceled,
+        canConsumeGesture = canConsumeGesture,
+        onGesture = onGesture,
+        onTap = onTap,
+        onDoubleTap = onDoubleTap,
+        enableOneFingerZoom = enableOneFingerZoom,
+    )
+    onGestureEnd()
+}
 
+private suspend fun AwaitPointerEventScope.detectGesture(
+    firstDown: PointerInputChange,
+    cancelIfZoomCanceled: Boolean,
+    canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
+    onTap: (position: Offset) -> Unit,
+    onDoubleTap: (position: Offset) -> Unit,
+    enableOneFingerZoom: Boolean,
+) {
     var firstUp: PointerInputChange = firstDown
     var hasMoved = false
     var isMultiTouch = false
@@ -75,8 +95,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         firstUp = gestureOrUp.event.changes[0]
     }
     if (gestureOrUp is Event.Canceled) {
-        onGestureEnd()
-        return@awaitEachGesture
+        return
     }
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
@@ -84,16 +103,14 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     }
 
     if (hasMoved || isMultiTouch || isLongPressed) {
-        onGestureEnd()
-        return@awaitEachGesture
+        return
     }
 
     // Vertical scrolling following a double tap is treated as a zoom gesture.
     val secondDown = awaitSecondDown(firstUp)
     if (secondDown == null) {
         onTap(firstUp.position)
-        onGestureEnd()
-        return@awaitEachGesture
+        return
     }
 
     secondDown.consume()
@@ -122,8 +139,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         secondUp = gestureOrUp.event.changes[0]
     }
     if (gestureOrUp is Event.Canceled) {
-        onGestureEnd()
-        return@awaitEachGesture
+        return
     }
 
     val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
@@ -134,13 +150,12 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     if (isDoubleTap) {
         onDoubleTap(secondUp.position)
     }
-    onGestureEnd()
 }
 
 private sealed interface Event {
-    data class PositionChange(val event: PointerEvent): Event
-    data class Up(val event: PointerEvent): Event
-    data object Canceled: Event
+    data class PositionChange(val event: PointerEvent) : Event
+    data class Up(val event: PointerEvent) : Event
+    data object Canceled : Event
 }
 
 private suspend fun AwaitPointerEventScope.awaitEventAfterTouchSlopPast(): Event {
