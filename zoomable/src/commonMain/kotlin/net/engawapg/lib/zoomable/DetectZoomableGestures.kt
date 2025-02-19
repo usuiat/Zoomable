@@ -64,14 +64,12 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     onDoubleTap: (position: Offset) -> Unit,
     enableOneFingerZoom: Boolean,
 ) {
-    var firstUp: PointerInputChange = firstDown
     var hasMoved = false
     var isMultiTouch = false
     var isLongPressed = false
 
-    var gestureOrUp = awaitEventAfterTouchSlopPast()
-    while (gestureOrUp is Event.PositionChange) {
-        val event = gestureOrUp.event
+    var event = awaitTouchSlop() ?: return
+    while (event.isPressed) {
         val zoomChange = event.calculateZoom()
         val panChange = event.calculatePan()
         if (zoomChange != 1f || panChange != Offset.Zero) {
@@ -89,14 +87,9 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         if (cancelIfZoomCanceled && isMultiTouch && event.changes.count { it.pressed } == 1) {
             break
         }
-        gestureOrUp = awaitEvent()
+        event = awaitEvent() ?: return
     }
-    if (gestureOrUp is Event.Up) {
-        firstUp = gestureOrUp.event.changes[0]
-    }
-    if (gestureOrUp is Event.Canceled) {
-        return
-    }
+    val firstUp = event.changes[0]
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
         isLongPressed = true
@@ -115,11 +108,9 @@ private suspend fun AwaitPointerEventScope.detectGesture(
 
     secondDown.consume()
     var isDoubleTap = true
-    var secondUp: PointerInputChange = secondDown
 
-    gestureOrUp = awaitEventAfterTouchSlopPast()
-    while (gestureOrUp is Event.PositionChange) {
-        val event = gestureOrUp.event
+    event = awaitTouchSlop() ?: return
+    while (event.isPressed) {
         if (enableOneFingerZoom) {
             val panChange = event.calculatePan()
             val zoomChange = 1f + panChange.y * 0.004f
@@ -133,14 +124,9 @@ private suspend fun AwaitPointerEventScope.detectGesture(
             }
         }
         isDoubleTap = false
-        gestureOrUp = awaitEvent()
+        event = awaitEvent() ?: return
     }
-    if (gestureOrUp is Event.Up) {
-        secondUp = gestureOrUp.event.changes[0]
-    }
-    if (gestureOrUp is Event.Canceled) {
-        return
-    }
+    val secondUp = event.changes[0]
 
     val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
     if (secondPressedTime > viewConfiguration.longPressTimeoutMillis) {
@@ -152,47 +138,40 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     }
 }
 
-private sealed interface Event {
-    data class PositionChange(val event: PointerEvent) : Event
-    data class Up(val event: PointerEvent) : Event
-    data object Canceled : Event
-}
-
-private suspend fun AwaitPointerEventScope.awaitEventAfterTouchSlopPast(): Event {
+private suspend fun AwaitPointerEventScope.awaitTouchSlop(): PointerEvent? {
     val touchSlop = TouchSlop(viewConfiguration.touchSlop)
     while (true) {
         val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
         if (mainEvent.changes.fastAny { it.isConsumed }) {
-            return Event.Canceled
+            return null // canceled
         }
 
         if (mainEvent.changes.none { it.pressed }) {
-            return Event.Up(mainEvent)
+            return mainEvent // all pointers are up
         }
 
         if (touchSlop.isPast(mainEvent)) {
-            return Event.PositionChange(mainEvent)
+            return mainEvent
         }
 
         val finalEvent = awaitPointerEvent(pass = PointerEventPass.Final)
         if (finalEvent.changes.fastAny { it.isConsumed }) {
-            return Event.Canceled
+            return null // canceled
         }
     }
 }
 
-private suspend fun AwaitPointerEventScope.awaitEvent(): Event {
+private suspend fun AwaitPointerEventScope.awaitEvent(): PointerEvent? {
     val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
     if (mainEvent.changes.fastAny { it.isConsumed }) {
-        return Event.Canceled
+        return null // canceled
     }
 
-    if (mainEvent.changes.none { it.pressed }) {
-        return Event.Up(mainEvent)
-    }
-
-    return Event.PositionChange(mainEvent)
+    return mainEvent
 }
+
+private val PointerEvent.isPressed
+    get() = changes.fastAny { it.pressed }
 
 /**
  * Await second down or timeout from first up
