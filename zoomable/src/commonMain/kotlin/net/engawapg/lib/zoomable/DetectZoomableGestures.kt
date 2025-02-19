@@ -90,41 +90,37 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         return
     }
 
-    // Vertical scrolling following a double tap is treated as a zoom gesture.
     val secondDown = awaitSecondDown(firstUp)
     if (secondDown == null) {
         onTap(firstUp.position)
         return
     }
-
     secondDown.consume()
-    var isDoubleTap = true
 
     event = awaitTouchSlop() ?: return
-    while (event.isPressed) {
-        if (enableOneFingerZoom) {
-            val panChange = event.calculatePan()
-            val zoomChange = 1f + panChange.y * 0.004f
-            if (zoomChange != 1f) {
-                val centroid = event.calculateCentroid(useCurrent = true)
-                val timeMillis = event.changes[0].uptimeMillis
-                if (canConsumeGesture(Offset.Zero, zoomChange)) {
-                    onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                    event.consumePositionChanges()
-                }
-            }
+    if (!event.isPressed) {
+        val pressedTime = event.changes[0].uptimeMillis - secondDown.uptimeMillis
+        if (pressedTime < viewConfiguration.longPressTimeoutMillis) {
+            onDoubleTap(event.changes[0].position)
         }
-        isDoubleTap = false
-        event = awaitEvent() ?: return
-    }
-    val secondUp = event.changes[0]
-    val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
-    if (secondPressedTime > viewConfiguration.longPressTimeoutMillis) {
         return
     }
 
-    if (isDoubleTap) {
-        onDoubleTap(secondUp.position)
+    if (!enableOneFingerZoom) return
+
+    while (event.isPressed) {
+        // Vertical scrolling following a double tap is treated as a zoom gesture.
+        val panChange = event.calculatePan()
+        val zoomChange = 1f + panChange.y * 0.004f
+        if (zoomChange != 1f) {
+            val centroid = event.calculateCentroid(useCurrent = true)
+            val timeMillis = event.changes[0].uptimeMillis
+            if (canConsumeGesture(Offset.Zero, zoomChange)) {
+                onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
+                event.consumePositionChanges()
+            }
+        }
+        event = awaitEvent() ?: return
     }
 }
 
