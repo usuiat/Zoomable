@@ -44,7 +44,6 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     firstDown.consume()
     onGestureStart()
     detectGesture(
-        firstDown = firstDown,
         cancelIfZoomCanceled = cancelIfZoomCanceled,
         canConsumeGesture = canConsumeGesture,
         onGesture = onGesture,
@@ -56,7 +55,6 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
 }
 
 private suspend fun AwaitPointerEventScope.detectGesture(
-    firstDown: PointerInputChange,
     cancelIfZoomCanceled: Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
@@ -64,6 +62,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     onDoubleTap: (position: Offset) -> Unit,
     enableOneFingerZoom: Boolean,
 ) {
+    val startTimeMillis = currentEvent.changes[0].uptimeMillis
     var hasMoved = false
     var isMultiTouch = false
     var isLongPressed = false
@@ -91,7 +90,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     }
     val firstUp = event.changes[0]
 
-    if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
+    if (firstUp.uptimeMillis - startTimeMillis > viewConfiguration.longPressTimeoutMillis) {
         isLongPressed = true
     }
 
