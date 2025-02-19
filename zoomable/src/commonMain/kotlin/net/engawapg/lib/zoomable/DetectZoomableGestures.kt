@@ -48,38 +48,42 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     var hasMoved = false
     var isMultiTouch = false
     var isLongPressed = false
-    var isCanceled = false
-    forEachPointerEventUntilReleased(
-        onCancel = { isCanceled = true },
-    ) { event, isTouchSlopPast ->
-        if (isTouchSlopPast) {
-            val zoomChange = event.calculateZoom()
-            val panChange = event.calculatePan()
-            if (zoomChange != 1f || panChange != Offset.Zero) {
-                val centroid = event.calculateCentroid(useCurrent = true)
-                val timeMillis = event.changes[0].uptimeMillis
-                if (canConsumeGesture(panChange, zoomChange)) {
-                    onGesture(centroid, panChange, zoomChange, timeMillis)
-                    event.consumePositionChanges()
-                }
+
+    var gestureOrUp = awaitEventAfterTouchSlopPast()
+    while (gestureOrUp is Event.PositionChange) {
+        val event = gestureOrUp.event
+        val zoomChange = event.calculateZoom()
+        val panChange = event.calculatePan()
+        if (zoomChange != 1f || panChange != Offset.Zero) {
+            val centroid = event.calculateCentroid(useCurrent = true)
+            val timeMillis = event.changes[0].uptimeMillis
+            if (canConsumeGesture(panChange, zoomChange)) {
+                onGesture(centroid, panChange, zoomChange, timeMillis)
+                event.consumePositionChanges()
             }
-            hasMoved = true
         }
+        hasMoved = true
         if (event.changes.count { it.pressed } > 1) {
             isMultiTouch = true
         }
-        firstUp = event.changes[0]
-        val cancelGesture = cancelIfZoomCanceled &&
-            isMultiTouch &&
-            event.changes.count { it.pressed } == 1
-        cancelGesture
+        if (cancelIfZoomCanceled && isMultiTouch && event.changes.count { it.pressed } == 1) {
+            break
+        }
+        gestureOrUp = awaitEvent()
+    }
+    if (gestureOrUp is Event.Up) {
+        firstUp = gestureOrUp.event.changes[0]
+    }
+    if (gestureOrUp is Event.Canceled) {
+        onGestureEnd()
+        return@awaitEachGesture
     }
 
     if (firstUp.uptimeMillis - firstDown.uptimeMillis > viewConfiguration.longPressTimeoutMillis) {
         isLongPressed = true
     }
 
-    if (hasMoved || isMultiTouch || isLongPressed || isCanceled) {
+    if (hasMoved || isMultiTouch || isLongPressed) {
         onGestureEnd()
         return@awaitEachGesture
     }
@@ -94,28 +98,32 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
 
     secondDown.consume()
     var isDoubleTap = true
-    var isSecondCanceled = false
     var secondUp: PointerInputChange = secondDown
-    forEachPointerEventUntilReleased(
-        onCancel = { isSecondCanceled = true }
-    ) { event, isTouchSlopPast ->
-        if (isTouchSlopPast) {
-            if (enableOneFingerZoom) {
-                val panChange = event.calculatePan()
-                val zoomChange = 1f + panChange.y * 0.004f
-                if (zoomChange != 1f) {
-                    val centroid = event.calculateCentroid(useCurrent = true)
-                    val timeMillis = event.changes[0].uptimeMillis
-                    if (canConsumeGesture(Offset.Zero, zoomChange)) {
-                        onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
-                        event.consumePositionChanges()
-                    }
+
+    gestureOrUp = awaitEventAfterTouchSlopPast()
+    while (gestureOrUp is Event.PositionChange) {
+        val event = gestureOrUp.event
+        if (enableOneFingerZoom) {
+            val panChange = event.calculatePan()
+            val zoomChange = 1f + panChange.y * 0.004f
+            if (zoomChange != 1f) {
+                val centroid = event.calculateCentroid(useCurrent = true)
+                val timeMillis = event.changes[0].uptimeMillis
+                if (canConsumeGesture(Offset.Zero, zoomChange)) {
+                    onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
+                    event.consumePositionChanges()
                 }
             }
-            isDoubleTap = false
         }
-        secondUp = event.changes[0]
-        false
+        isDoubleTap = false
+        gestureOrUp = awaitEvent()
+    }
+    if (gestureOrUp is Event.Up) {
+        secondUp = gestureOrUp.event.changes[0]
+    }
+    if (gestureOrUp is Event.Canceled) {
+        onGestureEnd()
+        return@awaitEachGesture
     }
 
     val secondPressedTime = secondUp.uptimeMillis - secondDown.uptimeMillis
@@ -123,45 +131,52 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         isDoubleTap = false
     }
 
-    if (isDoubleTap && !isSecondCanceled) {
+    if (isDoubleTap) {
         onDoubleTap(secondUp.position)
     }
     onGestureEnd()
 }
 
-/**
- * Invoke action for each PointerEvent until all pointers are released.
- *
- * @param onCancel Callback function that will be called if PointerEvents is consumed by other composable.
- * @param action Callback function that will be called every PointerEvents occur.
- */
-private suspend fun AwaitPointerEventScope.forEachPointerEventUntilReleased(
-    onCancel: () -> Unit,
-    action: (event: PointerEvent, isTouchSlopPast: Boolean) -> Boolean,
-) {
+private sealed interface Event {
+    data class PositionChange(val event: PointerEvent): Event
+    data class Up(val event: PointerEvent): Event
+    data object Canceled: Event
+}
+
+private suspend fun AwaitPointerEventScope.awaitEventAfterTouchSlopPast(): Event {
     val touchSlop = TouchSlop(viewConfiguration.touchSlop)
-    do {
+    while (true) {
         val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
         if (mainEvent.changes.fastAny { it.isConsumed }) {
-            onCancel()
-            break
+            return Event.Canceled
         }
 
-        val isTouchSlopPast = touchSlop.isPast(mainEvent)
-        val doBreak = action(mainEvent, isTouchSlopPast)
-        if (doBreak) {
-            break
+        if (mainEvent.changes.none { it.pressed }) {
+            return Event.Up(mainEvent)
         }
-        if (isTouchSlopPast) {
-            continue
+
+        if (touchSlop.isPast(mainEvent)) {
+            return Event.PositionChange(mainEvent)
         }
 
         val finalEvent = awaitPointerEvent(pass = PointerEventPass.Final)
         if (finalEvent.changes.fastAny { it.isConsumed }) {
-            onCancel()
-            break
+            return Event.Canceled
         }
-    } while (mainEvent.changes.fastAny { it.pressed })
+    }
+}
+
+private suspend fun AwaitPointerEventScope.awaitEvent(): Event {
+    val mainEvent = awaitPointerEvent(pass = PointerEventPass.Main)
+    if (mainEvent.changes.fastAny { it.isConsumed }) {
+        return Event.Canceled
+    }
+
+    if (mainEvent.changes.none { it.pressed }) {
+        return Event.Up(mainEvent)
+    }
+
+    return Event.PositionChange(mainEvent)
 }
 
 /**
