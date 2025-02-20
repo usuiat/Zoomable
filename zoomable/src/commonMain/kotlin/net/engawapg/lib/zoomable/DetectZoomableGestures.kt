@@ -9,6 +9,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventTimeoutCancellationException
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.positionChanged
@@ -66,9 +67,17 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     onLongPress: (position: Offset) -> Unit,
     enableOneFingerZoom: Boolean,
 ) {
-    val startTimeMillis = currentEvent.changes[0].uptimeMillis
+    val startPosition = currentEvent.changes[0].position
+    var event = try {
+        withTimeout(viewConfiguration.longPressTimeoutMillis) {
+            awaitTouchSlop()
+        } ?: return
+    } catch (_: PointerEventTimeoutCancellationException) {
+        onLongPress(startPosition)
+        return
+    }
+
     var hasMoved = false
-    var event = awaitTouchSlop() ?: return
     while (event.isPressed) {
         val zoomChange = event.calculateZoom()
         val panChange = event.calculatePan()
@@ -90,10 +99,6 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         return
     }
     val firstUp = event.changes[0]
-    if (firstUp.uptimeMillis - startTimeMillis > viewConfiguration.longPressTimeoutMillis) {
-        onLongPress(firstUp.position)
-        return
-    }
 
     val secondDown = awaitSecondDown(firstUp)
     if (secondDown == null) {
