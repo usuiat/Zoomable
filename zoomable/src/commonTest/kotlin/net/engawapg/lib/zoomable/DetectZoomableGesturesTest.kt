@@ -226,6 +226,36 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     }
 
     @Test
+    fun long_press_gesture_should_be_judged_as_long_press() = runComposeUiTest {
+        var longPressResult = 0
+        var tapResult = 0
+        val target = pointerInputContent {
+            detectZoomableGestures(
+                cancelIfZoomCanceled = false,
+                canConsumeGesture = { _, _ -> true },
+                onGesture = { _, _, _, _ -> },
+                onTap = { tapResult++ },
+                onLongPress = { longPressResult++ }
+            )
+        }
+
+        target.performTouchInput {
+            down(center)
+            advanceEventTime(250L)
+            moveBy(Offset(1f, 0f))
+        }
+
+        assertEquals(0, longPressResult)
+
+        target .performTouchInput {
+            advanceEventTime(500L)
+            moveBy(Offset(-1f, 0f))
+        }
+
+        assertEquals(1, longPressResult)
+    }
+
+    @Test
     fun tap_and_drag_gesture_should_ignored_if_one_finger_zoom_is_disabled() = runComposeUiTest {
         var zoomResult = 1f
         var panResult = Offset.Zero
@@ -356,27 +386,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertEquals(0, doubleTapResult)
-    }
-
-    @Test
-    fun long_press_gesture_should_not_be_judged_as_tap() = runComposeUiTest {
-        var tapResult = 0
-        val target = pointerInputContent {
-            detectZoomableGestures(
-                cancelIfZoomCanceled = false,
-                canConsumeGesture = { _, _ -> true },
-                onGesture = { _, _, _, _ -> },
-                onTap = { tapResult++ }
-            )
-        }
-
-        target.performGesture {
-            down(center)
-            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
-            up()
-        }
-
-        assertEquals(0, tapResult)
     }
 
     @Test
