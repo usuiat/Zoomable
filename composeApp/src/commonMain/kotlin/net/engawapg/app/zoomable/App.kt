@@ -29,9 +29,12 @@ fun App() {
             val samples = remember { samples() }
 
             Column(modifier = Modifier.padding(innerPadding)) {
-                var onTapMessage by remember { mutableStateOf("") }
+                var message by remember { mutableStateOf("") }
                 val onTap = { point: Offset ->
-                    onTapMessage = "Tapped @(${point.x}, ${point.y})"
+                    message = "Tapped @(${point.x}, ${point.y})"
+                }
+                val onLongPress = { point: Offset ->
+                    message = "Long pressed @(${point.x}, ${point.y})"
                 }
                 ScrollableTabRow(
                     selectedTabIndex = tabIndex,
@@ -50,10 +53,10 @@ fun App() {
                         .fillMaxWidth()
                         .clipToBounds()
                 ) {
-                    samples[tabIndex].content(onTap)
+                    samples[tabIndex].content(onTap, onLongPress)
                 }
                 Text(
-                    text = onTapMessage
+                    text = message
                 )
             }
         }

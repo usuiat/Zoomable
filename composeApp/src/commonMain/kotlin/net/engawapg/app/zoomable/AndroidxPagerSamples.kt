@@ -30,7 +30,10 @@ import zoomable_root.composeapp.generated.resources.eagle3
  */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
-fun AndroidxHorizontalPagerSample(onTap: (Offset) -> Unit = {}) {
+fun AndroidxHorizontalPagerSample(
+    onTap: (Offset) -> Unit = {},
+    onLongPress: (Offset) -> Unit = {},
+) {
     val resources = listOf(Res.drawable.duck1, Res.drawable.duck2, Res.drawable.duck3)
     val pagerState = rememberPagerState { resources.size }
     HorizontalPager(
@@ -48,6 +51,7 @@ fun AndroidxHorizontalPagerSample(onTap: (Offset) -> Unit = {}) {
                 .zoomable(
                     zoomState = zoomState,
                     onTap = onTap,
+                    onLongPress = onLongPress,
                 )
         )
 
@@ -68,7 +72,7 @@ fun AndroidxHorizontalPagerSample(onTap: (Offset) -> Unit = {}) {
  */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
-fun AndroidxVerticalPagerSample(onTap: (Offset) -> Unit) {
+fun AndroidxVerticalPagerSample(onTap: (Offset) -> Unit = {}, onLongPress: (Offset) -> Unit = {}) {
     val resources = listOf(Res.drawable.eagle1, Res.drawable.eagle2, Res.drawable.eagle3)
     val pagerState = rememberPagerState { resources.size }
     VerticalPager(
@@ -85,7 +89,8 @@ fun AndroidxVerticalPagerSample(onTap: (Offset) -> Unit) {
                 .fillMaxSize()
                 .zoomable(
                     zoomState = zoomState,
-                    onTap = onTap
+                    onTap = onTap,
+                    onLongPress = onLongPress,
                 ),
         )
 

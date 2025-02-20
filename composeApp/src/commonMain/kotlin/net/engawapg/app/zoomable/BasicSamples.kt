@@ -25,7 +25,7 @@ import zoomable_root.composeapp.generated.resources.penguin
  */
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun SyncImageSample(onTap: (Offset) -> Unit) {
+fun SyncImageSample(onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
     val painter = painterResource(resource = Res.drawable.penguin)
 //    val painter = painterResource(id = R.drawable.grid)   // for debug
     val zoomState = rememberZoomState(
@@ -39,7 +39,8 @@ fun SyncImageSample(onTap: (Offset) -> Unit) {
             .fillMaxSize()
             .zoomable(
                 zoomState = zoomState,
-                onTap = onTap
+                onTap = onTap,
+                onLongPress = onLongPress,
             ),
     )
 }
@@ -51,7 +52,7 @@ fun SyncImageSample(onTap: (Offset) -> Unit) {
  * setContentSize() will be called when the image data is loaded.
  */
 @Composable
-fun AsyncImageSample(onTap: (Offset) -> Unit) {
+fun AsyncImageSample(onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
     val zoomState = rememberZoomState()
     AsyncImage(
         model = "https://github.com/usuiat.png",
@@ -64,7 +65,8 @@ fun AsyncImageSample(onTap: (Offset) -> Unit) {
             .fillMaxSize()
             .zoomable(
                 zoomState = zoomState,
-                onTap = onTap
+                onTap = onTap,
+                onLongPress = onLongPress,
             ),
     )
 }
@@ -75,7 +77,7 @@ fun AsyncImageSample(onTap: (Offset) -> Unit) {
  * [Modifier.zoomable] modifies [Text] composable.
  */
 @Composable
-fun TextSample(onTap: (Offset) -> Unit) {
+fun TextSample(onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
     val zoomState = rememberZoomState()
     Box(
         contentAlignment = Alignment.Center,
@@ -83,7 +85,8 @@ fun TextSample(onTap: (Offset) -> Unit) {
             .fillMaxSize()
             .zoomable(
                 zoomState = zoomState,
-                onTap = onTap
+                onTap = onTap,
+                onLongPress = onLongPress,
             ),
     ) {
         Text(
