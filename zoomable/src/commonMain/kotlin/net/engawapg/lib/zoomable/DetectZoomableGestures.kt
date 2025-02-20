@@ -27,6 +27,7 @@ import androidx.compose.ui.util.fastForEach
  * @param onGestureEnd This lambda is called when a gesture ends.
  * @param onTap will be called when single tap is detected.
  * @param onDoubleTap will be called when double tap is detected.
+ * @param onLongPress will be called when time elapses without the pointer moving
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  */
@@ -38,6 +39,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     onGestureEnd: () -> Unit = {},
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
+    onLongPress: (position: Offset) -> Unit = {},
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
@@ -49,6 +51,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         onGesture = onGesture,
         onTap = onTap,
         onDoubleTap = onDoubleTap,
+        onLongPress = onLongPress,
         enableOneFingerZoom = enableOneFingerZoom,
     )
     onGestureEnd()
@@ -60,6 +63,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onTap: (position: Offset) -> Unit,
     onDoubleTap: (position: Offset) -> Unit,
+    onLongPress: (position: Offset) -> Unit,
     enableOneFingerZoom: Boolean,
 ) {
     val startTimeMillis = currentEvent.changes[0].uptimeMillis
@@ -87,6 +91,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     }
     val firstUp = event.changes[0]
     if (firstUp.uptimeMillis - startTimeMillis > viewConfiguration.longPressTimeoutMillis) {
+        onLongPress(firstUp.position)
         return
     }
 
