@@ -7,13 +7,17 @@ import androidx.compose.ui.geometry.Offset
 @Immutable
 data class Sample(
     val title: String,
-    val content: @Composable (onTap: (Offset) -> Unit) -> Unit,
+    val content: @Composable (onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) -> Unit,
 )
 
 fun samples(): Array<Sample> = arrayOf(
-    Sample("Sync Image") { SyncImageSample(it) },
-    Sample("Async Image") { AsyncImageSample(it) },
-    Sample("Text") { TextSample(it) },
-    Sample("HorizontalPager\n(Androidx)") { AndroidxHorizontalPagerSample(it) },
-    Sample("VerticalPager\n(Androidx)") { AndroidxVerticalPagerSample(it) },
+    Sample("Sync Image") { onTap, onLongPress -> SyncImageSample(onTap, onLongPress) },
+    Sample("Async Image") { onTap, onLongPress -> AsyncImageSample(onTap, onLongPress) },
+    Sample("Text") { onTap, onLongPress -> TextSample(onTap, onLongPress) },
+    Sample("HorizontalPager\n(Androidx)") { onTap, onLongPress ->
+        AndroidxHorizontalPagerSample(onTap, onLongPress)
+    },
+    Sample("VerticalPager\n(Androidx)") { onTap, onLongPress ->
+        AndroidxVerticalPagerSample(onTap, onLongPress)
+    },
 )

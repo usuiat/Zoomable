@@ -9,6 +9,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventTimeoutCancellationException
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.positionChanged
@@ -27,6 +28,7 @@ import androidx.compose.ui.util.fastForEach
  * @param onGestureEnd This lambda is called when a gesture ends.
  * @param onTap will be called when single tap is detected.
  * @param onDoubleTap will be called when double tap is detected.
+ * @param onLongPress will be called when time elapses without the pointer moving
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  */
@@ -38,6 +40,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     onGestureEnd: () -> Unit = {},
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
+    onLongPress: (position: Offset) -> Unit = {},
     enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
@@ -49,6 +52,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         onGesture = onGesture,
         onTap = onTap,
         onDoubleTap = onDoubleTap,
+        onLongPress = onLongPress,
         enableOneFingerZoom = enableOneFingerZoom,
     )
     onGestureEnd()
@@ -60,11 +64,21 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onTap: (position: Offset) -> Unit,
     onDoubleTap: (position: Offset) -> Unit,
+    onLongPress: (position: Offset) -> Unit,
     enableOneFingerZoom: Boolean,
 ) {
-    val startTimeMillis = currentEvent.changes[0].uptimeMillis
+    val startPosition = currentEvent.changes[0].position
+    var event = try {
+        withTimeout(viewConfiguration.longPressTimeoutMillis) {
+            awaitTouchSlop()
+        } ?: return
+    } catch (_: PointerEventTimeoutCancellationException) {
+        onLongPress(startPosition)
+        consumeAllEventsUntilReleased()
+        return
+    }
+
     var hasMoved = false
-    var event = awaitTouchSlop() ?: return
     while (event.isPressed) {
         val zoomChange = event.calculateZoom()
         val panChange = event.calculatePan()
@@ -86,9 +100,6 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         return
     }
     val firstUp = event.changes[0]
-    if (firstUp.uptimeMillis - startTimeMillis > viewConfiguration.longPressTimeoutMillis) {
-        return
-    }
 
     val secondDown = awaitSecondDown(firstUp)
     if (secondDown == null) {
@@ -154,6 +165,13 @@ private suspend fun AwaitPointerEventScope.awaitEvent(): PointerEvent? {
     }
 
     return mainEvent
+}
+
+private suspend fun AwaitPointerEventScope.consumeAllEventsUntilReleased() {
+    do {
+        val event = awaitEvent() ?: return
+        event.changes.fastForEach { it.consume() }
+    } while (event.isPressed)
 }
 
 private val PointerEvent.isPressed
