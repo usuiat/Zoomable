@@ -335,6 +335,22 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     }
 
     @Test
+    fun slight_movement_on_long_tap_should_be_ignored() = runComposeUiTest {
+        val result = ZoomableResult()
+        val target = pointerInputContentWithDetectZoomableGestures(result)
+
+        target.performGesture {
+            down(center)
+            moveBy(Offset(0f, viewConfiguration.touchSlop / 2f))
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            up()
+        }
+
+        assertEquals(1, result.longPress)
+        assertEquals(Offset.Zero, result.pan)
+    }
+
+    @Test
     fun two_finger_tap_gesture_should_not_be_judged_as_tap() = runComposeUiTest {
         val result = ZoomableResult()
         val target = pointerInputContentWithDetectZoomableGestures(result)
@@ -366,6 +382,22 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertEquals(0, result.doubleTap)
+    }
+
+    @Test
+    fun two_finger_long_tap_gesture_should_not_be_judged_as_long_press() = runComposeUiTest {
+        val result = ZoomableResult()
+        val target = pointerInputContentWithDetectZoomableGestures(result)
+
+        target.performGesture {
+            down(0, center)
+            down(1, center)
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            up(0)
+            up(1)
+        }
+
+        assertEquals(0, result.longPress)
     }
 
     @Test
@@ -445,6 +477,46 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     }
 
     @Test
+    fun pan_and_zoom_after_long_press_should_be_ignored() = runComposeUiTest {
+        val result = ZoomableResult()
+        val target = pointerInputContentWithDetectZoomableGestures(result)
+
+        target.performGesture {
+            // long press
+            down(0, center)
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            // pan
+            moveBy(Offset(50f, 0f))
+            // zoom
+            down(1, center + Offset(-50f, 0f))
+            moveBy(0, Offset(50f, 0f))
+            moveBy(1, Offset(-50f, 0f))
+            up(0)
+            up(1)
+        }
+
+        assertEquals(Offset.Zero, result.pan)
+        assertEquals(1f, result.zoom)
+        assertEquals(1, result.longPress)
+    }
+
+    @Test
+    fun long_press_after_pan_should_be_ignored() = runComposeUiTest {
+        val result = ZoomableResult()
+        val target = pointerInputContentWithDetectZoomableGestures(result)
+
+        target.performGesture {
+            down(center)
+            moveBy(Offset(50f, 0f))
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            up()
+        }
+
+        assertEquals(0, result.longPress)
+        assertEquals(Offset(50f, 0f), result.pan)
+    }
+
+    @Test
     fun first_down_event_should_be_consumed() = runComposeUiTest {
         val downEvents = mutableListOf<PointerInputChange>()
         val target = nestedPointerInputContentWithDetectZoomableGestures(
@@ -477,6 +549,11 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
             pan(50f)
 
             down(center)
+            moveBy(Offset(0f, viewConfiguration.touchSlop / 2f))
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            up()
+
+            down(center)
             up()
             advanceEventTime(viewConfiguration.doubleTapDelay)
             down(center)
@@ -490,6 +567,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
 
         assertEquals(Offset.Zero, result.pan)
         assertEquals(1f, result.zoom)
+        assertEquals(0, result.longPress, "long press should not be called")
         assertEquals(0, result.doubleTap, "double tap should not be called")
         assertEquals(0, result.tap, "tap should not be called")
     }

@@ -1,6 +1,5 @@
 package net.engawapg.lib.zoomable
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -50,7 +49,6 @@ fun ZoomableContent(zoomEnabled: Boolean = true) {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ZoomablePagerContent(
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
@@ -221,6 +219,42 @@ class ZoomableTest : PlatformZoomableTest() {
         mainClock.advanceTimeBy(1000L)
         assertTrue(count == 1)
         assertEquals(positionAtCallback, positionTapped)
+    }
+
+    @Test
+    fun long_press_gesture_works() = runComposeUiTest {
+        var count = 0
+        var positionAtCallback: Offset = Offset.Unspecified
+        var positionTapped: Offset = Offset.Zero
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zoomable(
+                        zoomState = zoomState,
+                        onLongPress = { position ->
+                            count = 1
+                            positionAtCallback = position
+                        },
+                    )
+            )
+        }
+
+        onNodeWithContentDescription("image").performTouchInput {
+            positionTapped = center
+            down(positionTapped)
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            up()
+        }
+
+        assertTrue(count == 1)
+        assertEquals(positionTapped, positionAtCallback)
     }
 
     @Test
