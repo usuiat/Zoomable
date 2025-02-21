@@ -646,4 +646,30 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         assertEquals(Offset.Zero, result.pan)
         assertEquals(1f, result.zoom)
     }
+
+    @Test
+    fun event_after_long_press_should_be_consumed() = runComposeUiTest {
+        val changes = mutableListOf<PointerInputChange>()
+        var longPressed = false
+        val result = ZoomableResult()
+        val target = nestedPointerInputContentWithDetectZoomableGestures(
+            result = result,
+            eventOnParent = { event ->
+                if (longPressed) changes.addAll(event.changes)
+            }
+        )
+
+        target.performTouchInput {
+            down(center)
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+            move() // send 0px move event to advance the clock
+        }
+        longPressed = true
+        target.performTouchInput {
+            moveBy(Offset(50f, 0f))
+            up()
+        }
+
+        assertTrue(changes.all { it.isConsumed })
+    }
 }

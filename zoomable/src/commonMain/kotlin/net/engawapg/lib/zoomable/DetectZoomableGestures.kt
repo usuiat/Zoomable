@@ -74,6 +74,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         } ?: return
     } catch (_: PointerEventTimeoutCancellationException) {
         onLongPress(startPosition)
+        consumeAllEventsUntilReleased()
         return
     }
 
@@ -164,6 +165,13 @@ private suspend fun AwaitPointerEventScope.awaitEvent(): PointerEvent? {
     }
 
     return mainEvent
+}
+
+private suspend fun AwaitPointerEventScope.consumeAllEventsUntilReleased() {
+    do {
+        val event = awaitEvent() ?: return
+        event.changes.fastForEach { it.consume() }
+    } while (event.isPressed)
 }
 
 private val PointerEvent.isPressed
