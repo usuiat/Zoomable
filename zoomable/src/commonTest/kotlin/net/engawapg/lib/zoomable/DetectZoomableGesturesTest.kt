@@ -241,15 +241,15 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
 
         target.performTouchInput {
             down(center)
-            advanceEventTime(250L)
-            moveBy(Offset(1f, 0f))
+            advanceEventTime(viewConfiguration.longPressTimeoutMillis / 2)
+            move() // Send 0px move event to advance the clock
         }
 
         assertEquals(0, longPressResult)
 
-        target .performTouchInput {
+        target.performTouchInput {
             advanceEventTime(500L)
-            moveBy(Offset(-1f, 0f))
+            move() // Send 0px move event to advance the clock
         }
 
         assertEquals(1, longPressResult)
