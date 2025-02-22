@@ -1,6 +1,6 @@
 [versions]
 jetbrains-compose = "1.7.3"
-compose = "1.7.6"
+jetpack-compose = "1.7.8"
 
 kotlin = "2.1.10"
 androidGradle = "8.8.1"
@@ -28,7 +28,7 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
 
 [libraries]
-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "jetpack-compose" }
 
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
 androidx-activity = "androidx.activity:activity-compose:1.9.3"
