@@ -31,7 +31,7 @@ vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.3
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "jetpack-compose" }
 
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
-androidx-activity = "androidx.activity:activity-compose:1.9.3"
+androidx-activity = "androidx.activity:activity-compose:1.10.0"
 androidx-core = "androidx.core:core-ktx:1.15.0"
 androidx-lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:2.8.7"
 
