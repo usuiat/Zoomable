@@ -31,12 +31,14 @@ sealed interface SampleType {
     data class Basic(override val title: String = "Basic image sample") : SampleType
     data class Coil(override val title: String = "Coil image sample") : SampleType
     data class Pager(override val title: String = "HorizontalPager sample") : SampleType
+    data class SnapBack(override val title: String = "snapBackZoomable sample") : SampleType
 }
 
 val sampleTypes = listOf(
     SampleType.Basic(),
     SampleType.Coil(),
     SampleType.Pager(),
+    SampleType.SnapBack(),
 )
 
 @Composable
@@ -63,6 +65,11 @@ fun App() {
                         onLongPress = onLongPress
                     )
                     is SampleType.Pager -> PagerSample(
+                        settings = settings,
+                        onTap = onTap,
+                        onLongPress = onLongPress
+                    )
+                    is SampleType.SnapBack -> SnapBackSample(
                         settings = settings,
                         onTap = onTap,
                         onLongPress = onLongPress
