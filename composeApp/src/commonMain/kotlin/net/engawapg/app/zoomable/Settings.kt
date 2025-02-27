@@ -93,7 +93,11 @@ private fun SwitchSettingItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().heightIn(min = 48.dp).padding(vertical = 4.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(vertical = 4.dp)
+            .heightIn(min = 48.dp)
     ) {
         Text(
             text = text,
@@ -102,7 +106,7 @@ private fun SwitchSettingItem(
         )
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = null
         )
     }
 }
