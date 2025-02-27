@@ -17,7 +17,7 @@ import zoomable_root.composeapp.generated.resources.duck2
 import zoomable_root.composeapp.generated.resources.duck3
 
 @Composable
-fun PagerSample(onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
+fun PagerSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
     val resources = listOf(Res.drawable.duck1, Res.drawable.duck2, Res.drawable.duck3)
     val pagerState = rememberPagerState { resources.size }
     HorizontalPager(
@@ -34,6 +34,9 @@ fun PagerSample(onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
                 .fillMaxSize()
                 .zoomable(
                     zoomState = zoomState,
+                    zoomEnabled = settings.zoomEnabled,
+                    enableOneFingerZoom = settings.enableOneFingerZoom,
+                    scrollGesturePropagation = settings.scrollGesturePropagation,
                     onTap = onTap,
                     onLongPress = onLongPress,
                 )
