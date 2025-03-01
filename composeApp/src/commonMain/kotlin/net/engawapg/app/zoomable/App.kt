@@ -1,16 +1,19 @@
 package net.engawapg.app.zoomable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
@@ -26,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,7 +42,7 @@ import zoomable_root.composeapp.generated.resources.settings_24dp
 
 sealed interface SampleType {
     val title: String
-    data class Basic(override val title: String = "Basic") : SampleType
+    data class Basic(override val title: String = "Basic sample") : SampleType
     data class Coil(override val title: String = "Coil AsyncImage") : SampleType
     data class Pager(override val title: String = "Images on HorizontalPager") : SampleType
     data class SnapBack(override val title: String = "snapBackZoomable") : SampleType
@@ -56,14 +60,18 @@ val sampleTypes = listOf(
 fun App() {
     ZoomableTheme {
         Scaffold { innerPadding ->
+            var sampleType by remember { mutableStateOf(sampleTypes[0]) }
+            var showSampleSelection by remember { mutableStateOf(false) }
+            var settings by remember { mutableStateOf(Settings()) }
+            var showSettings by remember { mutableStateOf(false) }
             Box {
-                var sampleType by remember { mutableStateOf(sampleTypes[0]) }
-                var showSampleSelection by remember { mutableStateOf(false) }
-                var settings by remember { mutableStateOf(Settings()) }
-                var showSettings by remember { mutableStateOf(false) }
-                var message by remember(sampleType) { mutableStateOf("") }
-                val onTap = { position: Offset -> message = "Tapped at $position" }
-                val onLongPress = { position: Offset -> message = "Long pressed at $position" }
+                var message by remember(sampleType) { mutableStateOf(sampleType.title) }
+                val onTap = { position: Offset ->
+                    message = "Tapped (${position.x.toInt()}, ${position.y.toInt()})"
+                }
+                val onLongPress = { position: Offset ->
+                    message = "Long pressed (${position.x.toInt()}, ${position.y.toInt()})"
+                }
                 when (sampleType) {
                     is SampleType.Basic -> BasicSample(
                         settings = settings,
@@ -87,42 +95,59 @@ fun App() {
                     )
                 }
 
-                IconButton(
-                    onClick = { showSampleSelection = true },
-                    modifier = Modifier.padding(innerPadding).align(Alignment.TopStart)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.menu_24dp),
-                        contentDescription = "Sample type selection",
-                    )
-                }
-                if (showSampleSelection) {
-                    SampleTypeSelectionBottomSheet(
-                        sampleTypeList = sampleTypes,
-                        sampleType = sampleType,
-                        onSampleTypeChange = { sampleType = it },
-                        onDismissRequest = { showSampleSelection = false },
-                    )
-                }
-                IconButton(
-                    onClick = { showSettings = true },
-                    modifier = Modifier.padding(innerPadding).align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.settings_24dp),
-                        contentDescription = "Settings",
-                    )
-                }
-                if (showSettings) {
-                    SettingsBottomSheet(
-                        settings = settings,
-                        onSettingsChange = { settings = it },
-                        onDismissRequest = { showSettings = false },
-                    )
-                }
-                Text(
-                    text = message,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(innerPadding).align(Alignment.BottomCenter)
+                ) {
+                    FilledTonalIconButton(
+                        modifier = Modifier.padding(8.dp),
+                        onClick = { showSampleSelection = true },
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.menu_24dp),
+                            contentDescription = "Sample type selection",
+                        )
+                    }
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 40.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                    ) {
+                        Text(
+                            text = message,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                    FilledTonalIconButton(
+                        modifier = Modifier.padding(8.dp),
+                        onClick = { showSettings = true },
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.settings_24dp),
+                            contentDescription = "Settings",
+                        )
+                    }
+                }
+            }
+            if (showSampleSelection) {
+                SampleTypeSelectionBottomSheet(
+                    sampleTypeList = sampleTypes,
+                    sampleType = sampleType,
+                    onSampleTypeChange = { sampleType = it },
+                    onDismissRequest = { showSampleSelection = false },
+                )
+            }
+            if (showSettings) {
+                SettingsBottomSheet(
+                    settings = settings,
+                    onSettingsChange = { settings = it },
+                    onDismissRequest = { showSettings = false },
                 )
             }
         }
