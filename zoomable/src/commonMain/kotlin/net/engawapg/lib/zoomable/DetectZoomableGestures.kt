@@ -22,6 +22,9 @@ import androidx.compose.ui.util.fastForEach
  * A caller of this function can choose if the pointer events will be consumed.
  * And the caller can implement [onGestureStart] and [onGestureEnd] event.
  *
+ * @param cancelIfZoomCanceled If true, cancel gesture when the number of fingers become one.
+ * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
+ * vertical scrolling.
  * @param canConsumeGesture Lambda that asks the caller whether the gesture can be consumed.
  * @param onGesture This lambda is called when [canConsumeGesture] returns true.
  * @param onGestureStart This lambda is called when a gesture starts.
@@ -29,11 +32,10 @@ import androidx.compose.ui.util.fastForEach
  * @param onTap will be called when single tap is detected.
  * @param onDoubleTap will be called when double tap is detected.
  * @param onLongPress will be called when time elapses without the pointer moving
- * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
- * vertical scrolling.
  */
 internal suspend fun PointerInputScope.detectZoomableGestures(
-    cancelIfZoomCanceled: Boolean,
+    cancelIfZoomCanceled: () -> Boolean,
+    enableOneFingerZoom: () -> Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onGestureStart: () -> Unit = {},
@@ -41,7 +43,6 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     onTap: (position: Offset) -> Unit = {},
     onDoubleTap: (position: Offset) -> Unit = {},
     onLongPress: (position: Offset) -> Unit = {},
-    enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
     firstDown.consume()
@@ -59,13 +60,13 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
 }
 
 private suspend fun AwaitPointerEventScope.detectGesture(
-    cancelIfZoomCanceled: Boolean,
+    cancelIfZoomCanceled: () -> Boolean,
+    enableOneFingerZoom: () -> Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onTap: (position: Offset) -> Unit,
     onDoubleTap: (position: Offset) -> Unit,
     onLongPress: (position: Offset) -> Unit,
-    enableOneFingerZoom: Boolean,
 ) {
     val startPosition = currentEvent.changes[0].position
     var event = try {
@@ -91,7 +92,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
             }
         }
         hasMoved = true
-        if (cancelIfZoomCanceled && event.isPointerReducedToOne) {
+        if (cancelIfZoomCanceled() && event.isPointerReducedToOne) {
             break
         }
         event = awaitEvent() ?: return
@@ -117,7 +118,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
         return
     }
 
-    if (!enableOneFingerZoom) return
+    if (!enableOneFingerZoom()) return
 
     while (event.isPressed) {
         // Vertical scrolling following a double tap is treated as a zoom gesture.

@@ -206,7 +206,7 @@ private class ZoomableNode(
     val pointerInputNode = delegate(
         SuspendingPointerInputModifierNode {
             detectZoomableGestures(
-                cancelIfZoomCanceled = snapBackEnabled,
+                cancelIfZoomCanceled = { snapBackEnabled },
                 onGestureStart = {
                     resetConsumeGesture()
                     zoomState.startGesture()
@@ -235,14 +235,14 @@ private class ZoomableNode(
                         }
                     }
                 },
-                onTap = onTap,
+                onTap = { onTap(it) },
                 onDoubleTap = { position ->
                     coroutineScope.launch {
                         onDoubleTap(position)
                     }
                 },
-                onLongPress = onLongPress,
-                enableOneFingerZoom = enableOneFingerZoom,
+                onLongPress = { onLongPress(it) },
+                enableOneFingerZoom = { enableOneFingerZoom },
             )
         }
     )

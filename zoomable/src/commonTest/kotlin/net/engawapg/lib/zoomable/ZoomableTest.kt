@@ -4,11 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -387,4 +391,42 @@ class ZoomableTest : PlatformZoomableTest() {
             assertEquals(boundsAfter.width, boundsBefore.width)
             assertEquals(boundsAfter.height, boundsBefore.height)
         }
+
+    @Test
+    fun enableOneFingerZoom_can_be_changed() = runComposeUiTest {
+        var enableOneFingerZoom by mutableStateOf(true)
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(300.dp)
+                    .zoomable(
+                        zoomState = zoomState,
+                        enableOneFingerZoom = enableOneFingerZoom,
+                    )
+            )
+        }
+
+        val node = onNodeWithContentDescription("image")
+        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        node.performTouchInput {
+            tapAndDragZoom(1.5f)
+        }
+        val boundsResult1 = node.fetchSemanticsNode().boundsInRoot
+        assertTrue(boundsResult1.width > boundsBefore.width)
+        assertTrue(boundsResult1.height > boundsBefore.height)
+
+        enableOneFingerZoom = false
+        node.performTouchInput {
+            tapAndDragZoom(1.5f)
+        }
+        val boundsResult2 = node.fetchSemanticsNode().boundsInRoot
+        assertEquals(boundsResult2.width, boundsResult1.width)
+        assertEquals(boundsResult2.height, boundsResult1.height)
+    }
 }

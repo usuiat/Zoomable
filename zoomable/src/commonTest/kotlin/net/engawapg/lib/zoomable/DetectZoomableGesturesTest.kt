@@ -33,9 +33,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     private val ViewConfiguration.tapDetermineDelay: Long
         get() = doubleTapTimeoutMillis * 2
 
-    private val ViewConfiguration.doubleTapDelay: Long
-        get() = (doubleTapMinTimeMillis + doubleTapTimeoutMillis) / 2
-
     private fun SemanticsNodeInteraction.performGesture(gesture: TouchInjectionScope.() -> Unit) {
         performTouchInput {
             gesture()
@@ -49,27 +46,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     private fun TouchInjectionScope.pan(x: Float = 0f, y: Float = 0f) {
         down(center)
         moveBy(Offset(x, y))
-        up()
-    }
-
-    private fun TouchInjectionScope.pinchZoom(zoom: Float) {
-        val startDistance = 100f
-        down(0, center + Offset(startDistance / 2, 0f))
-        down(1, center - Offset(startDistance / 2, 0f))
-        val endDistance = startDistance * zoom
-        moveTo(0, center + Offset(endDistance / 2, 0f))
-        moveTo(1, center - Offset(endDistance / 2, 0f))
-        up(0)
-        up(1)
-    }
-
-    private fun TouchInjectionScope.tapAndDragZoom(zoom: Float) {
-        down(center)
-        up()
-        advanceEventTime(viewConfiguration.doubleTapDelay)
-        down(center)
-        val y = (zoom - 1f) / 0.004f
-        moveBy(Offset(0f, y))
         up()
     }
 
@@ -95,7 +71,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                     .size(300.dp)
                     .pointerInput(Unit) {
                         detectZoomableGestures(
-                            cancelIfZoomCanceled = cancelIfZoomCanceled,
+                            cancelIfZoomCanceled = { cancelIfZoomCanceled },
                             canConsumeGesture = canConsumeGesture,
                             onGesture = { _, pan, zoom, _ ->
                                 result.pan += pan
@@ -104,7 +80,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                             onTap = { result.tap++ },
                             onDoubleTap = { result.doubleTap++ },
                             onLongPress = { result.longPress++ },
-                            enableOneFingerZoom = enableOneFingerZoom,
+                            enableOneFingerZoom = { enableOneFingerZoom },
                         )
                     }
             )
@@ -141,7 +117,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                         .size(300.dp)
                         .pointerInput(Unit) {
                             detectZoomableGestures(
-                                cancelIfZoomCanceled = cancelIfZoomCanceled,
+                                cancelIfZoomCanceled = { cancelIfZoomCanceled },
                                 canConsumeGesture = canConsumeGesture,
                                 onGesture = { _, pan, zoom, _ ->
                                     result.pan += pan
@@ -150,7 +126,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                                 onTap = { result.tap++ },
                                 onDoubleTap = { result.doubleTap++ },
                                 onLongPress = { result.longPress++ },
-                                enableOneFingerZoom = enableOneFingerZoom,
+                                enableOneFingerZoom = { enableOneFingerZoom },
                             )
                         }
                 ) {
