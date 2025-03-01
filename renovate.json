@@ -7,7 +7,8 @@
     {
       "automerge": true,
       "matchPackageNames": [
-        "com.android.*"
+        "com.android.*",
+        "org.jlleitschuh.gradle.ktlint"
       ]
     }
   ]
