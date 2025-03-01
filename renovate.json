@@ -10,6 +10,10 @@
         "com.android.*",
         "org.jlleitschuh.gradle.ktlint"
       ]
+    },
+    {
+      "automerge": true,
+      "matchDatasources": ["gradle-version"]
     }
   ]
 }
