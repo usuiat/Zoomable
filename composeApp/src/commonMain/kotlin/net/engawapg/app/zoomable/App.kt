@@ -114,12 +114,10 @@ fun App() {
                     )
                 }
                 if (showSettings) {
-                    SettingsDialog(
+                    SettingsBottomSheet(
                         settings = settings,
-                        onDone = {
-                            settings = it
-                            showSettings = false
-                        }
+                        onSettingsChange = { settings = it },
+                        onDismissRequest = { showSettings = false },
                     )
                 }
                 Text(
