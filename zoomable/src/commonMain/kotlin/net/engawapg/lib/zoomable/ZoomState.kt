@@ -45,18 +45,21 @@ import kotlinx.coroutines.launch
  * @param contentSize Size of content (i.e. image size.) If Zero, the composable layout size will
  * be used as content size.
  * @param velocityDecay The decay animation spec for fling behaviour.
+ * @param initialScale The initial scale of the content.
  */
 @Stable
 class ZoomState(
     @FloatRange(from = 1.0) val maxScale: Float = 5f,
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
+    @FloatRange(from = 1.0) private val initialScale: Float = 1f,
 ) {
     init {
         require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
+        require(initialScale >= 1.0f) { "initialScale must be at least 1.0." }
     }
 
-    private var _scale = Animatable(1f).apply {
+    private var _scale = Animatable(initialScale).apply {
         updateBounds(0.9f, maxScale)
     }
 
@@ -132,7 +135,7 @@ class ZoomState(
      * Reset the scale and the offsets.
      */
     suspend fun reset() = coroutineScope {
-        launch { _scale.snapTo(1f) }
+        launch { _scale.snapTo(initialScale) }
         _offsetX.updateBounds(0f, 0f)
         launch { _offsetX.snapTo(0f) }
         _offsetY.updateBounds(0f, 0f)
@@ -385,12 +388,14 @@ class ZoomState(
  * @param contentSize Size of content (i.e. image size.) If Zero, the composable layout size will
  * be used as content size.
  * @param velocityDecay The decay animation spec for fling behaviour.
+ * @param initialScale The initial scale of the content.
  */
 @Composable
 fun rememberZoomState(
     @FloatRange(from = 1.0) maxScale: Float = 5f,
     contentSize: Size = Size.Zero,
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
+    @FloatRange(from = 1.0) initialScale: Float = 1f,
 ) = remember {
-    ZoomState(maxScale, contentSize, velocityDecay)
+    ZoomState(maxScale, contentSize, velocityDecay, initialScale)
 }
