@@ -17,6 +17,7 @@ fun BasicSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offse
     val painter = painterResource(resource = Res.drawable.penguin)
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
+        initialScale = settings.initialScale,
     )
     Image(
         painter = painter,

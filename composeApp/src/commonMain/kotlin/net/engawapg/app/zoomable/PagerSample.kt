@@ -25,7 +25,10 @@ fun PagerSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offse
         modifier = Modifier.fillMaxSize()
     ) { page ->
         val painter = painterResource(resource = resources[page])
-        val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+        val zoomState = rememberZoomState(
+            contentSize = painter.intrinsicSize,
+            initialScale = settings.initialScale,
+        )
         Image(
             painter = painter,
             contentDescription = "Zoomable image",

@@ -170,7 +170,7 @@ private fun SampleTypeSelectionBottomSheet(
     ) {
         Text(
             text = "Samples",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.height(4.dp))
