@@ -33,6 +33,12 @@ class ZoomStateTest {
     }
 
     @Test
+    fun zoomState_is_initialized_with_arbitrary_scale() {
+        val zoomState = ZoomState(initialScale = 2.0f)
+        assertEquals(zoomState.scale, 2.0f)
+    }
+
+    @Test
     fun applyGesture_enlargeToGreaterThanMax_enlargesToMax() = runTest {
         val zoomState = ZoomState(contentSize = Size(100f, 100f))
         zoomState.setLayoutSize(Size(100f, 100f))
