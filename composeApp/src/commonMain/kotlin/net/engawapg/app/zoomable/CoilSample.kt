@@ -11,7 +11,7 @@ import net.engawapg.lib.zoomable.zoomable
 
 @Composable
 fun CoilSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
-    val zoomState = rememberZoomState()
+    val zoomState = rememberZoomState(initialScale = settings.initialScale)
     AsyncImage(
         model = "https://github.com/usuiat.png",
         contentDescription = "GitHub icon",
