@@ -48,8 +48,8 @@ import kotlinx.coroutines.launch
  * @param initialScale The initial scale of the content.
  */
 @Stable
-class ZoomState(
-    @FloatRange(from = 1.0) val maxScale: Float = 5f,
+public class ZoomState(
+    @FloatRange(from = 1.0) public val maxScale: Float = 5f,
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
     @FloatRange(from = 1.0) private val initialScale: Float = 1f,
@@ -66,7 +66,7 @@ class ZoomState(
     /**
      * The scale of the content.
      */
-    val scale: Float
+    public val scale: Float
         get() = _scale.value
 
     private var _offsetX = Animatable(0f)
@@ -74,7 +74,7 @@ class ZoomState(
     /**
      * The horizontal offset of the content.
      */
-    val offsetX: Float
+    public val offsetX: Float
         get() = _offsetX.value
 
     private var _offsetY = Animatable(0f)
@@ -82,7 +82,7 @@ class ZoomState(
     /**
      * The vertical offset of the content.
      */
-    val offsetY: Float
+    public val offsetY: Float
         get() = _offsetY.value
 
     private var layoutSize = Size.Zero
@@ -94,7 +94,7 @@ class ZoomState(
      *
      * @param size The size of composable layout size.
      */
-    fun setLayoutSize(size: Size) {
+    public fun setLayoutSize(size: Size) {
         layoutSize = size
         updateFitContentSize()
     }
@@ -104,7 +104,7 @@ class ZoomState(
      *
      * @param size The content size, for example an image size in pixel.
      */
-    fun setContentSize(size: Size) {
+    public fun setContentSize(size: Size) {
         contentSize = size
         updateFitContentSize()
     }
@@ -134,7 +134,7 @@ class ZoomState(
     /**
      * Reset the scale and the offsets.
      */
-    suspend fun reset() = coroutineScope {
+    public suspend fun reset(): Unit = coroutineScope {
         launch { _scale.snapTo(initialScale) }
         _offsetX.updateBounds(0f, 0f)
         launch { _offsetX.snapTo(0f) }
@@ -213,11 +213,11 @@ class ZoomState(
      * @param position Zoom around this point.
      * @param animationSpec The animation configuration.
      */
-    suspend fun changeScale(
+    public suspend fun changeScale(
         targetScale: Float,
         position: Offset,
         animationSpec: AnimationSpec<Float> = spring(),
-    ) = coroutineScope {
+    ): Unit = coroutineScope {
         val newScale = targetScale.coerceIn(1f, maxScale)
         val newOffset = calculateNewOffset(newScale, position, Offset.Zero)
         val newBounds = calculateNewBounds(newScale)
@@ -288,11 +288,11 @@ class ZoomState(
      * @param scale The scale to apply for zooming the content.
      * @param animationSpec AnimationSpec for centering and scaling.
      */
-    suspend fun centerByContentCoordinate(
+    public suspend fun centerByContentCoordinate(
         offset: Offset,
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
-    ) = coroutineScope {
+    ): Unit = coroutineScope {
         val fitContentSizeFactor = fitContentSize.width / contentSize.width
 
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
@@ -339,11 +339,11 @@ class ZoomState(
      * @param scale The scale to apply for zooming the content.
      * @param animationSpec AnimationSpec for centering and scaling.
      */
-    suspend fun centerByLayoutCoordinate(
+    public suspend fun centerByLayoutCoordinate(
         offset: Offset,
         scale: Float = 3f,
         animationSpec: AnimationSpec<Float> = tween(700),
-    ) = coroutineScope {
+    ): Unit = coroutineScope {
         val boundX = max((fitContentSize.width * scale - layoutSize.width), 0f) / 2f
         val boundY = max((fitContentSize.height * scale - layoutSize.height), 0f) / 2f
 
@@ -391,11 +391,11 @@ class ZoomState(
  * @param initialScale The initial scale of the content.
  */
 @Composable
-fun rememberZoomState(
+public fun rememberZoomState(
     @FloatRange(from = 1.0) maxScale: Float = 5f,
     contentSize: Size = Size.Zero,
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
     @FloatRange(from = 1.0) initialScale: Float = 1f,
-) = remember {
+): ZoomState = remember {
     ZoomState(maxScale, contentSize, velocityDecay, initialScale)
 }

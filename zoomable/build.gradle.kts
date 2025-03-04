@@ -29,6 +29,8 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
+
     androidTarget { publishLibraryVariants("release") }
     jvm("desktop")
 

@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
  * [ScrollGesturePropagation] defines when [Modifier.zoomable] propagates scroll gestures to the
  * parent composable element.
  */
-enum class ScrollGesturePropagation {
+public enum class ScrollGesturePropagation {
 
     /**
      * Propagates the scroll gesture to the parent composable element when the content is scrolled
@@ -71,7 +71,7 @@ enum class ScrollGesturePropagation {
  * 2.5f with animation.
  * @param onLongPress will be called when time elapses without the pointer moving
  */
-fun Modifier.zoomable(
+public fun Modifier.zoomable(
     zoomState: ZoomState,
     zoomEnabled: Boolean = true,
     enableOneFingerZoom: Boolean = true,
@@ -104,7 +104,7 @@ fun Modifier.zoomable(
  * 2.5f with animation.
  * @param onLongPress will be called when time elapses without the pointer moving
  */
-fun Modifier.snapBackZoomable(
+public fun Modifier.snapBackZoomable(
     zoomState: ZoomState,
     zoomEnabled: Boolean = true,
     onTap: (position: Offset) -> Unit = {},
@@ -306,7 +306,7 @@ private class ZoomableNode(
  * @param position Zoom around this point.
  * @param animationSpec The animation configuration.
  */
-suspend fun ZoomState.toggleScale(
+public suspend fun ZoomState.toggleScale(
     targetScale: Float,
     position: Offset,
     animationSpec: AnimationSpec<Float> = spring(),
