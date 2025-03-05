@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import kotlin.math.abs
 import kotlin.math.max
@@ -95,7 +96,7 @@ public class ZoomState(
      * @param size The size of composable layout size.
      */
     public fun setLayoutSize(size: Size) {
-        layoutSize = size
+        layoutSize = if (size.isUnspecified) Size.Zero else size
         updateFitContentSize()
     }
 
@@ -105,7 +106,7 @@ public class ZoomState(
      * @param size The content size, for example an image size in pixel.
      */
     public fun setContentSize(size: Size) {
-        contentSize = size
+        contentSize = if (size.isUnspecified) Size.Zero else size
         updateFitContentSize()
     }
 

@@ -186,6 +186,25 @@ class ZoomStateTest {
         assertEquals(zoomState.offsetX, 0f)
         assertEquals(zoomState.offsetY, 50f)
     }
+
+    @Test
+    fun unspecified_layout_size_does_not_cause_crash() {
+        val zoomState = ZoomState(contentSize = Size(100f, 100f))
+
+        zoomState.setLayoutSize(Size.Unspecified)
+
+        assertNotNull(zoomState)
+    }
+
+    @Test
+    fun unspecified_content_size_does_not_cause_crash() {
+        val zoomState = ZoomState()
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.setContentSize(Size.Unspecified)
+
+        assertNotNull(zoomState)
+    }
 }
 
 class ZoomStateTestPanWillChangeOffset {
