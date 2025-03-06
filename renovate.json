@@ -8,7 +8,8 @@
       "automerge": true,
       "matchPackageNames": [
         "/com\\.android\\.\\w+/",
-        "/org\\.jlleitschuh\\.gradle\\.ktlint/"
+        "/org\\.jlleitschuh\\.gradle\\.ktlint/",
+        "/com\\.vanniktech\\.maven\\.publish/"
       ]
     },
     {
