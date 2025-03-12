@@ -31,6 +31,7 @@ fun BasicSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offse
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                mouseWheelZoom = settings.mouseWheelZoom,
             ),
     )
 }

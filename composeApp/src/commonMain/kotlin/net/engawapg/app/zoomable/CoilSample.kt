@@ -27,6 +27,7 @@ fun CoilSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                mouseWheelZoom = settings.mouseWheelZoom,
             ),
     )
 }
