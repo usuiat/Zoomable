@@ -276,6 +276,7 @@ private class ZoomableNode(
                             zoom = zoom,
                             position = change.position,
                             timeMillis = change.uptimeMillis,
+                            enableBounce = false,
                         )
                     }
                 }
