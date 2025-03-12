@@ -23,7 +23,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -260,27 +259,22 @@ private class ZoomableNode(
 
     val mouseWheelInputNode = delegate(
         SuspendingPointerInputModifierNode {
-            awaitPointerEventScope {
-                while (true) {
-                    val event = awaitPointerEvent()
-                    if (event.type != PointerEventType.Scroll) continue
-
-                    if (!zoomEnabled) continue
-                    if (!mouseWheelZoom.matchKeyboardModifiers(event.keyboardModifiers)) continue
-
-                    val change = event.changes[0]
-                    val zoom = 1f - change.scrollDelta.y * 0.1f
+            detectMouseWheelZoom(
+                canZoom = { keyboardModifiers ->
+                    zoomEnabled && mouseWheelZoom.matchKeyboardModifiers(keyboardModifiers)
+                },
+                onZoom = { zoom, position ->
                     coroutineScope.launch {
                         zoomState.applyGesture(
                             pan = Offset.Zero,
                             zoom = zoom,
-                            position = change.position,
-                            timeMillis = change.uptimeMillis,
+                            position = position,
+                            timeMillis = 0L,
                             enableBounce = false,
                         )
                     }
-                }
-            }
+                },
+            )
         }
     )
 
