@@ -70,6 +70,7 @@ public enum class ScrollGesturePropagation {
  * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
  * 2.5f with animation.
  * @param onLongPress will be called when time elapses without the pointer moving
+ * @param mouseWheelZoom specifies mouse wheel zoom behaviour.
  */
 public fun Modifier.zoomable(
     zoomState: ZoomState,
