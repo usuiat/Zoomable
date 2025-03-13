@@ -94,7 +94,7 @@ expect open class PlatformZoomableTest()
 class ZoomableTest : PlatformZoomableTest() {
 
     @Test
-    fun zoomable_pinch_zoomed() = runComposeUiTest {
+    fun pinch_gesture_works() = runComposeUiTest {
         setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
@@ -114,7 +114,7 @@ class ZoomableTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun zoomable_tapAndSwipe_zoomed() = runComposeUiTest {
+    fun tap_and_drag_gesture_works() = runComposeUiTest {
         setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
@@ -135,7 +135,7 @@ class ZoomableTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun zoomable_doubleTap_zoomed() = runComposeUiTest {
+    fun double_tap_works_as_zoom() = runComposeUiTest {
         setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
@@ -156,7 +156,7 @@ class ZoomableTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun zoomable_on_pager_zoomAfterSwipePage_zoomed() = runComposeUiTest {
+    fun zoom_for_composable_on_pager_is_available_after_swiping_pages() = runComposeUiTest {
         /*
         This function tests that zooming works after page swipes.
         We ran into a problem with Compose 1.5 where zooming did not work after swiping a
@@ -196,7 +196,7 @@ class ZoomableTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun zoomable_tap_calledOnTap() = runComposeUiTest {
+    fun tap_works() = runComposeUiTest {
         var count = 0
         var positionAtCallback: Offset = Offset.Unspecified
         var positionTapped: Offset = Offset.Zero
@@ -233,7 +233,7 @@ class ZoomableTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun long_press_gesture_works() = runComposeUiTest {
+    fun long_press_works() = runComposeUiTest {
         var count = 0
         var positionAtCallback: Offset = Offset.Unspecified
         var positionTapped: Offset = Offset.Zero
