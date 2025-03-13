@@ -43,59 +43,60 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@Composable
-fun ZoomableContent(
-    zoomEnabled: Boolean = true,
-    mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
-) {
-    val icon = Icons.Default.Info
-    val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-    Image(
-        imageVector = icon,
-        contentDescription = "image",
-        contentScale = ContentScale.Fit,
-        modifier = Modifier
-            .fillMaxSize()
-            .zoomable(
-                zoomState = zoomState,
-                zoomEnabled = zoomEnabled,
-                mouseWheelZoom = mouseWheelZoom,
-            )
-    )
-}
+expect open class PlatformZoomableTest()
 
-@Composable
-fun ZoomablePagerContent(
-    scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
-) {
-    val pagerState = rememberPagerState { 2 }
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier
-            .fillMaxSize()
-            .semantics { testTag = "pager" }
-    ) { page ->
+@OptIn(ExperimentalTestApi::class)
+class ZoomableTest : PlatformZoomableTest() {
+
+    @Composable
+    private fun ZoomableContent(
+        zoomEnabled: Boolean = true,
+        mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
+    ) {
         val icon = Icons.Default.Info
         val zoomState =
             rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
         Image(
             imageVector = icon,
-            contentDescription = "image$page",
+            contentDescription = "image",
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .fillMaxSize()
                 .zoomable(
                     zoomState = zoomState,
-                    scrollGesturePropagation = scrollGesturePropagation,
+                    zoomEnabled = zoomEnabled,
+                    mouseWheelZoom = mouseWheelZoom,
                 )
         )
     }
-}
 
-expect open class PlatformZoomableTest()
-
-@OptIn(ExperimentalTestApi::class)
-class ZoomableTest : PlatformZoomableTest() {
+    @Composable
+    private fun ZoomablePagerContent(
+        scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
+    ) {
+        val pagerState = rememberPagerState { 2 }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize()
+                .semantics { testTag = "pager" }
+        ) { page ->
+            val icon = Icons.Default.Info
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image$page",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zoomable(
+                        zoomState = zoomState,
+                        scrollGesturePropagation = scrollGesturePropagation,
+                    )
+            )
+        }
+    }
 
     @Test
     fun pinch_gesture_works() = runComposeUiTest {
