@@ -24,6 +24,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performKeyInput
@@ -35,6 +36,9 @@ import androidx.compose.ui.test.swipe
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
+import androidx.compose.ui.unit.size
+import androidx.compose.ui.unit.width
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -98,7 +102,7 @@ class ZoomableTest : PlatformZoomableTest() {
         setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput {
             pinch(
                 start0 = center + Offset(-100f, 0f),
@@ -107,7 +111,7 @@ class ZoomableTest : PlatformZoomableTest() {
                 end1 = center + Offset(+200f, 0f),
             )
         }
-        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        val boundsAfter = node.getBoundsInRoot()
         assertTrue(
             (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
         )
@@ -118,7 +122,7 @@ class ZoomableTest : PlatformZoomableTest() {
         setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        val boundsBefore = node.getBoundsInRoot()
         println("bounds=$boundsBefore")
         node.performTouchInput {
             down(center)
@@ -127,7 +131,7 @@ class ZoomableTest : PlatformZoomableTest() {
             advanceEventTime(100)
             swipe(start = center, end = center + Offset(0f, 100f))
         }
-        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        val boundsAfter = node.getBoundsInRoot()
         println("bounds=$boundsAfter")
         assertTrue(
             (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
@@ -139,19 +143,19 @@ class ZoomableTest : PlatformZoomableTest() {
         setContent { ZoomableContent() }
 
         val node = onNodeWithContentDescription("image")
-        val bounds0 = node.fetchSemanticsNode().boundsInRoot
+        val bounds0 = node.getBoundsInRoot()
 
         node.performTouchInput {
             doubleClick(center)
         }
-        val bounds1 = node.fetchSemanticsNode().boundsInRoot
+        val bounds1 = node.getBoundsInRoot()
         assertTrue((bounds1.width / bounds0.width) == 2.5f)
         assertTrue((bounds1.height / bounds0.height) == 2.5f)
 
         node.performTouchInput {
             doubleClick(center)
         }
-        val bounds2 = node.fetchSemanticsNode().boundsInRoot
+        val bounds2 = node.getBoundsInRoot()
         assertEquals(bounds2.size, bounds0.size)
     }
 
@@ -273,9 +277,9 @@ class ZoomableTest : PlatformZoomableTest() {
         setContent { ZoomableContent(mouseWheelZoom = MouseWheelZoom.Enabled) }
 
         val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        val boundsBefore = node.getBoundsInRoot()
         node.performMouseInput { scroll(-1f) }
-        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        val boundsAfter = node.getBoundsInRoot()
         assertTrue(
             (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
         )
@@ -286,11 +290,11 @@ class ZoomableTest : PlatformZoomableTest() {
         setContent { ZoomableContent(mouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey) }
 
         val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        val boundsBefore = node.getBoundsInRoot()
         node.performKeyInput { keyDown(Key.CtrlRight) }
         node.performMouseInput { scroll(-1f) }
         node.performKeyInput { keyUp(Key.CtrlRight) }
-        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        val boundsAfter = node.getBoundsInRoot()
         assertTrue(
             (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
         )
@@ -374,7 +378,7 @@ class ZoomableTest : PlatformZoomableTest() {
         }
 
         val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput {
             pinch(
                 start0 = center + Offset(-100f, 0f),
@@ -384,7 +388,7 @@ class ZoomableTest : PlatformZoomableTest() {
             )
         }
 
-        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        val boundsAfter = node.getBoundsInRoot()
         assertEquals(boundsAfter, boundsBefore)
     }
 
@@ -408,19 +412,19 @@ class ZoomableTest : PlatformZoomableTest() {
             }
 
             val node = onNodeWithContentDescription("image")
-            val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+            val boundsBefore = node.getBoundsInRoot()
             node.performTouchInput {
                 down(0, center + Offset(-100f, 0f))
                 down(1, center + Offset(+100f, 0f))
                 moveTo(0, center + Offset(-200f, 0f))
                 moveTo(1, center + Offset(+200f, 0f))
             }
-            val boundsInGesture = node.fetchSemanticsNode().boundsInRoot
+            val boundsInGesture = node.getBoundsInRoot()
             node.performTouchInput {
                 up(0)
                 up(1)
             }
-            val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+            val boundsAfter = node.getBoundsInRoot()
             assertTrue(boundsInGesture.width > boundsBefore.width)
             assertTrue(boundsInGesture.height > boundsBefore.height)
             assertEquals(boundsAfter.width, boundsBefore.width)
@@ -448,11 +452,11 @@ class ZoomableTest : PlatformZoomableTest() {
         }
 
         val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput {
             tapAndDragZoom(1.5f)
         }
-        val boundsResult1 = node.fetchSemanticsNode().boundsInRoot
+        val boundsResult1 = node.getBoundsInRoot()
         assertTrue(boundsResult1.width > boundsBefore.width)
         assertTrue(boundsResult1.height > boundsBefore.height)
 
@@ -460,7 +464,7 @@ class ZoomableTest : PlatformZoomableTest() {
         node.performTouchInput {
             tapAndDragZoom(1.5f)
         }
-        val boundsResult2 = node.fetchSemanticsNode().boundsInRoot
+        val boundsResult2 = node.getBoundsInRoot()
         assertEquals(boundsResult2.width, boundsResult1.width)
         assertEquals(boundsResult2.height, boundsResult1.height)
     }
