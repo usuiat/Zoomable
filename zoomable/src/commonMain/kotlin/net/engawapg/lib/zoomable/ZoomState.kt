@@ -179,8 +179,10 @@ public class ZoomState(
         zoom: Float,
         position: Offset,
         timeMillis: Long,
+        enableBounce: Boolean = true,
     ) = coroutineScope {
-        val newScale = (scale * zoom).coerceIn(0.9f, maxScale)
+        val minScale = if (enableBounce) 0.9f else 1f
+        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
         val newOffset = calculateNewOffset(newScale, position, pan)
         val newBounds = calculateNewBounds(newScale)
 

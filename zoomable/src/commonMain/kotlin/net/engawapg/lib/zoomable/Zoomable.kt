@@ -70,6 +70,7 @@ public enum class ScrollGesturePropagation {
  * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
  * 2.5f with animation.
  * @param onLongPress will be called when time elapses without the pointer moving
+ * @param mouseWheelZoom specifies mouse wheel zoom behaviour.
  */
 public fun Modifier.zoomable(
     zoomState: ZoomState,
@@ -81,6 +82,7 @@ public fun Modifier.zoomable(
         position: Offset,
     ) -> Unit = { position -> if (zoomEnabled) zoomState.toggleScale(2.5f, position) },
     onLongPress: (position: Offset) -> Unit = {},
+    mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
     zoomEnabled = zoomEnabled,
@@ -90,6 +92,7 @@ public fun Modifier.zoomable(
     onTap = onTap,
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
+    mouseWheelZoom = mouseWheelZoom,
 )
 
 /**
@@ -119,6 +122,7 @@ public fun Modifier.snapBackZoomable(
     onTap = onTap,
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
+    mouseWheelZoom = MouseWheelZoom.Disabled,
 )
 
 private data class ZoomableElement(
@@ -130,6 +134,7 @@ private data class ZoomableElement(
     val onTap: (position: Offset) -> Unit,
     val onDoubleTap: suspend (position: Offset) -> Unit,
     val onLongPress: (position: Offset) -> Unit,
+    val mouseWheelZoom: MouseWheelZoom,
 ) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
@@ -140,6 +145,7 @@ private data class ZoomableElement(
         onTap,
         onDoubleTap,
         onLongPress,
+        mouseWheelZoom,
     )
 
     override fun update(node: ZoomableNode) {
@@ -152,6 +158,7 @@ private data class ZoomableElement(
             onTap,
             onDoubleTap,
             onLongPress,
+            mouseWheelZoom,
         )
     }
 
@@ -165,6 +172,7 @@ private data class ZoomableElement(
         properties["onTap"] = onTap
         properties["onDoubleTap"] = onDoubleTap
         properties["onLongPress"] = onLongPress
+        properties["mouseWheelZoom"] = mouseWheelZoom
     }
 }
 
@@ -177,6 +185,7 @@ private class ZoomableNode(
     var onTap: (position: Offset) -> Unit,
     var onDoubleTap: suspend (position: Offset) -> Unit,
     var onLongPress: (position: Offset) -> Unit,
+    var mouseWheelZoom: MouseWheelZoom,
 ) : PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
@@ -189,6 +198,7 @@ private class ZoomableNode(
         onTap: (position: Offset) -> Unit,
         onDoubleTap: suspend (position: Offset) -> Unit,
         onLongPress: (position: Offset) -> Unit,
+        mouseWheelZoom: MouseWheelZoom,
     ) {
         if (this.zoomState != zoomState) {
             zoomState.setLayoutSize(measuredSize)
@@ -201,6 +211,7 @@ private class ZoomableNode(
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
         this.onLongPress = onLongPress
+        this.mouseWheelZoom = mouseWheelZoom
     }
 
     val pointerInputNode = delegate(
@@ -247,6 +258,27 @@ private class ZoomableNode(
         }
     )
 
+    val mouseWheelInputNode = delegate(
+        SuspendingPointerInputModifierNode {
+            detectMouseWheelZoom(
+                canZoom = { keyboardModifiers ->
+                    zoomEnabled && mouseWheelZoom.matchKeyboardModifiers(keyboardModifiers)
+                },
+                onZoom = { zoom, position ->
+                    coroutineScope.launch {
+                        zoomState.applyGesture(
+                            pan = Offset.Zero,
+                            zoom = zoom,
+                            position = position,
+                            timeMillis = 0L,
+                            enableBounce = false,
+                        )
+                    }
+                },
+            )
+        }
+    )
+
     private var consumeGesture: Boolean? = null
 
     private fun resetConsumeGesture() {
@@ -275,10 +307,12 @@ private class ZoomableNode(
         bounds: IntSize,
     ) {
         pointerInputNode.onPointerEvent(pointerEvent, pass, bounds)
+        mouseWheelInputNode.onPointerEvent(pointerEvent, pass, bounds)
     }
 
     override fun onCancelPointerInput() {
         pointerInputNode.onCancelPointerInput()
+        mouseWheelInputNode.onCancelPointerInput()
     }
 
     override fun MeasureScope.measure(

@@ -42,6 +42,7 @@ fun PagerSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offse
                     scrollGesturePropagation = settings.scrollGesturePropagation,
                     onTap = onTap,
                     onLongPress = onLongPress,
+                    mouseWheelZoom = settings.mouseWheelZoom,
                 )
         )
     }

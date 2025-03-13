@@ -1,6 +1,7 @@
 package net.engawapg.app.zoomable
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import net.engawapg.lib.zoomable.MouseWheelZoom
 import net.engawapg.lib.zoomable.ScrollGesturePropagation
 
 data class Settings(
@@ -30,6 +34,7 @@ data class Settings(
     val enableOneFingerZoom: Boolean = true,
     val scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     val initialScale: Float = 1f,
+    val mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +44,7 @@ fun SettingsBottomSheet(
     onSettingsChange: (Settings) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     ModalBottomSheet(
         sheetState = sheetState,
@@ -83,73 +88,92 @@ internal fun SettingsContent(
 
     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 
-    SwitchSettingItem(
-        text = "zoomEnabled",
-        checked = settings.zoomEnabled,
-        onCheckedChange = {
-            onSettingsChange(settings.copy(zoomEnabled = it))
-        },
-    )
-    SwitchSettingItem(
-        text = "enableOneFingerZoom",
-        checked = settings.enableOneFingerZoom,
-        onCheckedChange = {
-            onSettingsChange(settings.copy(enableOneFingerZoom = it))
-        },
-    )
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
+        SwitchSettingItem(
+            text = "zoomEnabled",
+            checked = settings.zoomEnabled,
+            onCheckedChange = {
+                onSettingsChange(settings.copy(zoomEnabled = it))
+            },
+        )
+        SwitchSettingItem(
+            text = "enableOneFingerZoom",
+            checked = settings.enableOneFingerZoom,
+            onCheckedChange = {
+                onSettingsChange(settings.copy(enableOneFingerZoom = it))
+            },
+        )
 
-    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 
-    Text(
-        text = "scrollGesturePropagation",
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-    )
-    RadioButtonSettingItem(
-        text = "ContentEdge",
-        selected = settings.scrollGesturePropagation == ScrollGesturePropagation.ContentEdge,
-        onClick = {
-            onSettingsChange(
-                settings.copy(scrollGesturePropagation = ScrollGesturePropagation.ContentEdge)
+        Text(
+            text = "scrollGesturePropagation",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        RadioButtonSettingItem(
+            text = "ContentEdge",
+            selected = settings.scrollGesturePropagation == ScrollGesturePropagation.ContentEdge,
+            onClick = {
+                onSettingsChange(
+                    settings.copy(scrollGesturePropagation = ScrollGesturePropagation.ContentEdge)
+                )
+            },
+        )
+        RadioButtonSettingItem(
+            text = "NotZoomed",
+            selected = settings.scrollGesturePropagation == ScrollGesturePropagation.NotZoomed,
+            onClick = {
+                onSettingsChange(
+                    settings.copy(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
+                )
+            },
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+
+        Text(
+            text = "initialScale",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        Text(
+            text = "To reflect the changed values, switch the sample to be displayed.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        RadioButtonSettingItem(
+            text = "1.0",
+            selected = settings.initialScale == 1f,
+            onClick = { onSettingsChange(settings.copy(initialScale = 1f)) },
+        )
+        RadioButtonSettingItem(
+            text = "2.0",
+            selected = settings.initialScale == 2f,
+            onClick = { onSettingsChange(settings.copy(initialScale = 2f)) },
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+
+        Text(
+            text = "mouseWheelZoom",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        MouseWheelZoom.entries.forEach { mouseWheelZoom ->
+            RadioButtonSettingItem(
+                text = mouseWheelZoom.toString(),
+                selected = settings.mouseWheelZoom == mouseWheelZoom,
+                onClick = { onSettingsChange(settings.copy(mouseWheelZoom = mouseWheelZoom)) },
             )
-        },
-    )
-    RadioButtonSettingItem(
-        text = "NotZoomed",
-        selected = settings.scrollGesturePropagation == ScrollGesturePropagation.NotZoomed,
-        onClick = {
-            onSettingsChange(
-                settings.copy(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
-            )
-        },
-    )
+        }
 
-    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-
-    Text(
-        text = "initialScale",
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-    )
-    Text(
-        text = "To reflect the changed values, switch the sample to be displayed.",
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    RadioButtonSettingItem(
-        text = "1.0",
-        selected = settings.initialScale == 1f,
-        onClick = { onSettingsChange(settings.copy(initialScale = 1f)) },
-    )
-    RadioButtonSettingItem(
-        text = "2.0",
-        selected = settings.initialScale == 2f,
-        onClick = { onSettingsChange(settings.copy(initialScale = 2f)) },
-    )
-
-    Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+    }
 }
 
 @Composable
