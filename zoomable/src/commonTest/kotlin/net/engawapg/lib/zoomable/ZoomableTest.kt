@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.TouchInjectionScope
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
@@ -98,6 +99,15 @@ class ZoomableTest : PlatformZoomableTest() {
         }
     }
 
+    private fun TouchInjectionScope.pinchZoom() {
+        pinch(
+            start0 = center + Offset(-100f, 0f),
+            end0 = center + Offset(-200f, 0f),
+            start1 = center + Offset(+100f, 0f),
+            end1 = center + Offset(+200f, 0f),
+        )
+    }
+
     @Test
     fun pinch_gesture_works() = runComposeUiTest {
         setContent { ZoomableContent() }
@@ -105,12 +115,7 @@ class ZoomableTest : PlatformZoomableTest() {
         val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput {
-            pinch(
-                start0 = center + Offset(-100f, 0f),
-                end0 = center + Offset(-200f, 0f),
-                start1 = center + Offset(+100f, 0f),
-                end1 = center + Offset(+200f, 0f),
-            )
+            pinchZoom()
         }
         val boundsAfter = node.getBoundsInRoot()
 
@@ -182,12 +187,7 @@ class ZoomableTest : PlatformZoomableTest() {
         image = onNodeWithContentDescription("image0")
         image.assertIsDisplayed()
         image.performTouchInput {
-            pinch(
-                start0 = center + Offset(-100f, 0f),
-                end0 = center + Offset(-200f, 0f),
-                start1 = center + Offset(+100f, 0f),
-                end1 = center + Offset(+200f, 0f),
-            )
+            pinchZoom()
         }
 
         /*
@@ -379,14 +379,7 @@ class ZoomableTest : PlatformZoomableTest() {
 
         val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
-        node.performTouchInput {
-            pinch(
-                start0 = center + Offset(-100f, 0f),
-                end0 = center + Offset(-200f, 0f),
-                start1 = center + Offset(+100f, 0f),
-                end1 = center + Offset(+200f, 0f),
-            )
-        }
+        node.performTouchInput { pinchZoom() }
 
         val boundsAfter = node.getBoundsInRoot()
         assertEquals(boundsAfter, boundsBefore)
