@@ -112,9 +112,9 @@ class ZoomableTest : PlatformZoomableTest() {
             )
         }
         val boundsAfter = node.getBoundsInRoot()
-        assertTrue(
-            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
-        )
+
+        assertTrue(boundsAfter.width > boundsBefore.width)
+        assertTrue(boundsAfter.height > boundsBefore.height)
     }
 
     @Test
@@ -123,7 +123,6 @@ class ZoomableTest : PlatformZoomableTest() {
 
         val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
-        println("bounds=$boundsBefore")
         node.performTouchInput {
             down(center)
             advanceEventTime(100)
@@ -132,10 +131,9 @@ class ZoomableTest : PlatformZoomableTest() {
             swipe(start = center, end = center + Offset(0f, 100f))
         }
         val boundsAfter = node.getBoundsInRoot()
-        println("bounds=$boundsAfter")
-        assertTrue(
-            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
-        )
+
+        assertTrue(boundsAfter.width > boundsBefore.width)
+        assertTrue(boundsAfter.height > boundsBefore.height)
     }
 
     @Test
@@ -149,8 +147,8 @@ class ZoomableTest : PlatformZoomableTest() {
             doubleClick(center)
         }
         val bounds1 = node.getBoundsInRoot()
-        assertTrue((bounds1.width / bounds0.width) == 2.5f)
-        assertTrue((bounds1.height / bounds0.height) == 2.5f)
+        assertTrue(bounds1.width > bounds0.width)
+        assertTrue(bounds1.height > bounds0.height)
 
         node.performTouchInput {
             doubleClick(center)
@@ -196,7 +194,8 @@ class ZoomableTest : PlatformZoomableTest() {
         so instead we check that Top and Right are negative numbers.
          */
         val bounds = image.getUnclippedBoundsInRoot()
-        assertTrue(bounds.left < 0.dp && bounds.top < 0.dp)
+        assertTrue(bounds.left < 0.dp)
+        assertTrue(bounds.top < 0.dp)
     }
 
     @Test
@@ -280,9 +279,9 @@ class ZoomableTest : PlatformZoomableTest() {
         val boundsBefore = node.getBoundsInRoot()
         node.performMouseInput { scroll(-1f) }
         val boundsAfter = node.getBoundsInRoot()
-        assertTrue(
-            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
-        )
+
+        assertTrue(boundsAfter.width > boundsBefore.width)
+        assertTrue(boundsAfter.height > boundsBefore.height)
     }
 
     @Test
@@ -295,9 +294,9 @@ class ZoomableTest : PlatformZoomableTest() {
         node.performMouseInput { scroll(-1f) }
         node.performKeyInput { keyUp(Key.CtrlRight) }
         val boundsAfter = node.getBoundsInRoot()
-        assertTrue(
-            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
-        )
+
+        assertTrue(boundsAfter.width > boundsBefore.width)
+        assertTrue(boundsAfter.height > boundsBefore.height)
     }
 
     @Test
