@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
@@ -25,6 +26,8 @@ import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.performMouseInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pinch
 import androidx.compose.ui.test.runComposeUiTest
@@ -37,7 +40,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @Composable
-fun ZoomableContent(zoomEnabled: Boolean = true) {
+fun ZoomableContent(
+    zoomEnabled: Boolean = true,
+    mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
+) {
     val icon = Icons.Default.Info
     val zoomState = rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
     Image(
@@ -49,6 +55,7 @@ fun ZoomableContent(zoomEnabled: Boolean = true) {
             .zoomable(
                 zoomState = zoomState,
                 zoomEnabled = zoomEnabled,
+                mouseWheelZoom = mouseWheelZoom,
             )
     )
 }
@@ -259,6 +266,34 @@ class ZoomableTest : PlatformZoomableTest() {
 
         assertTrue(count == 1)
         assertEquals(positionTapped, positionAtCallback)
+    }
+
+    @Test
+    fun mouse_wheel_operation_works_as_zoom() = runComposeUiTest {
+        setContent { ZoomableContent(mouseWheelZoom = MouseWheelZoom.Enabled) }
+
+        val node = onNodeWithContentDescription("image")
+        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        node.performMouseInput { scroll(-1f) }
+        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        assertTrue(
+            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        )
+    }
+
+    @Test
+    fun modifier_key_and_mouse_wheel_operation_works_as_zoom() = runComposeUiTest {
+        setContent { ZoomableContent(mouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey) }
+
+        val node = onNodeWithContentDescription("image")
+        val boundsBefore = node.fetchSemanticsNode().boundsInRoot
+        node.performKeyInput { keyDown(Key.CtrlRight) }
+        node.performMouseInput { scroll(-1f) }
+        node.performKeyInput { keyUp(Key.CtrlRight) }
+        val boundsAfter = node.fetchSemanticsNode().boundsInRoot
+        assertTrue(
+            (boundsAfter.width > boundsBefore.width && boundsAfter.height > boundsBefore.height)
+        )
     }
 
     @Test
