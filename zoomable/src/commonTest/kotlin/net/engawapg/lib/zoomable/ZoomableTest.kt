@@ -50,7 +50,7 @@ expect open class PlatformZoomableTest()
 @OptIn(ExperimentalTestApi::class)
 class ZoomableTest : PlatformZoomableTest() {
 
-    private fun ComposeUiTest.zoomableContent(
+    private fun ComposeUiTest.zoomableImage(
         zoomEnabled: Boolean = true,
         mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
         onTap: (Offset) -> Unit = {},
@@ -122,13 +122,13 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun pinch_gesture_works() = runComposeUiTest {
-        val node = zoomableContent()
+        val image = zoomableImage()
 
-        val boundsBefore = node.getBoundsInRoot()
-        node.performTouchInput {
+        val boundsBefore = image.getBoundsInRoot()
+        image.performTouchInput {
             pinchZoom()
         }
-        val boundsAfter = node.getBoundsInRoot()
+        val boundsAfter = image.getBoundsInRoot()
 
         assertTrue(boundsAfter.width > boundsBefore.width)
         assertTrue(boundsAfter.height > boundsBefore.height)
@@ -136,17 +136,17 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun tap_and_drag_gesture_works() = runComposeUiTest {
-        val node = zoomableContent()
+        val image = zoomableImage()
 
-        val boundsBefore = node.getBoundsInRoot()
-        node.performTouchInput {
+        val boundsBefore = image.getBoundsInRoot()
+        image.performTouchInput {
             down(center)
             advanceEventTime(100)
             up()
             advanceEventTime(100)
             swipe(start = center, end = center + Offset(0f, 100f))
         }
-        val boundsAfter = node.getBoundsInRoot()
+        val boundsAfter = image.getBoundsInRoot()
 
         assertTrue(boundsAfter.width > boundsBefore.width)
         assertTrue(boundsAfter.height > boundsBefore.height)
@@ -154,21 +154,21 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun double_tap_works_as_zoom() = runComposeUiTest {
-        val node = zoomableContent()
+        val image = zoomableImage()
 
-        val bounds0 = node.getBoundsInRoot()
+        val bounds0 = image.getBoundsInRoot()
 
-        node.performTouchInput {
+        image.performTouchInput {
             doubleClick(center)
         }
-        val bounds1 = node.getBoundsInRoot()
+        val bounds1 = image.getBoundsInRoot()
         assertTrue(bounds1.width > bounds0.width)
         assertTrue(bounds1.height > bounds0.height)
 
-        node.performTouchInput {
+        image.performTouchInput {
             doubleClick(center)
         }
-        val bounds2 = node.getBoundsInRoot()
+        val bounds2 = image.getBoundsInRoot()
         assertEquals(bounds2.size, bounds0.size)
     }
 
@@ -210,14 +210,14 @@ class ZoomableTest : PlatformZoomableTest() {
         var count = 0
         var positionTapped: Offset = Offset.Unspecified
         mainClock.autoAdvance = false
-        val node = zoomableContent(
+        val image = zoomableImage(
             onTap = { position ->
                 count++
                 positionTapped = position
             }
         )
 
-        node.performTouchInput {
+        image.performTouchInput {
             click(Offset(100f, 100f))
         }
         // Wait manually because automatic synchronization does not work well.
@@ -231,14 +231,14 @@ class ZoomableTest : PlatformZoomableTest() {
     fun long_press_works() = runComposeUiTest {
         var count = 0
         var positionTapped: Offset = Offset.Unspecified
-        val node = zoomableContent(
+        val image = zoomableImage(
             onLongPress = { position ->
                 count++
                 positionTapped = position
             }
         )
 
-        node.performTouchInput {
+        image.performTouchInput {
             down(Offset(100f, 100f))
             advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
             up()
@@ -250,11 +250,11 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun mouse_wheel_operation_works_as_zoom() = runComposeUiTest {
-        val node = zoomableContent(mouseWheelZoom = MouseWheelZoom.Enabled)
+        val image = zoomableImage(mouseWheelZoom = MouseWheelZoom.Enabled)
 
-        val boundsBefore = node.getBoundsInRoot()
-        node.performMouseInput { scroll(-1f) }
-        val boundsAfter = node.getBoundsInRoot()
+        val boundsBefore = image.getBoundsInRoot()
+        image.performMouseInput { scroll(-1f) }
+        val boundsAfter = image.getBoundsInRoot()
 
         assertTrue(boundsAfter.width > boundsBefore.width)
         assertTrue(boundsAfter.height > boundsBefore.height)
@@ -262,13 +262,13 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun modifier_key_and_mouse_wheel_operation_works_as_zoom() = runComposeUiTest {
-        val node = zoomableContent(mouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey)
+        val image = zoomableImage(mouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey)
 
-        val boundsBefore = node.getBoundsInRoot()
-        node.performKeyInput { keyDown(Key.CtrlRight) }
-        node.performMouseInput { scroll(-1f) }
-        node.performKeyInput { keyUp(Key.CtrlRight) }
-        val boundsAfter = node.getBoundsInRoot()
+        val boundsBefore = image.getBoundsInRoot()
+        image.performKeyInput { keyDown(Key.CtrlRight) }
+        image.performMouseInput { scroll(-1f) }
+        image.performKeyInput { keyUp(Key.CtrlRight) }
+        val boundsAfter = image.getBoundsInRoot()
 
         assertTrue(boundsAfter.width > boundsBefore.width)
         assertTrue(boundsAfter.height > boundsBefore.height)
@@ -342,12 +342,12 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun pinch_gesture_does_not_work_when_zoom_is_disabled() = runComposeUiTest {
-        val node = zoomableContent(zoomEnabled = false)
+        val image = zoomableImage(zoomEnabled = false)
 
-        val boundsBefore = node.getBoundsInRoot()
-        node.performTouchInput { pinchZoom() }
+        val boundsBefore = image.getBoundsInRoot()
+        image.performTouchInput { pinchZoom() }
 
-        val boundsAfter = node.getBoundsInRoot()
+        val boundsAfter = image.getBoundsInRoot()
         assertEquals(boundsAfter, boundsBefore)
     }
 
@@ -370,20 +370,20 @@ class ZoomableTest : PlatformZoomableTest() {
                 )
             }
 
-            val node = onNodeWithContentDescription("image")
-            val boundsBefore = node.getBoundsInRoot()
-            node.performTouchInput {
+            val image = onNodeWithContentDescription("image")
+            val boundsBefore = image.getBoundsInRoot()
+            image.performTouchInput {
                 down(0, center + Offset(-100f, 0f))
                 down(1, center + Offset(+100f, 0f))
                 moveTo(0, center + Offset(-200f, 0f))
                 moveTo(1, center + Offset(+200f, 0f))
             }
-            val boundsInGesture = node.getBoundsInRoot()
-            node.performTouchInput {
+            val boundsInGesture = image.getBoundsInRoot()
+            image.performTouchInput {
                 up(0)
                 up(1)
             }
-            val boundsAfter = node.getBoundsInRoot()
+            val boundsAfter = image.getBoundsInRoot()
             assertTrue(boundsInGesture.width > boundsBefore.width)
             assertTrue(boundsInGesture.height > boundsBefore.height)
             assertEquals(boundsAfter.width, boundsBefore.width)
@@ -410,20 +410,20 @@ class ZoomableTest : PlatformZoomableTest() {
             )
         }
 
-        val node = onNodeWithContentDescription("image")
-        val boundsBefore = node.getBoundsInRoot()
-        node.performTouchInput {
+        val image = onNodeWithContentDescription("image")
+        val boundsBefore = image.getBoundsInRoot()
+        image.performTouchInput {
             tapAndDragZoom(1.5f)
         }
-        val boundsResult1 = node.getBoundsInRoot()
+        val boundsResult1 = image.getBoundsInRoot()
         assertTrue(boundsResult1.width > boundsBefore.width)
         assertTrue(boundsResult1.height > boundsBefore.height)
 
         enableOneFingerZoom = false
-        node.performTouchInput {
+        image.performTouchInput {
             tapAndDragZoom(1.5f)
         }
-        val boundsResult2 = node.getBoundsInRoot()
+        val boundsResult2 = image.getBoundsInRoot()
         assertEquals(boundsResult2.width, boundsResult1.width)
         assertEquals(boundsResult2.height, boundsResult1.height)
     }
