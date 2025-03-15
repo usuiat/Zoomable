@@ -9,6 +9,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -50,6 +51,37 @@ expect open class PlatformZoomableTest()
 @OptIn(ExperimentalTestApi::class)
 class ZoomableTest : PlatformZoomableTest() {
 
+    @Composable
+    private fun ZoomableImage(
+        contentDescription: String,
+        modifier: Modifier = Modifier,
+        zoomEnabled: Boolean = true,
+        enableOneFingerZoom: Boolean = true,
+        scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
+        mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
+        onTap: (Offset) -> Unit = {},
+        onLongPress: (Offset) -> Unit = {},
+    ) {
+        val icon = Icons.Default.Info
+        val zoomState =
+            rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+        Image(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            contentScale = ContentScale.Fit,
+            modifier = modifier
+                .zoomable(
+                    zoomState = zoomState,
+                    zoomEnabled = zoomEnabled,
+                    enableOneFingerZoom = enableOneFingerZoom,
+                    scrollGesturePropagation = scrollGesturePropagation,
+                    mouseWheelZoom = mouseWheelZoom,
+                    onTap = onTap,
+                    onLongPress = onLongPress,
+                )
+        )
+    }
+
     private fun ComposeUiTest.zoomableImage(
         zoomEnabled: Boolean = true,
         mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
@@ -57,28 +89,19 @@ class ZoomableTest : PlatformZoomableTest() {
         onLongPress: (Offset) -> Unit = {},
     ): SemanticsNodeInteraction {
         setContent {
-            val icon = Icons.Default.Info
-            val zoomState =
-                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-            Image(
-                imageVector = icon,
+            ZoomableImage(
                 contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(300.dp)
-                    .zoomable(
-                        zoomState = zoomState,
-                        zoomEnabled = zoomEnabled,
-                        mouseWheelZoom = mouseWheelZoom,
-                        onTap = onTap,
-                        onLongPress = onLongPress,
-                    )
+                modifier = Modifier.size(300.dp),
+                zoomEnabled = zoomEnabled,
+                mouseWheelZoom = mouseWheelZoom,
+                onTap = onTap,
+                onLongPress = onLongPress,
             )
         }
         return onNodeWithContentDescription("image")
     }
 
-    private fun ComposeUiTest.zoomableOnPagerContent(
+    private fun ComposeUiTest.zoomableImagesOnPager(
         scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     ): List<SemanticsNodeInteraction> {
         setContent {
@@ -89,19 +112,10 @@ class ZoomableTest : PlatformZoomableTest() {
                     .fillMaxSize()
                     .semantics { testTag = "pager" }
             ) { page ->
-                val icon = Icons.Default.Info
-                val zoomState =
-                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-                Image(
-                    imageVector = icon,
+                ZoomableImage(
                     contentDescription = "image$page",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zoomable(
-                            zoomState = zoomState,
-                            scrollGesturePropagation = scrollGesturePropagation,
-                        )
+                    modifier = Modifier.fillMaxSize(),
+                    scrollGesturePropagation = scrollGesturePropagation,
                 )
             }
         }
@@ -179,7 +193,7 @@ class ZoomableTest : PlatformZoomableTest() {
         We ran into a problem with Compose 1.5 where zooming did not work after swiping a
         HorizontalPager page and then returning to the initial page.
          */
-        val images = zoomableOnPagerContent()
+        val images = zoomableImagesOnPager()
 
         images[0].assertIsDisplayed()
         images[0].performTouchInput {
@@ -281,19 +295,10 @@ class ZoomableTest : PlatformZoomableTest() {
         mainClock.autoAdvance = false
         setContent {
             Box(modifier = Modifier.clickable { parentClickCount++ }) {
-                val icon = Icons.Default.Info
-                val zoomState =
-                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-                Image(
-                    imageVector = icon,
+                ZoomableImage(
                     contentDescription = "image",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zoomable(
-                            zoomState = zoomState,
-                            onTap = { zoomableClickCount = 1 },
-                        )
+                    modifier = Modifier.fillMaxSize(),
+                    onTap = { zoomableClickCount++ }
                 )
             }
         }
@@ -311,7 +316,7 @@ class ZoomableTest : PlatformZoomableTest() {
     @Test
     fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() =
         runComposeUiTest {
-            val images = zoomableOnPagerContent(
+            val images = zoomableImagesOnPager(
                 scrollGesturePropagation = ScrollGesturePropagation.ContentEdge
             )
 
@@ -327,7 +332,7 @@ class ZoomableTest : PlatformZoomableTest() {
     @Test
     fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() =
         runComposeUiTest {
-            val images = zoomableOnPagerContent(
+            val images = zoomableImagesOnPager(
                 scrollGesturePropagation = ScrollGesturePropagation.NotZoomed
             )
 
@@ -394,19 +399,10 @@ class ZoomableTest : PlatformZoomableTest() {
     fun enableOneFingerZoom_can_be_changed() = runComposeUiTest {
         var enableOneFingerZoom by mutableStateOf(true)
         setContent {
-            val icon = Icons.Default.Info
-            val zoomState =
-                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-            Image(
-                imageVector = icon,
+            ZoomableImage(
                 contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(300.dp)
-                    .zoomable(
-                        zoomState = zoomState,
-                        enableOneFingerZoom = enableOneFingerZoom,
-                    )
+                modifier = Modifier.size(300.dp),
+                enableOneFingerZoom = enableOneFingerZoom,
             )
         }
 
