@@ -20,7 +20,9 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.TouchInjectionScope
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
@@ -49,26 +51,32 @@ expect open class PlatformZoomableTest()
 @OptIn(ExperimentalTestApi::class)
 class ZoomableTest : PlatformZoomableTest() {
 
-    @Composable
-    private fun ZoomableContent(
+    private fun ComposeUiTest.zoomableContent(
         zoomEnabled: Boolean = true,
         mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
-    ) {
-        val icon = Icons.Default.Info
-        val zoomState =
-            rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-        Image(
-            imageVector = icon,
-            contentDescription = "image",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxSize()
-                .zoomable(
-                    zoomState = zoomState,
-                    zoomEnabled = zoomEnabled,
-                    mouseWheelZoom = mouseWheelZoom,
-                )
-        )
+        onTap: (Offset) -> Unit = {},
+        onLongPress: (Offset) -> Unit = {},
+    ): SemanticsNodeInteraction {
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(300.dp)
+                    .zoomable(
+                        zoomState = zoomState,
+                        zoomEnabled = zoomEnabled,
+                        mouseWheelZoom = mouseWheelZoom,
+                        onTap = onTap,
+                        onLongPress = onLongPress,
+                    )
+            )
+        }
+        return onNodeWithContentDescription("image")
     }
 
     @Composable
@@ -110,9 +118,8 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun pinch_gesture_works() = runComposeUiTest {
-        setContent { ZoomableContent() }
+        val node = zoomableContent()
 
-        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput {
             pinchZoom()
@@ -125,9 +132,8 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun tap_and_drag_gesture_works() = runComposeUiTest {
-        setContent { ZoomableContent() }
+        val node = zoomableContent()
 
-        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput {
             down(center)
@@ -144,9 +150,8 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun double_tap_works_as_zoom() = runComposeUiTest {
-        setContent { ZoomableContent() }
+        val node = zoomableContent()
 
-        val node = onNodeWithContentDescription("image")
         val bounds0 = node.getBoundsInRoot()
 
         node.performTouchInput {
@@ -202,81 +207,50 @@ class ZoomableTest : PlatformZoomableTest() {
     @Test
     fun tap_works() = runComposeUiTest {
         var count = 0
-        var positionAtCallback: Offset = Offset.Unspecified
-        var positionTapped: Offset = Offset.Zero
+        var positionTapped: Offset = Offset.Unspecified
         mainClock.autoAdvance = false
-        setContent {
-            val icon = Icons.Default.Info
-            val zoomState =
-                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-            Image(
-                imageVector = icon,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zoomable(
-                        zoomState = zoomState,
-                        onTap = { position ->
-                            count = 1
-                            positionAtCallback = position
-                        },
-                    )
-            )
-        }
+        val node = zoomableContent(
+            onTap = { position ->
+                count++
+                positionTapped = position
+            }
+        )
 
-        onNodeWithContentDescription("image").performTouchInput {
-            positionTapped = center
-            click(positionTapped)
+        node.performTouchInput {
+            click(Offset(100f, 100f))
         }
         // Wait manually because automatic synchronization does not work well.
         // I think the wait process to determine if it is a double-tap is judged to be idle.
         mainClock.advanceTimeBy(1000L)
         assertTrue(count == 1)
-        assertEquals(positionAtCallback, positionTapped)
+        assertEquals(Offset(100f, 100f), positionTapped)
     }
 
     @Test
     fun long_press_works() = runComposeUiTest {
         var count = 0
-        var positionAtCallback: Offset = Offset.Unspecified
-        var positionTapped: Offset = Offset.Zero
-        setContent {
-            val icon = Icons.Default.Info
-            val zoomState =
-                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-            Image(
-                imageVector = icon,
-                contentDescription = "image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zoomable(
-                        zoomState = zoomState,
-                        onLongPress = { position ->
-                            count = 1
-                            positionAtCallback = position
-                        },
-                    )
-            )
-        }
+        var positionTapped: Offset = Offset.Unspecified
+        val node = zoomableContent(
+            onLongPress = { position ->
+                count++
+                positionTapped = position
+            }
+        )
 
-        onNodeWithContentDescription("image").performTouchInput {
-            positionTapped = center
-            down(positionTapped)
+        node.performTouchInput {
+            down(Offset(100f, 100f))
             advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
             up()
         }
 
         assertTrue(count == 1)
-        assertEquals(positionTapped, positionAtCallback)
+        assertEquals(Offset(100f, 100f), positionTapped)
     }
 
     @Test
     fun mouse_wheel_operation_works_as_zoom() = runComposeUiTest {
-        setContent { ZoomableContent(mouseWheelZoom = MouseWheelZoom.Enabled) }
+        val node = zoomableContent(mouseWheelZoom = MouseWheelZoom.Enabled)
 
-        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
         node.performMouseInput { scroll(-1f) }
         val boundsAfter = node.getBoundsInRoot()
@@ -287,9 +261,8 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun modifier_key_and_mouse_wheel_operation_works_as_zoom() = runComposeUiTest {
-        setContent { ZoomableContent(mouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey) }
+        val node = zoomableContent(mouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey)
 
-        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
         node.performKeyInput { keyDown(Key.CtrlRight) }
         node.performMouseInput { scroll(-1f) }
@@ -373,11 +346,8 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun pinch_gesture_does_not_work_when_zoom_is_disabled() = runComposeUiTest {
-        setContent {
-            ZoomableContent(zoomEnabled = false)
-        }
+        val node = zoomableContent(zoomEnabled = false)
 
-        val node = onNodeWithContentDescription("image")
         val boundsBefore = node.getBoundsInRoot()
         node.performTouchInput { pinchZoom() }
 
