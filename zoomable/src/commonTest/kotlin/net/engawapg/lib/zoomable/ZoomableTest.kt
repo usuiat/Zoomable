@@ -9,7 +9,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -79,32 +78,37 @@ class ZoomableTest : PlatformZoomableTest() {
         return onNodeWithContentDescription("image")
     }
 
-    @Composable
-    private fun ZoomablePagerContent(
+    private fun ComposeUiTest.zoomableOnPagerContent(
         scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
-    ) {
-        val pagerState = rememberPagerState { 2 }
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .semantics { testTag = "pager" }
-        ) { page ->
-            val icon = Icons.Default.Info
-            val zoomState =
-                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
-            Image(
-                imageVector = icon,
-                contentDescription = "image$page",
-                contentScale = ContentScale.Fit,
+    ): List<SemanticsNodeInteraction> {
+        setContent {
+            val pagerState = rememberPagerState { 2 }
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .zoomable(
-                        zoomState = zoomState,
-                        scrollGesturePropagation = scrollGesturePropagation,
-                    )
-            )
+                    .semantics { testTag = "pager" }
+            ) { page ->
+                val icon = Icons.Default.Info
+                val zoomState =
+                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+                Image(
+                    imageVector = icon,
+                    contentDescription = "image$page",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zoomable(
+                            zoomState = zoomState,
+                            scrollGesturePropagation = scrollGesturePropagation,
+                        )
+                )
+            }
         }
+        return listOf(
+            onNodeWithContentDescription("image0"),
+            onNodeWithContentDescription("image1"),
+        )
     }
 
     private fun TouchInjectionScope.pinchZoom() {
@@ -175,23 +179,20 @@ class ZoomableTest : PlatformZoomableTest() {
         We ran into a problem with Compose 1.5 where zooming did not work after swiping a
         HorizontalPager page and then returning to the initial page.
          */
-        setContent { ZoomablePagerContent() }
+        val images = zoomableOnPagerContent()
 
-        var image = onNodeWithContentDescription("image0")
-        image.assertIsDisplayed()
-        image.performTouchInput {
+        images[0].assertIsDisplayed()
+        images[0].performTouchInput {
             swipeLeft()
         }
 
-        image = onNodeWithContentDescription("image1")
-        image.assertIsDisplayed()
-        image.performTouchInput {
+        images[1].assertIsDisplayed()
+        images[1].performTouchInput {
             swipeRight()
         }
 
-        image = onNodeWithContentDescription("image0")
-        image.assertIsDisplayed()
-        image.performTouchInput {
+        images[0].assertIsDisplayed()
+        images[0].performTouchInput {
             pinchZoom()
         }
 
@@ -199,7 +200,7 @@ class ZoomableTest : PlatformZoomableTest() {
         We really want to check the size of the image, but on Pager we cannot get the size right,
         so instead we check that Top and Right are negative numbers.
          */
-        val bounds = image.getUnclippedBoundsInRoot()
+        val bounds = images[0].getUnclippedBoundsInRoot()
         assertTrue(bounds.left < 0.dp)
         assertTrue(bounds.top < 0.dp)
     }
@@ -310,38 +311,33 @@ class ZoomableTest : PlatformZoomableTest() {
     @Test
     fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() =
         runComposeUiTest {
-            setContent {
-                ZoomablePagerContent(
-                    scrollGesturePropagation = ScrollGesturePropagation.ContentEdge
-                )
-            }
+            val images = zoomableOnPagerContent(
+                scrollGesturePropagation = ScrollGesturePropagation.ContentEdge
+            )
 
-            val image0 = onNodeWithContentDescription("image0")
-            image0.performTouchInput { doubleClick() }
+            images[0].performTouchInput { doubleClick() }
             waitForIdle()
-            image0.performTouchInput { swipeLeft() }
+            images[0].performTouchInput { swipeLeft() }
             waitForIdle()
-            image0.performTouchInput { swipeLeft() }
+            images[0].performTouchInput { swipeLeft() }
 
-            val image1 = onNodeWithContentDescription("image1")
-            image1.assertIsDisplayed()
+            images[1].assertIsDisplayed()
         }
 
     @Test
     fun scroll_gesture_propagation_not_zoomed_disables_to_swipe_page_on_content_edge() =
         runComposeUiTest {
-            setContent {
-                ZoomablePagerContent(scrollGesturePropagation = ScrollGesturePropagation.NotZoomed)
-            }
+            val images = zoomableOnPagerContent(
+                scrollGesturePropagation = ScrollGesturePropagation.NotZoomed
+            )
 
-            val image0 = onNodeWithContentDescription("image0")
-            image0.performTouchInput { doubleClick() }
+            images[0].performTouchInput { doubleClick() }
             waitForIdle()
-            image0.performTouchInput { swipeLeft() }
+            images[0].performTouchInput { swipeLeft() }
             waitForIdle()
-            image0.performTouchInput { swipeLeft() }
+            images[0].performTouchInput { swipeLeft() }
 
-            image0.assertIsDisplayed()
+            images[0].assertIsDisplayed()
         }
 
     @Test
