@@ -152,6 +152,16 @@ You can easily achieve Instagram-like behavior.
 
 <img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />
 
+### Mouse Scroll Wheel
+
+By default, zooming works by holding down the Ctrl key and operating the mouse wheel.
+This is intended to be used primarily with desktop, but it also works with Android.
+You can change the behavior by using the `mouseWheelZoom` argument of `zoomable`.
+
+- `Disabled` disables zoom by mouse wheel operation.
+- `Enabled` enables zoom by mouse wheel operation regardless of whether the modifier key is pressed.
+- `EnabledWithCtrlKey`, `EnabledWithShiftKey`, `EnabledWithAltKey`, and `EnabledWithMetaKey` enable zoom by mouse wheel operation while holding down the modifier key.
+
 ## Samples
 
 You can try [sample app](./composeApp/) that contains following samples.
