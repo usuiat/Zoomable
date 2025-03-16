@@ -1,13 +1,10 @@
 # Zoomable
 
-Zoomable is a Compose Multiplatform library that enables the content zoomable by pinch gesture, by double-tap, or by double-tap and drag gesture.
+Zoomable is a Compose Multiplatform library that enables the content zoomable by pinch gesture, double-tap, tap-and-drag gesture, or mouse scroll wheel.
 
 | <img width="150" alt="Pinch" src="./doc/penguin.gif" /> | <img width="150" alt="Double-tap" src="./doc/double-tap.gif" /> | <img width="150" alt="Double-tap and drag" src="./doc/single_finger_gesture.gif" /> |
 |----------------------|-------------------------|------------------------------------|
 | Pinch                | Double-tap              | Double-tap and drag                |
-
-
-
 
 Zoomable provides a simple Modifier extension function `Modifier.zoomable`.
 
@@ -31,12 +28,18 @@ Zoomable also can be used in conjunction with `HorizontalPager` and `VerticalPag
 
 ## Platforms
 
-|Platform|Support|
-|--|--|
-|Android| ✅ Supported|
-|iOS| ✅ Supported|
-|Desktop| ⚠️ Experimental<br />Only double-tap zoom is available.<br />Touch gestures and mouse gestures are not available.|
-|Web| 🚫  Not supported|
+Zoomable supports Android, iOS, and Desktop.
+
+|Platform|Pinch|Double-tap|Tap-and-drag|Mouse scroll wheel|
+|--|--|--|--|--|
+|Android|✅|✅|✅|✅|
+|iOS|✅|✅|✅|*1|
+|Desktop|*2|✅|✅|✅|
+
+- ✅: Supported
+- *1: Mouse wheel scroll may not work on iOS.
+- *2: Compose desktop does not support multi-touch gestures.
+- Compose web is not supported. 
 
 ## API Reference
 
@@ -121,7 +124,7 @@ zoomable(
 
 ### One finger zoom
 
-By default, one finger zoom action, double tap followed by vertical drag, is enabled.
+By default, one finger zoom action, tap followed by vertical drag, is enabled.
 If you want disable it, set false to `enableOneFingerZoom`.
 
 ```Kotlin
@@ -149,14 +152,24 @@ You can easily achieve Instagram-like behavior.
 
 <img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />
 
+### Mouse Scroll Wheel
+
+By default, zooming works by holding down the Ctrl key and operating the mouse wheel.
+This is intended to be used primarily with desktop, but it also works with Android.
+You can change the behavior by using the `mouseWheelZoom` argument of `zoomable`.
+
+- `Disabled` disables zoom by mouse wheel operation.
+- `Enabled` enables zoom by mouse wheel operation regardless of whether the modifier key is pressed.
+- `EnabledWithCtrlKey`, `EnabledWithShiftKey`, `EnabledWithAltKey`, and `EnabledWithMetaKey` enable zoom by mouse wheel operation while holding down the modifier key.
+
 ## Samples
 
 You can try [sample app](./composeApp/) that contains following samples.
 
-- Standard Image composable
-- Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library
-- Text
-- Image on `HorizontalPager` and `VerticalPager`
+- Standard Image composable ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/BasicSample.kt))
+- Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/CoilSample.kt))
+- Image on `HorizontalPager` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/PagerSample.kt))
+- Snap back zoom ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/SnapBackSample.kt))
 
 ## Lisence
 
