@@ -40,9 +40,9 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
     onGestureStart: () -> Unit = {},
     onGestureEnd: () -> Unit = {},
-    onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: (position: Offset) -> Unit = {},
-    onLongPress: (position: Offset) -> Unit = {},
+    onTap: ((position: Offset) -> Unit)? = null,
+    onDoubleTap: ((position: Offset) -> Unit)? = null,
+    onLongPress: ((position: Offset) -> Unit)? = null,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
     firstDown.consume()
@@ -64,9 +64,9 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     enableOneFingerZoom: () -> Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
-    onTap: (position: Offset) -> Unit,
-    onDoubleTap: (position: Offset) -> Unit,
-    onLongPress: (position: Offset) -> Unit,
+    onTap: ((position: Offset) -> Unit)?,
+    onDoubleTap: ((position: Offset) -> Unit)?,
+    onLongPress: ((position: Offset) -> Unit)?,
 ) {
     val startPosition = currentEvent.changes[0].position
     var event = try {
@@ -74,7 +74,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
             awaitTouchSlop()
         } ?: return
     } catch (_: PointerEventTimeoutCancellationException) {
-        onLongPress(startPosition)
+        onLongPress?.invoke(startPosition)
         consumeAllEventsUntilReleased()
         return
     }
@@ -104,7 +104,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
 
     val secondDown = awaitSecondDown(firstUp)
     if (secondDown == null) {
-        onTap(firstUp.position)
+        onTap?.invoke(firstUp.position)
         return
     }
     secondDown.consume()
@@ -113,7 +113,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     if (!event.isPressed) {
         val pressedTime = event.changes[0].uptimeMillis - secondDown.uptimeMillis
         if (pressedTime < viewConfiguration.longPressTimeoutMillis) {
-            onDoubleTap(event.changes[0].position)
+            onDoubleTap?.invoke(event.changes[0].position)
         }
         return
     }

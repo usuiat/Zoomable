@@ -77,11 +77,11 @@ public fun Modifier.zoomable(
     zoomEnabled: Boolean = true,
     enableOneFingerZoom: Boolean = true,
     scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
-    onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: suspend (
-        position: Offset,
-    ) -> Unit = { position -> if (zoomEnabled) zoomState.toggleScale(2.5f, position) },
-    onLongPress: (position: Offset) -> Unit = {},
+    onTap: ((position: Offset) -> Unit)? = null,
+    onDoubleTap: (suspend (position: Offset) -> Unit)? = { position ->
+        if (zoomEnabled) zoomState.toggleScale(2.5f, position)
+    },
+    onLongPress: ((position: Offset) -> Unit)? = null,
     mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
@@ -131,9 +131,9 @@ private data class ZoomableElement(
     val enableOneFingerZoom: Boolean,
     val snapBackEnabled: Boolean,
     val scrollGesturePropagation: ScrollGesturePropagation,
-    val onTap: (position: Offset) -> Unit,
-    val onDoubleTap: suspend (position: Offset) -> Unit,
-    val onLongPress: (position: Offset) -> Unit,
+    val onTap: ((position: Offset) -> Unit)?,
+    val onDoubleTap: (suspend (position: Offset) -> Unit)?,
+    val onLongPress: ((position: Offset) -> Unit)?,
     val mouseWheelZoom: MouseWheelZoom,
 ) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
@@ -182,9 +182,9 @@ private class ZoomableNode(
     var enableOneFingerZoom: Boolean,
     var snapBackEnabled: Boolean,
     var scrollGesturePropagation: ScrollGesturePropagation,
-    var onTap: (position: Offset) -> Unit,
-    var onDoubleTap: suspend (position: Offset) -> Unit,
-    var onLongPress: (position: Offset) -> Unit,
+    var onTap: ((position: Offset) -> Unit)?,
+    var onDoubleTap: (suspend (position: Offset) -> Unit)?,
+    var onLongPress: ((position: Offset) -> Unit)?,
     var mouseWheelZoom: MouseWheelZoom,
 ) : PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
@@ -195,9 +195,9 @@ private class ZoomableNode(
         enableOneFingerZoom: Boolean,
         snapBackEnabled: Boolean,
         scrollGesturePropagation: ScrollGesturePropagation,
-        onTap: (position: Offset) -> Unit,
-        onDoubleTap: suspend (position: Offset) -> Unit,
-        onLongPress: (position: Offset) -> Unit,
+        onTap: ((position: Offset) -> Unit)?,
+        onDoubleTap: (suspend (position: Offset) -> Unit)?,
+        onLongPress: ((position: Offset) -> Unit)?,
         mouseWheelZoom: MouseWheelZoom,
     ) {
         if (this.zoomState != zoomState) {
@@ -246,13 +246,13 @@ private class ZoomableNode(
                         }
                     }
                 },
-                onTap = { onTap(it) },
+                onTap = { onTap?.invoke(it) },
                 onDoubleTap = { position ->
                     coroutineScope.launch {
-                        onDoubleTap(position)
+                        onDoubleTap?.invoke(position)
                     }
                 },
-                onLongPress = { onLongPress(it) },
+                onLongPress = { onLongPress?.invoke(it) },
                 enableOneFingerZoom = { enableOneFingerZoom },
             )
         }
