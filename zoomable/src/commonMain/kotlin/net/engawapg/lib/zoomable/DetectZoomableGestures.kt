@@ -102,6 +102,11 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     }
     val firstUp = event.changes[0]
 
+    if (onDoubleTap == null && !enableOneFingerZoom()) {
+        onTap?.invoke(firstUp.position)
+        return
+    }
+
     val secondDown = awaitSecondDown(firstUp)
     if (secondDown == null) {
         onTap?.invoke(firstUp.position)
