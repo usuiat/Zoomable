@@ -208,6 +208,12 @@ private class ZoomableNode(
         this.enableOneFingerZoom = enableOneFingerZoom
         this.scrollGesturePropagation = scrollGesturePropagation
         this.snapBackEnabled = snapBackEnabled
+        if (((onTap == null) != (this.onTap == null)) ||
+            ((onDoubleTap == null) != (this.onDoubleTap == null)) ||
+            ((onLongPress == null) != (this.onLongPress == null))
+        ) {
+            this.pointerInputNode.resetPointerInputHandler()
+        }
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
         this.onLongPress = onLongPress
@@ -246,13 +252,21 @@ private class ZoomableNode(
                         }
                     }
                 },
-                onTap = { onTap?.invoke(it) },
-                onDoubleTap = { position ->
-                    coroutineScope.launch {
-                        onDoubleTap?.invoke(position)
-                    }
+                onTap = if (onTap != null) {
+                    { onTap?.invoke(it) }
+                } else {
+                    null
                 },
-                onLongPress = { onLongPress?.invoke(it) },
+                onDoubleTap = if (onDoubleTap != null) {
+                    { coroutineScope.launch { onDoubleTap?.invoke(it) } }
+                } else {
+                    null
+                },
+                onLongPress = if (onLongPress != null) {
+                    { onLongPress?.invoke(it) }
+                } else {
+                    null
+                },
                 enableOneFingerZoom = { enableOneFingerZoom },
             )
         }
