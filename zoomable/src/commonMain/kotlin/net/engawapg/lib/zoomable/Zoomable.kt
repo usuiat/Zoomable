@@ -110,9 +110,9 @@ public fun Modifier.zoomable(
 public fun Modifier.snapBackZoomable(
     zoomState: ZoomState,
     zoomEnabled: Boolean = true,
-    onTap: (position: Offset) -> Unit = {},
-    onDoubleTap: suspend (position: Offset) -> Unit = {},
-    onLongPress: (position: Offset) -> Unit = {},
+    onTap: ((position: Offset) -> Unit)? = null,
+    onDoubleTap: (suspend (position: Offset) -> Unit)? = null,
+    onLongPress: ((position: Offset) -> Unit)? = null,
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
     zoomEnabled = zoomEnabled,
