@@ -33,13 +33,18 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     private val ViewConfiguration.tapDetermineDelay: Long
         get() = doubleTapTimeoutMillis * 2
 
-    private fun SemanticsNodeInteraction.performGesture(gesture: TouchInjectionScope.() -> Unit) {
+    private fun SemanticsNodeInteraction.performGesture(
+        waitCompleted: Boolean = true,
+        gesture: TouchInjectionScope.() -> Unit,
+    ) {
         performTouchInput {
             gesture()
 
-            // Wait for the gesture to complete
-            advanceEventTime(viewConfiguration.tapDetermineDelay)
-            down(center)
+            if (waitCompleted) {
+                // Wait for the gesture to complete
+                advanceEventTime(viewConfiguration.tapDetermineDelay)
+                down(center)
+            }
         }
     }
 
@@ -62,6 +67,9 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         cancelIfZoomCanceled: Boolean = false,
         enableOneFingerZoom: Boolean = true,
         canConsumeGesture: (Offset, Float) -> Boolean = { _, _ -> true },
+        onTap: ((Offset) -> Unit)? = { result.tap++ },
+        onDoubleTap: ((Offset) -> Unit)? = { result.doubleTap++ },
+        onLongPress: ((Offset) -> Unit)? = { result.longPress++ },
     ): SemanticsNodeInteraction {
         val testTag = "target"
         setContent {
@@ -77,9 +85,9 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                                 result.pan += pan
                                 result.zoom *= zoom
                             },
-                            onTap = { result.tap++ },
-                            onDoubleTap = { result.doubleTap++ },
-                            onLongPress = { result.longPress++ },
+                            onTap = onTap,
+                            onDoubleTap = onDoubleTap,
+                            onLongPress = onLongPress,
                             enableOneFingerZoom = { enableOneFingerZoom },
                         )
                     }
@@ -648,4 +656,21 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
 
         assertTrue(changes.all { it.isConsumed })
     }
+
+    @Test
+    fun tap_should_be_processed_immediately_if_double_tap_and_one_finger_zoom_are_disabled() =
+        runComposeUiTest {
+            val result = ZoomableResult()
+            val target = pointerInputContentWithDetectZoomableGestures(
+                result,
+                enableOneFingerZoom = false,
+                onDoubleTap = null
+            )
+
+            target.performGesture(waitCompleted = false) {
+                click()
+            }
+
+            assertEquals(1, result.tap)
+        }
 }

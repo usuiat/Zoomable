@@ -134,6 +134,23 @@ class ZoomableTest : PlatformZoomableTest() {
         )
     }
 
+    private fun TouchInjectionScope.longPress(position: Offset = center) {
+        down(position)
+        advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+        up()
+    }
+
+    private fun TouchInjectionScope.tapAndWaitConfirmed(position: Offset = center) {
+        click(position)
+        waitDoubleTapTimeout()
+    }
+
+    private fun TouchInjectionScope.waitDoubleTapTimeout() {
+        advanceEventTime(viewConfiguration.doubleTapTimeoutMillis * 2)
+        down(center)
+        cancel()
+    }
+
     @Test
     fun pinch_gesture_works() = runComposeUiTest {
         val image = zoomableImage()
@@ -223,7 +240,6 @@ class ZoomableTest : PlatformZoomableTest() {
     fun tap_works() = runComposeUiTest {
         var count = 0
         var positionTapped: Offset = Offset.Unspecified
-        mainClock.autoAdvance = false
         val image = zoomableImage(
             onTap = { position ->
                 count++
@@ -232,11 +248,9 @@ class ZoomableTest : PlatformZoomableTest() {
         )
 
         image.performTouchInput {
-            click(Offset(100f, 100f))
+            tapAndWaitConfirmed(Offset(100f, 100f))
         }
-        // Wait manually because automatic synchronization does not work well.
-        // I think the wait process to determine if it is a double-tap is judged to be idle.
-        mainClock.advanceTimeBy(1000L)
+
         assertTrue(count == 1)
         assertEquals(Offset(100f, 100f), positionTapped)
     }
@@ -253,9 +267,7 @@ class ZoomableTest : PlatformZoomableTest() {
         )
 
         image.performTouchInput {
-            down(Offset(100f, 100f))
-            advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
-            up()
+            longPress(Offset(100f, 100f))
         }
 
         assertTrue(count == 1)
@@ -292,7 +304,6 @@ class ZoomableTest : PlatformZoomableTest() {
     fun tap_gesture_works_even_if_parent_composable_has_clickable_modifier() = runComposeUiTest {
         var zoomableClickCount = 0
         var parentClickCount = 0
-        mainClock.autoAdvance = false
         setContent {
             Box(modifier = Modifier.clickable { parentClickCount++ }) {
                 ZoomableImage(
@@ -304,11 +315,9 @@ class ZoomableTest : PlatformZoomableTest() {
         }
 
         onNodeWithContentDescription("image").performTouchInput {
-            click(center)
+            tapAndWaitConfirmed()
         }
-        // Wait manually because automatic synchronization does not work well.
-        // I think the wait process to determine if it is a double-tap is judged to be idle.
-        mainClock.advanceTimeBy(1000L)
+
         assertEquals(1, zoomableClickCount)
         assertEquals(0, parentClickCount)
     }
@@ -422,5 +431,133 @@ class ZoomableTest : PlatformZoomableTest() {
         val boundsResult2 = image.getBoundsInRoot()
         assertEquals(boundsResult2.width, boundsResult1.width)
         assertEquals(boundsResult2.height, boundsResult1.height)
+    }
+
+    @Test
+    fun tap_fires_immediately_if_double_tap_and_one_finger_zoom_disabled() = runComposeUiTest {
+        var count = 0
+        var doubleTapEnabled by mutableStateOf(true)
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(300.dp)
+                    .zoomable(
+                        zoomState = zoomState,
+                        enableOneFingerZoom = false,
+                        onTap = { count++ },
+                        onDoubleTap = if (doubleTapEnabled) {
+                            {}
+                        } else {
+                            null
+                        },
+                    )
+            )
+        }
+        val image = onNodeWithContentDescription("image")
+
+        // When double tap is enabled, it takes time to tap to fire.
+        image.performTouchInput {
+            click()
+        }
+        assertEquals(0, count)
+        image.performTouchInput {
+            waitDoubleTapTimeout()
+        }
+        assertEquals(1, count)
+
+        // When double tap is disabled, it takes no time to tap to fire.
+        doubleTapEnabled = false
+        image.performTouchInput {
+            click()
+        }
+        assertEquals(2, count)
+    }
+
+    @Test
+    fun gesture_callbacks_can_be_disabled_and_enabled() = runComposeUiTest {
+        var tapResult = 0
+        var doubleTapResult = 0
+        var longPressResult = 0
+        var callbackState by mutableStateOf("plus1")
+        setContent {
+            val icon = Icons.Default.Info
+            val zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(300.dp)
+                    .zoomable(
+                        zoomState = zoomState,
+                        enableOneFingerZoom = false,
+                        onTap = when (callbackState) {
+                            "plus1" -> {
+                                { tapResult += 1 }
+                            }
+                            "plus10" -> {
+                                { tapResult += 10 }
+                            }
+                            else -> null
+                        },
+                        onDoubleTap = when (callbackState) {
+                            "plus1" -> {
+                                { doubleTapResult += 1 }
+                            }
+                            "plus10" -> {
+                                { doubleTapResult += 10 }
+                            }
+                            else -> null
+                        },
+                        onLongPress = when (callbackState) {
+                            "plus1" -> {
+                                { longPressResult += 1 }
+                            }
+                            "plus10" -> {
+                                { longPressResult += 10 }
+                            }
+                            else -> null
+                        },
+                    )
+            )
+        }
+        val image = onNodeWithContentDescription("image")
+
+        callbackState = "plus1"
+        image.performTouchInput {
+            tapAndWaitConfirmed()
+            doubleClick()
+            longPress()
+        }
+        assertEquals(1, tapResult)
+        assertEquals(1, doubleTapResult)
+        assertEquals(1, longPressResult)
+
+        callbackState = ""
+        image.performTouchInput {
+            click()
+            doubleClick()
+            longPress()
+        }
+        assertEquals(1, tapResult)
+        assertEquals(1, doubleTapResult)
+        assertEquals(1, longPressResult)
+
+        callbackState = "plus10"
+        image.performTouchInput {
+            tapAndWaitConfirmed()
+            doubleClick()
+            longPress()
+        }
+        assertEquals(11, tapResult)
+        assertEquals(11, doubleTapResult)
+        assertEquals(11, longPressResult)
     }
 }
