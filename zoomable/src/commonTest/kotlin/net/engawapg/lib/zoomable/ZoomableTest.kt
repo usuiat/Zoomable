@@ -323,6 +323,38 @@ class ZoomableTest : PlatformZoomableTest() {
     }
 
     @Test
+    fun tap_gesture_on_parent_composable_works_if_zoomable_tap_is_disabled() = runComposeUiTest {
+        var parentClickCount = 0
+        setContent {
+            Box(modifier = Modifier.clickable { parentClickCount++ }) {
+                val icon = Icons.Default.Info
+                val zoomState =
+                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+                Image(
+                    imageVector = icon,
+                    contentDescription = "image",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .zoomable(
+                            zoomState = zoomState,
+                            enableOneFingerZoom = false,
+                            onTap = null,
+                            onLongPress = null,
+                            onDoubleTap = null,
+                        )
+                )
+            }
+        }
+
+        onNodeWithContentDescription("image").performTouchInput {
+            click()
+        }
+
+        assertEquals(1, parentClickCount)
+    }
+
+    @Test
     fun scroll_gesture_propagation_content_edge_enables_to_swipe_page_on_content_edge() =
         runComposeUiTest {
             val images = zoomableImagesOnPager(

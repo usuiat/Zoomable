@@ -19,6 +19,7 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.TouchInjectionScope
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.runComposeUiTest
@@ -516,6 +517,49 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertTrue(downEvents.isEmpty())
+    }
+
+    @Test
+    fun first_down_event_should_not_be_consumed_if_tap_is_not_needed() = runComposeUiTest {
+        val downEvents = mutableListOf<PointerInputChange>()
+        val targetTag = "target"
+        setContent {
+            Box(
+                modifier = Modifier
+                    .pointerInput(Unit) {
+                        awaitEachGesture {
+                            downEvents.add(awaitFirstDown(requireUnconsumed = true))
+                        }
+                    }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .testTag(targetTag)
+                        .size(300.dp)
+                        .pointerInput(Unit) {
+                            detectZoomableGestures(
+                                cancelIfZoomCanceled = { true },
+                                canConsumeGesture = { _, _ -> true },
+                                onGesture = { _, _, _, _ -> },
+                                onTap = null,
+                                onDoubleTap = null,
+                                onLongPress = null,
+                                enableOneFingerZoom = { false },
+                            )
+                        }
+                )
+            }
+        }
+        val target = onNodeWithTag(targetTag)
+
+        target.performTouchInput {
+            pinchZoom(2f)
+            pan(50f)
+            longClick()
+            click()
+        }
+
+        assertEquals(4, downEvents.size)
     }
 
     @Test

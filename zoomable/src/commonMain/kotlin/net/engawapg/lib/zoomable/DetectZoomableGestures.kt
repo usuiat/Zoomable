@@ -45,7 +45,9 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     onLongPress: ((position: Offset) -> Unit)? = null,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
-    firstDown.consume()
+    if (onTap != null || onDoubleTap != null || onLongPress != null || enableOneFingerZoom()) {
+        firstDown.consume()
+    }
     onGestureStart()
     detectGesture(
         cancelIfZoomCanceled = cancelIfZoomCanceled,
