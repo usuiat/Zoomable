@@ -186,12 +186,12 @@ public class ZoomState(
         val newOffset = calculateNewOffset(newScale, position, pan)
         val newBounds = calculateNewBounds(newScale)
 
-        _offsetX.updateBounds(newBounds.left, newBounds.right)
+//        _offsetX.updateBounds(newBounds.left, newBounds.right)
         launch {
             _offsetX.snapTo(newOffset.x)
         }
 
-        _offsetY.updateBounds(newBounds.top, newBounds.bottom)
+//        _offsetY.updateBounds(newBounds.top, newBounds.bottom)
         launch {
             _offsetY.snapTo(newOffset.y)
         }
@@ -229,14 +229,14 @@ public class ZoomState(
         launch {
             _offsetX.updateBounds(null, null)
             _offsetX.animateTo(x, animationSpec)
-            _offsetX.updateBounds(newBounds.left, newBounds.right)
+//            _offsetX.updateBounds(newBounds.left, newBounds.right)
         }
 
         val y = newOffset.y.coerceIn(newBounds.top, newBounds.bottom)
         launch {
             _offsetY.updateBounds(null, null)
             _offsetY.animateTo(y, animationSpec)
-            _offsetY.updateBounds(newBounds.top, newBounds.bottom)
+//            _offsetY.updateBounds(newBounds.top, newBounds.bottom)
         }
 
         launch {
