@@ -67,6 +67,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(compose.animation)
             implementation(compose.foundation)
             implementation(compose.runtime)
             implementation(compose.ui)

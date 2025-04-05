@@ -25,6 +25,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -60,9 +61,7 @@ public class ZoomState(
         require(initialScale >= 1.0f) { "initialScale must be at least 1.0." }
     }
 
-    private var _scale = Animatable(initialScale).apply {
-        updateBounds(0.9f, maxScale)
-    }
+    private var _scale = mutableFloatStateOf(initialScale)
 
     /**
      * The scale of the content.
@@ -136,7 +135,7 @@ public class ZoomState(
      * Reset the scale and the offsets.
      */
     public suspend fun reset(): Unit = coroutineScope {
-        launch { _scale.snapTo(initialScale) }
+        launch { _scale.value = initialScale }
         _offsetX.updateBounds(0f, 0f)
         launch { _offsetX.snapTo(0f) }
         _offsetY.updateBounds(0f, 0f)
@@ -196,9 +195,7 @@ public class ZoomState(
             _offsetY.snapTo(newOffset.y)
         }
 
-        launch {
-            _scale.snapTo(newScale)
-        }
+        _scale.value = newScale
 
         if (zoom == 1f) {
             velocityTracker.addPosition(timeMillis, position)
