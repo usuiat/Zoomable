@@ -21,6 +21,9 @@ import androidx.compose.animation.core.spring
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScrollModifierNode
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
@@ -93,6 +96,7 @@ public fun Modifier.zoomable(
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
     mouseWheelZoom = mouseWheelZoom,
+    enableNestedScroll = false,
 )
 
 /**
@@ -123,6 +127,31 @@ public fun Modifier.snapBackZoomable(
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
     mouseWheelZoom = MouseWheelZoom.Disabled,
+    enableNestedScroll = false,
+)
+
+public fun Modifier.zoomableWithScroll(
+    zoomState: ZoomState,
+    zoomEnabled: Boolean = true,
+    enableOneFingerZoom: Boolean = true,
+    scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
+    onTap: ((position: Offset) -> Unit)? = null,
+    onDoubleTap: (suspend (position: Offset) -> Unit)? = { position ->
+        if (zoomEnabled) zoomState.toggleScale(2.5f, position)
+    },
+    onLongPress: ((position: Offset) -> Unit)? = null,
+    mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
+): Modifier = this then ZoomableElement(
+    zoomState = zoomState,
+    zoomEnabled = zoomEnabled,
+    enableOneFingerZoom = enableOneFingerZoom,
+    snapBackEnabled = false,
+    scrollGesturePropagation = scrollGesturePropagation,
+    onTap = onTap,
+    onDoubleTap = onDoubleTap,
+    onLongPress = onLongPress,
+    mouseWheelZoom = mouseWheelZoom,
+    enableNestedScroll = true,
 )
 
 private data class ZoomableElement(
@@ -135,6 +164,7 @@ private data class ZoomableElement(
     val onDoubleTap: (suspend (position: Offset) -> Unit)?,
     val onLongPress: ((position: Offset) -> Unit)?,
     val mouseWheelZoom: MouseWheelZoom,
+    val enableNestedScroll: Boolean,
 ) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
@@ -146,6 +176,7 @@ private data class ZoomableElement(
         onDoubleTap,
         onLongPress,
         mouseWheelZoom,
+        enableNestedScroll,
     )
 
     override fun update(node: ZoomableNode) {
@@ -173,6 +204,7 @@ private data class ZoomableElement(
         properties["onDoubleTap"] = onDoubleTap
         properties["onLongPress"] = onLongPress
         properties["mouseWheelZoom"] = mouseWheelZoom
+        properties["enableNestedScroll"] = enableNestedScroll
     }
 }
 
@@ -186,6 +218,7 @@ private class ZoomableNode(
     var onDoubleTap: (suspend (position: Offset) -> Unit)?,
     var onLongPress: ((position: Offset) -> Unit)?,
     var mouseWheelZoom: MouseWheelZoom,
+    enableNestedScroll: Boolean,
 ) : PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
@@ -218,6 +251,28 @@ private class ZoomableNode(
         this.onDoubleTap = onDoubleTap
         this.onLongPress = onLongPress
         this.mouseWheelZoom = mouseWheelZoom
+    }
+
+    init {
+        if (enableNestedScroll) {
+            delegate(
+                nestedScrollModifierNode(
+                    connection = object : NestedScrollConnection {
+                        override fun onPostScroll(
+                            consumed: Offset,
+                            available: Offset,
+                            source: NestedScrollSource,
+                        ): Offset {
+                            return zoomState.applyPan(
+                                pan = available,
+                                coroutineScope = coroutineScope
+                            )
+                        }
+                    },
+                    dispatcher = null,
+                )
+            )
+        }
     }
 
     val pointerInputNode = delegate(
