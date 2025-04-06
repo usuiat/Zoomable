@@ -18,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
+import net.engawapg.lib.zoomable.ExperimentalZoomableApi
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomableWithScroll
 
+@OptIn(ExperimentalZoomableApi::class)
 @Composable
 fun LazyColumnSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()

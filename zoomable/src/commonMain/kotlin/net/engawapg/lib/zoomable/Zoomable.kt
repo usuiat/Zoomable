@@ -130,6 +130,7 @@ public fun Modifier.snapBackZoomable(
     enableNestedScroll = false,
 )
 
+@ExperimentalZoomableApi
 public fun Modifier.zoomableWithScroll(
     zoomState: ZoomState,
     zoomEnabled: Boolean = true,
