@@ -41,24 +41,6 @@ import androidx.compose.ui.unit.toSize
 import kotlinx.coroutines.launch
 
 /**
- * [ScrollGesturePropagation] defines when [Modifier.zoomable] propagates scroll gestures to the
- * parent composable element.
- */
-public enum class ScrollGesturePropagation {
-
-    /**
-     * Propagates the scroll gesture to the parent composable element when the content is scrolled
-     * to the edge and attempts to scroll further.
-     */
-    ContentEdge,
-
-    /**
-     * Propagates the scroll gesture to the parent composable element when the content is not zoomed.
-     */
-    NotZoomed,
-}
-
-/**
  * A modifier function that allows content to be zoomable.
  *
  * @param zoomState A [ZoomState] object.
