@@ -50,10 +50,7 @@ fun ScrollableRowSample(
 }
 
 @Composable
-private fun RowItem(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+private fun RowItem(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         modifier = modifier
