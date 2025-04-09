@@ -112,6 +112,29 @@ public fun Modifier.snapBackZoomable(
     enableNestedScroll = false,
 )
 
+/**
+ * A modifier function that allows scrollable content to be zoomable.
+ *
+ * It can be applied to lazy composable functions such as LazyColumn and LazyRow.
+ *
+ * It can also be applied in combination with Modifier.verticalScroll for Columns, or
+ * Modifier.horizontalScroll for Rows. In these case, please write it before verticalScroll or
+ * horizontalScroll in the modifier chain.
+ *
+ * @param zoomState A [ZoomState] object.
+ * @param zoomEnabled specifies if zoom behaviour is enabled or disabled. Even if this is false,
+ * [onTap] and [onDoubleTap] will be called.
+ * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
+ * vertical scrolling.
+ * @param scrollGesturePropagation specifies when scroll gestures are propagated to the parent
+ * composable element.
+ * @param onTap will be called when single tap is detected on the element.
+ * @param onDoubleTap will be called when double tap is detected on the element. This is a suspend
+ * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
+ * 2.5f with animation.
+ * @param onLongPress will be called when time elapses without the pointer moving
+ * @param mouseWheelZoom specifies mouse wheel zoom behaviour.
+ */
 @ExperimentalZoomableApi
 public fun Modifier.zoomableWithScroll(
     zoomState: ZoomState,
