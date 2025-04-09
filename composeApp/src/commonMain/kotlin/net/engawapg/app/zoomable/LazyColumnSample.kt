@@ -58,7 +58,7 @@ private fun ListItem(text: String, modifier: Modifier = Modifier) {
             .height(100.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = MaterialTheme.colorScheme.surfaceDim,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = MaterialTheme.shapes.medium
             )
             .wrapContentSize()

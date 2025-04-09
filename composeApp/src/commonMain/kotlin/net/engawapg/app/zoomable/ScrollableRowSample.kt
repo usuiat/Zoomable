@@ -56,7 +56,7 @@ private fun RowItem(text: String, modifier: Modifier = Modifier) {
         modifier = modifier
             .size(200.dp)
             .background(
-                color = MaterialTheme.colorScheme.surfaceDim,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = MaterialTheme.shapes.medium
             )
             .wrapContentSize()
