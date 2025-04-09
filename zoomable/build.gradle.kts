@@ -84,9 +84,6 @@ kotlin {
 
             implementation(compose("org.jetbrains.compose.material:material-icons-core"))
         }
-        androidMain.dependencies {
-            implementation(libs.androidx.core)
-        }
         invokeWhenCreated("androidDebug") {
             dependencies {
                 implementation(libs.compose.ui.test.manifest)
