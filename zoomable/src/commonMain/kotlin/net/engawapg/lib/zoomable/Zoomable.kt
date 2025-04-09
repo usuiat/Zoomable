@@ -21,6 +21,9 @@ import androidx.compose.animation.core.spring
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScrollModifierNode
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
@@ -36,24 +39,6 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toSize
 import kotlinx.coroutines.launch
-
-/**
- * [ScrollGesturePropagation] defines when [Modifier.zoomable] propagates scroll gestures to the
- * parent composable element.
- */
-public enum class ScrollGesturePropagation {
-
-    /**
-     * Propagates the scroll gesture to the parent composable element when the content is scrolled
-     * to the edge and attempts to scroll further.
-     */
-    ContentEdge,
-
-    /**
-     * Propagates the scroll gesture to the parent composable element when the content is not zoomed.
-     */
-    NotZoomed,
-}
 
 /**
  * A modifier function that allows content to be zoomable.
@@ -93,6 +78,7 @@ public fun Modifier.zoomable(
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
     mouseWheelZoom = mouseWheelZoom,
+    enableNestedScroll = false,
 )
 
 /**
@@ -123,6 +109,55 @@ public fun Modifier.snapBackZoomable(
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
     mouseWheelZoom = MouseWheelZoom.Disabled,
+    enableNestedScroll = false,
+)
+
+/**
+ * A modifier function that allows scrollable content to be zoomable.
+ *
+ * It can be applied to lazy composable functions such as LazyColumn and LazyRow.
+ *
+ * It can also be applied in combination with Modifier.verticalScroll for Columns, or
+ * Modifier.horizontalScroll for Rows. In these case, please write it before verticalScroll or
+ * horizontalScroll in the modifier chain.
+ *
+ * @param zoomState A [ZoomState] object.
+ * @param zoomEnabled specifies if zoom behaviour is enabled or disabled. Even if this is false,
+ * [onTap] and [onDoubleTap] will be called.
+ * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
+ * vertical scrolling.
+ * @param scrollGesturePropagation specifies when scroll gestures are propagated to the parent
+ * composable element.
+ * @param onTap will be called when single tap is detected on the element.
+ * @param onDoubleTap will be called when double tap is detected on the element. This is a suspend
+ * function and called in a coroutine scope. The default is to toggle the scale between 1.0f and
+ * 2.5f with animation.
+ * @param onLongPress will be called when time elapses without the pointer moving
+ * @param mouseWheelZoom specifies mouse wheel zoom behaviour.
+ */
+@ExperimentalZoomableApi
+public fun Modifier.zoomableWithScroll(
+    zoomState: ZoomState,
+    zoomEnabled: Boolean = true,
+    enableOneFingerZoom: Boolean = true,
+    scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
+    onTap: ((position: Offset) -> Unit)? = null,
+    onDoubleTap: (suspend (position: Offset) -> Unit)? = { position ->
+        if (zoomEnabled) zoomState.toggleScale(2.5f, position)
+    },
+    onLongPress: ((position: Offset) -> Unit)? = null,
+    mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
+): Modifier = this then ZoomableElement(
+    zoomState = zoomState,
+    zoomEnabled = zoomEnabled,
+    enableOneFingerZoom = enableOneFingerZoom,
+    snapBackEnabled = false,
+    scrollGesturePropagation = scrollGesturePropagation,
+    onTap = onTap,
+    onDoubleTap = onDoubleTap,
+    onLongPress = onLongPress,
+    mouseWheelZoom = mouseWheelZoom,
+    enableNestedScroll = true,
 )
 
 private data class ZoomableElement(
@@ -135,6 +170,7 @@ private data class ZoomableElement(
     val onDoubleTap: (suspend (position: Offset) -> Unit)?,
     val onLongPress: ((position: Offset) -> Unit)?,
     val mouseWheelZoom: MouseWheelZoom,
+    val enableNestedScroll: Boolean,
 ) : ModifierNodeElement<ZoomableNode>() {
     override fun create(): ZoomableNode = ZoomableNode(
         zoomState,
@@ -146,6 +182,7 @@ private data class ZoomableElement(
         onDoubleTap,
         onLongPress,
         mouseWheelZoom,
+        enableNestedScroll,
     )
 
     override fun update(node: ZoomableNode) {
@@ -173,6 +210,7 @@ private data class ZoomableElement(
         properties["onDoubleTap"] = onDoubleTap
         properties["onLongPress"] = onLongPress
         properties["mouseWheelZoom"] = mouseWheelZoom
+        properties["enableNestedScroll"] = enableNestedScroll
     }
 }
 
@@ -186,6 +224,7 @@ private class ZoomableNode(
     var onDoubleTap: (suspend (position: Offset) -> Unit)?,
     var onLongPress: ((position: Offset) -> Unit)?,
     var mouseWheelZoom: MouseWheelZoom,
+    enableNestedScroll: Boolean,
 ) : PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
     var measuredSize = Size.Zero
 
@@ -218,6 +257,28 @@ private class ZoomableNode(
         this.onDoubleTap = onDoubleTap
         this.onLongPress = onLongPress
         this.mouseWheelZoom = mouseWheelZoom
+    }
+
+    init {
+        if (enableNestedScroll) {
+            delegate(
+                nestedScrollModifierNode(
+                    connection = object : NestedScrollConnection {
+                        override fun onPostScroll(
+                            consumed: Offset,
+                            available: Offset,
+                            source: NestedScrollSource,
+                        ): Offset {
+                            return zoomState.applyPan(
+                                pan = available,
+                                coroutineScope = coroutineScope
+                            )
+                        }
+                    },
+                    dispatcher = null,
+                )
+            )
+        }
     }
 
     val pointerInputNode = delegate(

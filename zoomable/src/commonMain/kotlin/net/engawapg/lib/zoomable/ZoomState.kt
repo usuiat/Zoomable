@@ -34,6 +34,7 @@ import androidx.compose.ui.geometry.isUnspecified
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import kotlin.math.abs
 import kotlin.math.max
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -205,6 +206,21 @@ public class ZoomState(
         } else {
             velocityTracker.resetTracking()
         }
+    }
+
+    internal fun applyPan(pan: Offset, coroutineScope: CoroutineScope): Offset {
+        val bounds = calculateNewBounds(scale)
+        val newOffsetX = (_offsetX.value + pan.x).coerceIn(bounds.left, bounds.right)
+        val newOffsetY = (_offsetY.value + pan.y).coerceIn(bounds.top, bounds.bottom)
+        val consumedX = newOffsetX - _offsetX.value
+        val consumedY = newOffsetY - _offsetY.value
+        coroutineScope.launch {
+            _offsetX.snapTo(newOffsetX)
+        }
+        coroutineScope.launch {
+            _offsetY.snapTo(newOffsetY)
+        }
+        return Offset(consumedX, consumedY)
     }
 
     /**

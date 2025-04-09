@@ -54,6 +54,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(path = ":zoomable"))
+            implementation(compose.foundation)
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.components.resources)
