@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>zoomableWithScroll</title>
+    <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer="defer"></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+            <a class="library-name--link" href="../../index.html">
+                    zoomable
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+2.6.0        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector common-like" data-active=""
+                        data-filter=":zoomable/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":zoomable/commonMain"
+                                       data-filter=":zoomable/commonMain"/>
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                        data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    zoomable
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="zoomable::net.engawapg.lib.zoomable//zoomableWithScroll/androidx.compose.ui.Modifier#net.engawapg.lib.zoomable.ZoomState#kotlin.Boolean#kotlin.Boolean#net.engawapg.lib.zoomable.ScrollGesturePropagation#kotlin.Function1[androidx.compose.ui.geometry.Offset,kotlin.Unit]?#kotlin.coroutines.SuspendFunction1[androidx.compose.ui.geometry.Offset,kotlin.Unit]?#kotlin.Function1[androidx.compose.ui.geometry.Offset,kotlin.Unit]?#net.engawapg.lib.zoomable.MouseWheelZoom/PointingToDeclaration//-1298956168">
+  <div class="breadcrumbs"><a href="../../index.html">zoomable</a><span class="delimiter">/</span><a href="index.html">net.engawapg.lib.zoomable</a><span class="delimiter">/</span><span class="current">zoomableWithScroll</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>zoomable</span><wbr></wbr><span>With</span><wbr></wbr><span><span>Scroll</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a><span class="token punctuation">.</span><a href="zoomable-with-scroll.html"><span class="token function">zoomableWithScroll</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">zoomState<span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a><span class="token punctuation">, </span></span><span class="parameter ">zoomEnabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">enableOneFingerZoom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">scrollGesturePropagation<span class="token operator">: </span><a href="-scroll-gesture-propagation/index.html">ScrollGesturePropagation</a><span class="token operator"> = </span>ScrollGesturePropagation.ContentEdge<span class="token punctuation">, </span></span><span class="parameter ">onTap<span class="token operator">: </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">onDoubleTap<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>{ position -&gt;
+        if (zoomEnabled) zoomState.toggleScale(2.5f, position)
+    }<span class="token punctuation">, </span></span><span class="parameter ">onLongPress<span class="token operator">: </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">mouseWheelZoom<span class="token operator">: </span><a href="-mouse-wheel-zoom/index.html">MouseWheelZoom</a><span class="token operator"> = </span>MouseWheelZoom.EnabledWithCtrlKey</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a></div><p class="paragraph">A modifier function that allows scrollable content to be zoomable.</p><p class="paragraph">It can be applied to lazy composable functions such as LazyColumn and LazyRow.</p><p class="paragraph">It can also be applied in combination with Modifier.verticalScroll for Columns, or Modifier.horizontalScroll for Rows. In these case, please write it before verticalScroll or horizontalScroll in the modifier chain.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>zoom</span><wbr></wbr><span><span>State</span></span></u></div></span></div><div><div class="title"><p class="paragraph">A <a href="-zoom-state/index.html">ZoomState</a> object.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>zoom</span><wbr></wbr><span><span>Enabled</span></span></u></div></span></div><div><div class="title"><p class="paragraph">specifies if zoom behaviour is enabled or disabled. Even if this is false, <a href="zoomable-with-scroll.html">onTap</a> and <a href="zoomable-with-scroll.html">onDoubleTap</a> will be called.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>enable</span><wbr></wbr><span>One</span><wbr></wbr><span>Finger</span><wbr></wbr><span><span>Zoom</span></span></u></div></span></div><div><div class="title"><p class="paragraph">If true, enable one finger zoom gesture, double tap followed by vertical scrolling.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>scroll</span><wbr></wbr><span>Gesture</span><wbr></wbr><span><span>Propagation</span></span></u></div></span></div><div><div class="title"><p class="paragraph">specifies when scroll gestures are propagated to the parent composable element.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>on</span><wbr></wbr><span><span>Tap</span></span></u></div></span></div><div><div class="title"><p class="paragraph">will be called when single tap is detected on the element.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>on</span><wbr></wbr><span>Double</span><wbr></wbr><span><span>Tap</span></span></u></div></span></div><div><div class="title"><p class="paragraph">will be called when double tap is detected on the element. This is a suspend function and called in a coroutine scope. The default is to toggle the scale between 1.0f and 2.5f with animation.</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>on</span><wbr></wbr><span>Long</span><wbr></wbr><span><span>Press</span></span></u></div></span></div><div><div class="title"><p class="paragraph">will be called when time elapses without the pointer moving</p></div></div></div></div><div class="table-row" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>mouse</span><wbr></wbr><span>Wheel</span><wbr></wbr><span><span>Zoom</span></span></u></div></span></div><div><div class="title"><p class="paragraph">specifies mouse wheel zoom behaviour.</p></div></div></div></div></div></div></div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
