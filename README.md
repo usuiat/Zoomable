@@ -145,13 +145,6 @@ You can choose when to propagate scroll gestures to the parent Pager composable 
 |---------------------------------------------------|-------------------------------------------------|
 | ContentEdge                                       | NotZoomed                                       |
 
-### Snap Back Zoom
-
-`Modifier.snapBackZoomable` allows you to zoom an image with a pinch gesture and automatically return it to its original size when you release your finger.
-You can easily achieve Instagram-like behavior.
-
-<img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />
-
 ### Mouse Scroll Wheel
 
 By default, zooming works by holding down the Ctrl key and operating the mouse wheel.
@@ -162,6 +155,42 @@ You can change the behavior by using the `mouseWheelZoom` argument of `zoomable`
 - `Enabled` enables zoom by mouse wheel operation regardless of whether the modifier key is pressed.
 - `EnabledWithCtrlKey`, `EnabledWithShiftKey`, `EnabledWithAltKey`, and `EnabledWithMetaKey` enable zoom by mouse wheel operation while holding down the modifier key.
 
+### Snap Back Zoom
+
+`Modifier.snapBackZoomable` allows you to zoom an image with a pinch gesture and automatically return it to its original size when you release your finger.
+You can easily achieve Instagram-like behavior.
+
+<img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />
+
+### Zoom with Scroll Component
+
+To zoom a component that itself scrolls, such as a `LazyColumn` or `LazyRow`, use `zoomableWithScroll`.
+
+> [!WARNING]
+> `zoomableWithScroll` is an experimental API and may change in the future.
+
+```Kotlin
+LazyColumn(
+    modifier = Modifier.zoomableWithScroll(rememberZoomState())
+) {
+    items(100) { Text("Item $it") }
+}
+```
+
+It can also be used with `Modifier.verticalScroll` or `Modifier.horizontalScroll`.
+In that case, put `zoomableWithScroll` before `verticalScroll` or `horizontalScroll` in the Modifier chain.
+
+```Kotlin
+Column(
+    modifier = Modifier
+        .fillMaxSize()
+        .zoomableWithScroll(rememberZoomState())
+        .horizontalScroll(rememberScrollState())
+) {
+    repeat(100) { Text("Item $it") }
+}
+```
+
 ## Samples
 
 You can try [sample app](./composeApp/) that contains following samples.
@@ -170,6 +199,8 @@ You can try [sample app](./composeApp/) that contains following samples.
 - Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/CoilSample.kt))
 - Image on `HorizontalPager` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/PagerSample.kt))
 - Snap back zoom ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/SnapBackSample.kt))
+- `LazyColumn` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/LazyColumnSample.kt))
+- Row with `Modifier.horizontalScroll` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/ScrollableRowSample.kt))
 
 ## Lisence
 
