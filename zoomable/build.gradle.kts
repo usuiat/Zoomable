@@ -57,6 +57,7 @@ kotlin {
             group("nonAndroid") {
                 withJvm()
                 withIos()
+                withWasmJs()
             }
         }
     }
