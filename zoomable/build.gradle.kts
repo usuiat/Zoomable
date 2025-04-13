@@ -15,6 +15,7 @@
  */
 
 import org.jetbrains.compose.compose
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
@@ -34,6 +35,11 @@ kotlin {
     androidTarget { publishLibraryVariants("release") }
     jvm("desktop")
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -51,6 +57,7 @@ kotlin {
             group("nonAndroid") {
                 withJvm()
                 withIos()
+                withWasmJs()
             }
         }
     }
