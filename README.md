@@ -35,11 +35,11 @@ Zoomable supports Android, iOS, and Desktop.
 |Android|✅|✅|✅|✅|
 |iOS|✅|✅|✅|*1|
 |Desktop|*2|✅|✅|✅|
+|Wasm|✅|✅|✅|✅|
 
 - ✅: Supported
 - *1: Mouse wheel scroll may not work on iOS.
 - *2: Compose desktop does not support multi-touch gestures.
-- Compose web is not supported. 
 
 ## API Reference
 
