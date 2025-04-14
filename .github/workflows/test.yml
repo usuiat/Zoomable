@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Build
+      - name: Build android
         run: ./gradlew :composeApp:assembleDebug
 
       - name: Build desktop
