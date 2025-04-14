@@ -25,6 +25,9 @@ jobs:
       - name: Build
         run: ./gradlew :composeApp:assembleDebug
 
+      - name: Build desktop
+        run: ./gradlew :composeApp:desktopJar
+
       - name: Check lint
         run: ./gradlew lint
 
