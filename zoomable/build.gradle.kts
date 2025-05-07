@@ -89,7 +89,7 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
 
-            implementation(compose("org.jetbrains.compose.material:material-icons-core"))
+            implementation(libs.compose.material.icons)
         }
         invokeWhenCreated("androidDebug") {
             dependencies {
