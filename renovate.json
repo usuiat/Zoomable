@@ -9,7 +9,8 @@
       "matchPackageNames": [
         "/com\\.android\\.\\w+/",
         "/org\\.jlleitschuh\\.gradle\\.ktlint/",
-        "/com\\.vanniktech\\.maven\\.publish/"
+        "/com\\.vanniktech\\.maven\\.publish/",
+        "/androidx\\.compose\\.ui:ui-test-manifest/"
       ]
     },
     {
