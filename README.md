@@ -33,13 +33,12 @@ Zoomable supports Android, iOS, and Desktop.
 |Platform|Pinch|Double-tap|Tap-and-drag|Mouse scroll wheel|
 |--|--|--|--|--|
 |Android|✅|✅|✅|✅|
-|iOS|✅|✅|✅|*1|
-|Desktop|*2|✅|✅|✅|
+|iOS|✅|✅|✅|✅|
+|Desktop|*1|✅|✅|✅|
 |Wasm|✅|✅|✅|✅|
 
 - ✅: Supported
-- *1: Mouse wheel scroll may not work on iOS.
-- *2: Compose desktop does not support multi-touch gestures.
+- *1: Compose desktop does not support multi-touch gestures.
 
 ## API Reference
 
@@ -148,7 +147,7 @@ You can choose when to propagate scroll gestures to the parent Pager composable 
 ### Mouse Scroll Wheel
 
 By default, zooming works by holding down the Ctrl key and operating the mouse wheel.
-This is intended to be used primarily with desktop, but it also works with Android.
+This is intended to be used primarily with desktop and web, but it also works with Android and iOS.
 You can change the behavior by using the `mouseWheelZoom` argument of `zoomable`.
 
 - `Disabled` disables zoom by mouse wheel operation.
