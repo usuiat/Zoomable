@@ -61,6 +61,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         var tap: Int = 0,
         var doubleTap: Int = 0,
         var longPress: Int = 0,
+        var longPressReleased: Int = 0,
     )
 
     private fun ComposeUiTest.pointerInputContentWithDetectZoomableGestures(
@@ -71,6 +72,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         onTap: ((Offset) -> Unit)? = { result.tap++ },
         onDoubleTap: ((Offset) -> Unit)? = { result.doubleTap++ },
         onLongPress: ((Offset) -> Unit)? = { result.longPress++ },
+        onLongPressReleased: ((Offset) -> Unit)? = { result.longPressReleased++ },
     ): SemanticsNodeInteraction {
         val testTag = "target"
         setContent {
@@ -89,6 +91,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                             onTap = onTap,
                             onDoubleTap = onDoubleTap,
                             onLongPress = onLongPress,
+                            onLongPressReleased = onLongPressReleased,
                             enableOneFingerZoom = { enableOneFingerZoom },
                         )
                     }
@@ -135,6 +138,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                                 onTap = { result.tap++ },
                                 onDoubleTap = { result.doubleTap++ },
                                 onLongPress = { result.longPress++ },
+                                onLongPressReleased = { result.longPressReleased++ },
                                 enableOneFingerZoom = { enableOneFingerZoom },
                             )
                         }
@@ -270,6 +274,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertEquals(0, result.longPress)
+        assertEquals(0, result.longPressReleased)
 
         target.performTouchInput {
             advanceEventTime(500L)
@@ -281,6 +286,8 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         target.performGesture {
             up()
         }
+
+        assertEquals(1, result.longPressReleased)
 
         assertEquals(0, result.tap)
     }
@@ -332,6 +339,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertEquals(1, result.longPress)
+        assertEquals(1, result.longPressReleased)
         assertEquals(Offset.Zero, result.pan)
     }
 
@@ -383,6 +391,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertEquals(0, result.longPress)
+        assertEquals(0, result.longPressReleased)
     }
 
     @Test
@@ -483,6 +492,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         assertEquals(Offset.Zero, result.pan)
         assertEquals(1f, result.zoom)
         assertEquals(1, result.longPress)
+        assertEquals(1, result.longPressReleased)
     }
 
     @Test
@@ -498,6 +508,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         }
 
         assertEquals(0, result.longPress)
+        assertEquals(0, result.longPressReleased)
         assertEquals(Offset(50f, 0f), result.pan)
     }
 
@@ -544,6 +555,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                                 onTap = null,
                                 onDoubleTap = null,
                                 onLongPress = null,
+                                onLongPressReleased = null,
                                 enableOneFingerZoom = { false },
                             )
                         }
@@ -596,6 +608,7 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
         assertEquals(Offset.Zero, result.pan)
         assertEquals(1f, result.zoom)
         assertEquals(0, result.longPress, "long press should not be called")
+        assertEquals(0, result.longPressReleased, "long press released should not be called")
         assertEquals(0, result.doubleTap, "double tap should not be called")
         assertEquals(0, result.tap, "tap should not be called")
     }

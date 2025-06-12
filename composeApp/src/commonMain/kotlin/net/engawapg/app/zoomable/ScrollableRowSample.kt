@@ -28,6 +28,7 @@ fun ScrollableRowSample(
     settings: Settings,
     onTap: (Offset) -> Unit,
     onLongPress: (Offset) -> Unit,
+    onLongPressReleased: (Offset) -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -40,6 +41,7 @@ fun ScrollableRowSample(
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                onLongPressReleased = onLongPressReleased,
             )
             .horizontalScroll(state = rememberScrollState())
     ) {
@@ -72,6 +74,7 @@ fun ScrollableRowSamplePreview() {
                 settings = Settings(),
                 onTap = {},
                 onLongPress = {},
+                onLongPressReleased = {},
             )
         }
     }

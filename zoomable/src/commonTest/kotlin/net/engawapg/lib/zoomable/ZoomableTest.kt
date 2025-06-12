@@ -61,6 +61,7 @@ class ZoomableTest : PlatformZoomableTest() {
         mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
         onTap: (Offset) -> Unit = {},
         onLongPress: (Offset) -> Unit = {},
+        onLongPressReleased: (Offset) -> Unit = {},
     ) {
         val icon = Icons.Default.Info
         val zoomState =
@@ -78,6 +79,7 @@ class ZoomableTest : PlatformZoomableTest() {
                     mouseWheelZoom = mouseWheelZoom,
                     onTap = onTap,
                     onLongPress = onLongPress,
+                    onLongPressReleased = onLongPressReleased,
                 )
         )
     }
@@ -87,6 +89,7 @@ class ZoomableTest : PlatformZoomableTest() {
         mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
         onTap: (Offset) -> Unit = {},
         onLongPress: (Offset) -> Unit = {},
+        onLongPressReleased: (Offset) -> Unit = {},
     ): SemanticsNodeInteraction {
         setContent {
             ZoomableImage(
@@ -96,6 +99,7 @@ class ZoomableTest : PlatformZoomableTest() {
                 mouseWheelZoom = mouseWheelZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                onLongPressReleased = onLongPressReleased,
             )
         }
         return onNodeWithContentDescription("image")
@@ -137,6 +141,16 @@ class ZoomableTest : PlatformZoomableTest() {
     private fun TouchInjectionScope.longPress(position: Offset = center) {
         down(position)
         advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+        up()
+    }
+
+    private fun TouchInjectionScope.longPressAndMoveTo(
+        position: Offset = center,
+        moveTo: Offset = center,
+    ) {
+        down(position)
+        advanceEventTime(viewConfiguration.longPressTimeoutMillis * 2)
+        moveTo(moveTo)
         up()
     }
 
@@ -257,21 +271,32 @@ class ZoomableTest : PlatformZoomableTest() {
 
     @Test
     fun long_press_works() = runComposeUiTest {
-        var count = 0
-        var positionTapped: Offset = Offset.Unspecified
+        var longPressCount = 0
+        var longPressReleasedCount = 0
+        var longPressTappedPosition: Offset = Offset.Unspecified
+        var longPressReleasedPosition: Offset = Offset.Unspecified
         val image = zoomableImage(
             onLongPress = { position ->
-                count++
-                positionTapped = position
-            }
+                longPressCount++
+                longPressTappedPosition = position
+            },
+            onLongPressReleased = { position ->
+                longPressReleasedCount++
+                longPressReleasedPosition = position
+            },
         )
 
         image.performTouchInput {
-            longPress(Offset(100f, 100f))
+            longPressAndMoveTo(
+                position = Offset(100f, 100f),
+                moveTo = Offset(200f, 200f),
+            )
         }
 
-        assertTrue(count == 1)
-        assertEquals(Offset(100f, 100f), positionTapped)
+        assertTrue(longPressCount == 1)
+        assertTrue(longPressReleasedCount == 1)
+        assertEquals(Offset(100f, 100f), longPressTappedPosition)
+        assertEquals(Offset(200f, 200f), longPressReleasedPosition)
     }
 
     @Test
@@ -341,6 +366,7 @@ class ZoomableTest : PlatformZoomableTest() {
                             enableOneFingerZoom = false,
                             onTap = null,
                             onLongPress = null,
+                            onLongPressReleased = null,
                             onDoubleTap = null,
                         )
                 )
@@ -516,6 +542,7 @@ class ZoomableTest : PlatformZoomableTest() {
         var tapResult = 0
         var doubleTapResult = 0
         var longPressResult = 0
+        var longPressReleasedResult = 0
         var callbackState by mutableStateOf("plus1")
         setContent {
             val icon = Icons.Default.Info
@@ -534,27 +561,44 @@ class ZoomableTest : PlatformZoomableTest() {
                             "plus1" -> {
                                 { tapResult += 1 }
                             }
+
                             "plus10" -> {
                                 { tapResult += 10 }
                             }
+
                             else -> null
                         },
                         onDoubleTap = when (callbackState) {
                             "plus1" -> {
                                 { doubleTapResult += 1 }
                             }
+
                             "plus10" -> {
                                 { doubleTapResult += 10 }
                             }
+
                             else -> null
                         },
                         onLongPress = when (callbackState) {
                             "plus1" -> {
                                 { longPressResult += 1 }
                             }
+
                             "plus10" -> {
                                 { longPressResult += 10 }
                             }
+
+                            else -> null
+                        },
+                        onLongPressReleased = when (callbackState) {
+                            "plus1" -> {
+                                { longPressReleasedResult += 1 }
+                            }
+
+                            "plus10" -> {
+                                { longPressReleasedResult += 10 }
+                            }
+
                             else -> null
                         },
                     )

@@ -13,7 +13,12 @@ import zoomable_root.composeapp.generated.resources.Res
 import zoomable_root.composeapp.generated.resources.penguin
 
 @Composable
-fun BasicSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
+fun BasicSample(
+    settings: Settings,
+    onTap: (Offset) -> Unit,
+    onLongPress: (Offset) -> Unit,
+    onLongPressReleased: (Offset) -> Unit,
+) {
     val painter = painterResource(resource = Res.drawable.penguin)
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
@@ -31,6 +36,7 @@ fun BasicSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offse
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                onLongPressReleased = onLongPressReleased,
                 mouseWheelZoom = settings.mouseWheelZoom,
             ),
     )
