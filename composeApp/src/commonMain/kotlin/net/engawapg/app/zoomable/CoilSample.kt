@@ -10,7 +10,12 @@ import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 
 @Composable
-fun CoilSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
+fun CoilSample(
+    settings: Settings,
+    onTap: (Offset) -> Unit,
+    onLongPress: (Offset) -> Unit,
+    onLongPressReleased: (Offset) -> Unit,
+) {
     val zoomState = rememberZoomState(initialScale = settings.initialScale)
     AsyncImage(
         model = "https://github.com/usuiat.png",
@@ -27,6 +32,7 @@ fun CoilSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                onLongPressReleased = onLongPressReleased,
                 mouseWheelZoom = settings.mouseWheelZoom,
             ),
     )

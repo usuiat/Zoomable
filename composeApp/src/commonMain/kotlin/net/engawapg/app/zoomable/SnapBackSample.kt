@@ -13,7 +13,12 @@ import zoomable_root.composeapp.generated.resources.Res
 import zoomable_root.composeapp.generated.resources.bird1
 
 @Composable
-fun SnapBackSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
+fun SnapBackSample(
+    settings: Settings,
+    onTap: (Offset) -> Unit,
+    onLongPress: (Offset) -> Unit,
+    onLongPressReleased: (Offset) -> Unit,
+) {
     val painter = painterResource(resource = Res.drawable.bird1)
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
@@ -29,6 +34,7 @@ fun SnapBackSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Of
                 zoomEnabled = settings.zoomEnabled,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                onLongPressReleased = onLongPressReleased,
             ),
     )
 }

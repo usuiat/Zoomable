@@ -24,7 +24,12 @@ import net.engawapg.lib.zoomable.zoomableWithScroll
 
 @OptIn(ExperimentalZoomableApi::class)
 @Composable
-fun LazyColumnSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {
+fun LazyColumnSample(
+    settings: Settings,
+    onTap: (Offset) -> Unit,
+    onLongPress: (Offset) -> Unit,
+    onLongPressReleased: (Offset) -> Unit,
+) {
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
     val contentPadding = PaddingValues(
         top = systemBarsPadding.calculateTopPadding(),
@@ -41,6 +46,7 @@ fun LazyColumnSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
                 onLongPress = onLongPress,
+                onLongPressReleased = onLongPressReleased,
             )
     ) {
         items(10) {
