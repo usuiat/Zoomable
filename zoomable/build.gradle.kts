@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import org.jetbrains.compose.compose
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
@@ -32,7 +32,12 @@ plugins {
 kotlin {
     explicitApi()
 
-    androidTarget { publishLibraryVariants("release") }
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+        publishLibraryVariants("release")
+    }
     jvm("desktop")
 
     @OptIn(ExperimentalWasmDsl::class)
@@ -51,6 +56,7 @@ kotlin {
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
         sourceSetTrees(KotlinSourceSetTree.main, KotlinSourceSetTree.test)
         common {
@@ -58,16 +64,6 @@ kotlin {
                 withJvm()
                 withIos()
                 withWasmJs()
-            }
-        }
-    }
-
-    targets.all {
-        compilations.all {
-            kotlinOptions.let {
-                if (it is KotlinJvmOptions) {
-                    it.jvmTarget = "11"
-                }
             }
         }
     }
@@ -91,6 +87,7 @@ kotlin {
 
             implementation(libs.compose.material.icons)
         }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         invokeWhenCreated("androidDebug") {
             dependencies {
                 implementation(libs.compose.ui.test.manifest)
@@ -99,7 +96,7 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.uiTestJUnit4)
+                implementation(compose.desktop.uiTestJUnit4)
                 implementation(libs.junit)
                 implementation(libs.robolectric)
             }
