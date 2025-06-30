@@ -10,7 +10,8 @@
         "/com\\.android\\.\\w+/",
         "/org\\.jlleitschuh\\.gradle\\.ktlint/",
         "/com\\.vanniktech\\.maven\\.publish/",
-        "/androidx\\.compose\\.ui:ui-test-manifest/"
+        "/androidx\\.compose\\.ui:ui-test-manifest/",
+        "/org\\.robolectric:robolectric/"
       ]
     },
     {
