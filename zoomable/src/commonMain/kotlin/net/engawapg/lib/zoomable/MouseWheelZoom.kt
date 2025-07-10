@@ -42,8 +42,8 @@ public enum class MouseWheelZoom {
     EnabledWithMetaKey,
     ;
 
-    internal fun matchKeyboardModifiers(keyboardModifiers: PointerKeyboardModifiers): Boolean {
-        return when (this) {
+    internal fun matchKeyboardModifiers(keyboardModifiers: PointerKeyboardModifiers): Boolean =
+        when (this) {
             Disabled -> false
             Enabled -> true
             EnabledWithCtrlKey -> keyboardModifiers.isCtrlPressed
@@ -51,5 +51,4 @@ public enum class MouseWheelZoom {
             EnabledWithAltKey -> keyboardModifiers.isAltPressed
             EnabledWithMetaKey -> keyboardModifiers.isMetaPressed
         }
-    }
 }
