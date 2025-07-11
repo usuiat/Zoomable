@@ -27,9 +27,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class DetectMouseWheelZoomTest : PlatformZoomableTest() {
 
-    private data class ZoomResult(
-        var zoom: Float = 1f,
-    )
+    private data class ZoomResult(var zoom: Float = 1f)
 
     private fun ComposeUiTest.pointerInputContentWithDetectMouseWheelZoom(
         result: ZoomResult,

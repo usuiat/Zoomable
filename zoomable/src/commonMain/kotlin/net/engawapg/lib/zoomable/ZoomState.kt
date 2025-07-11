@@ -325,7 +325,8 @@ public class ZoomState(
                             .coerceIn(
                                 minimumValue = -boundX,
                                 maximumValue = boundX,
-                            ) // Adjust zoom target position to prevent execute zoom animation to out of content boundaries
+                            ) // Adjust zoom target position to prevent execute zoom animation to
+                    // out of content boundaries
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {
@@ -374,7 +375,8 @@ public class ZoomState(
                             .coerceIn(
                                 minimumValue = -boundX,
                                 maximumValue = boundX,
-                            ) // Adjust zoom target position to prevent execute zoom animation to out of content boundaries
+                            ) // Adjust zoom target position to prevent execute zoom animation to
+                    // out of content boundaries
                     _offsetX.animateTo(fixedTargetOffsetX, animationSpec)
                 },
                 async {

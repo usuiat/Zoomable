@@ -225,7 +225,9 @@ private class ZoomableNode(
     var onLongPress: ((position: Offset) -> Unit)?,
     var mouseWheelZoom: MouseWheelZoom,
     enableNestedScroll: Boolean,
-) : PointerInputModifierNode, LayoutModifierNode, DelegatingNode() {
+) : DelegatingNode(),
+    PointerInputModifierNode,
+    LayoutModifierNode {
     var measuredSize = Size.Zero
 
     fun update(
@@ -268,12 +270,10 @@ private class ZoomableNode(
                             consumed: Offset,
                             available: Offset,
                             source: NestedScrollSource,
-                        ): Offset {
-                            return zoomState.applyPan(
-                                pan = available,
-                                coroutineScope = coroutineScope
-                            )
-                        }
+                        ): Offset = zoomState.applyPan(
+                            pan = available,
+                            coroutineScope = coroutineScope
+                        )
                     },
                     dispatcher = null,
                 )

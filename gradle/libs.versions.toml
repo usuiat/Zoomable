@@ -14,7 +14,7 @@ coil = "3.2.0"
 ktor = "3.2.1"
 kotlinx-coroutine = "1.10.2"
 
-ktlint = "12.3.0"
+ktlint = "13.0.0"
 dokka = "2.0.0"
 
 [plugins]
