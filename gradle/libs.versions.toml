@@ -26,7 +26,7 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradle" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.33.0" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
 
 [libraries]
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "jetpack-compose" }
