@@ -201,7 +201,7 @@ You can try [sample app](./composeApp/) that contains following samples.
 - `LazyColumn` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/LazyColumnSample.kt))
 - Row with `Modifier.horizontalScroll` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/ScrollableRowSample.kt))
 
-## Lisence
+## License
 
 Copyright 2022 usuiat
 
