@@ -17,6 +17,14 @@
     {
       "automerge": true,
       "matchDatasources": ["gradle-version"]
+    },
+    {
+      "automerge": true,
+      "matchDatasources": ["github-actions"],
+      "matchPackageNames": [
+        "actions/setup-java",
+        "actions/checkout"
+      ]
     }
   ]
 }
