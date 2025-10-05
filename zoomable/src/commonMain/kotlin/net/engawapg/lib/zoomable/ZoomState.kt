@@ -51,10 +51,10 @@ import kotlinx.coroutines.launch
  */
 @Stable
 public class ZoomState(
-    @FloatRange(from = 1.0) public val maxScale: Float = 5f,
+    @param:FloatRange(from = 1.0) public val maxScale: Float = 5f,
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
-    @FloatRange(from = 1.0) private val initialScale: Float = 1f,
+    @param:FloatRange(from = 1.0) private val initialScale: Float = 1f,
 ) {
     init {
         require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
