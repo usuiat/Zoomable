@@ -34,7 +34,7 @@ compose-material-icons = { module = "org.jetbrains.compose.material:material-ico
 
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
 androidx-activity = "androidx.activity:activity-compose:1.11.0"
-androidx-core = "androidx.core:core-ktx:1.16.0"
+androidx-core = "androidx.core:core-ktx:1.17.0"
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
