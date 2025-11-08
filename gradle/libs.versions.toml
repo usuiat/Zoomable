@@ -1,5 +1,5 @@
 [versions]
-jetbrains-compose = "1.9.0"
+jetbrains-compose = "1.9.3"
 jetpack-compose = "1.9.4"
 material-icons = "1.7.3"
 
