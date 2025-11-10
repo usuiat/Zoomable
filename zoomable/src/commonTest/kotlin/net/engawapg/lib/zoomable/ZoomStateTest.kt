@@ -205,6 +205,14 @@ class ZoomStateTest {
 
         assertNotNull(zoomState)
     }
+
+    @Test
+    fun applyGesture_does_not_crash_even_if_initialized_with_unspecified_content_size() = runTest {
+        val zoomState = ZoomState(contentSize = Size.Unspecified)
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 2f, Offset.Zero, 0)
+    }
 }
 
 class ZoomStateTestPanWillChangeOffset {
