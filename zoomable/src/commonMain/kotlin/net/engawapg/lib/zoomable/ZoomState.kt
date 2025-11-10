@@ -59,6 +59,7 @@ public class ZoomState(
     init {
         require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
         require(initialScale >= 1.0f) { "initialScale must be at least 1.0." }
+        if (contentSize.isUnspecified) contentSize = Size.Zero
     }
 
     private var _scale = Animatable(initialScale).apply {
