@@ -410,6 +410,8 @@ public class ZoomState(
  * be used as content size.
  * @param velocityDecay The decay animation spec for fling behaviour.
  * @param initialScale The initial scale of the content.
+ *
+ * When [maxScale], [contentSize], and [initialScale] change, a new ZoomState instance is created.
  */
 @Composable
 public fun rememberZoomState(
@@ -417,6 +419,6 @@ public fun rememberZoomState(
     contentSize: Size = Size.Zero,
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
     @FloatRange(from = 1.0) initialScale: Float = 1f,
-): ZoomState = remember {
+): ZoomState = remember(maxScale, contentSize, initialScale) {
     ZoomState(maxScale, contentSize, velocityDecay, initialScale)
 }
