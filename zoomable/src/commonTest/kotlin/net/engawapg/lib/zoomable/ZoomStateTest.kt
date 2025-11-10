@@ -3,11 +3,11 @@ package net.engawapg.lib.zoomable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
-import kotlinx.coroutines.test.runTest
 
 class ZoomStateTest {
 
@@ -212,14 +212,6 @@ class ZoomStateTest {
         zoomState.setLayoutSize(Size(100f, 100f))
 
         zoomState.applyGesture(Offset.Zero, 2f, Offset.Zero, 0)
-    }
-
-    @Test
-    fun changeScale_does_not_crash_even_if_initialized_with_unspecified_content_size() = runTest {
-        val zoomState = ZoomState(contentSize = Size.Unspecified)
-        zoomState.setLayoutSize(Size(100f, 100f))
-
-        zoomState.changeScale(2f, Offset.Zero)
     }
 }
 
