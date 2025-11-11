@@ -19,12 +19,11 @@ Image(
 )
 ```
 
-Zoomable can be used with
+Zoomable can be used in the following ways:
 
-- any composable components such as `Image`, `Text`, etc.
-- asynchronous image composable such as coil's `AsyncImage`.
-
-Zoomable also can be used in conjunction with `HorizontalPager` and `VerticalPager`.
+- combined with any composable components such as `Image` or `Text`
+- combined with asynchronous image loading such as coil's `rememberAsyncImagePainter`
+- used within a `HorizontalPager` or `VerticalPager`
 
 ## Platforms
 
@@ -75,6 +74,40 @@ Image(
     painter = painter,
     contentDescription = "Zoomable image",
     contentScale = ContentScale.Fit,
+    modifier = Modifier
+        .fillMaxSize()
+        .zoomable(zoomState),
+)
+```
+
+### Asynchronous Image Loading
+
+You can use `Modifier.zoomable` with [Coil](https://coil-kt.github.io/coil/)'s `rememberAsyncImagePainter`.
+
+```Kotlin
+val painter = rememberAsyncImagePainter("https://example.com/image.jpg")
+val zoomState = rememberZoomState(contentSize = painter.intrinsicSize)
+Image(
+    painter = painter,
+    contentDescription = "Zoomable image",
+    contentScale = ContentScale.Fit,
+    modifier = Modifier
+        .fillMaxSize()
+        .zoomable(zoomState),
+)
+```
+
+If you want to use `AsyncImage`, you need to call `setContentSize` when the image is successfully loaded.
+
+```Kotlin
+val zoomState = rememberZoomState()
+AsyncImage(
+    model = "https://example.com/image.jpg",
+    contentDescription = "Zoomable image",
+    contentScale = ContentScale.Fit,
+    onSuccess = { state ->
+        zoomState.setContentSize(state.painter.intrinsicSize)
+    },
     modifier = Modifier
         .fillMaxSize()
         .zoomable(zoomState),
