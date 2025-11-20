@@ -10,7 +10,7 @@ jobs:
     name: Publish and release to maven central
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v5
