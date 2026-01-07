@@ -76,36 +76,48 @@ fun App() {
                 val onLongPress = { position: Offset ->
                     message = "Long pressed (${position.x.toInt()}, ${position.y.toInt()})"
                 }
+                val onLongPressReleased = { position: Offset ->
+                    message = "Long press released (${position.x.toInt()}, ${position.y.toInt()})"
+                }
                 when (sampleType) {
                     is SampleType.Basic -> BasicSample(
                         settings = settings,
                         onTap = onTap,
-                        onLongPress = onLongPress
+                        onLongPress = onLongPress,
+                        onLongPressReleased = onLongPressReleased
                     )
                     is SampleType.Coil -> CoilSample(
                         settings = settings,
                         onTap = onTap,
-                        onLongPress = onLongPress
+                        onLongPress = onLongPress,
+                        onLongPressReleased = onLongPressReleased
                     )
                     is SampleType.Pager -> PagerSample(
                         settings = settings,
                         onTap = onTap,
-                        onLongPress = onLongPress
+                        onLongPress = onLongPress,
+                        onLongPressReleased = onLongPressReleased
+
                     )
                     is SampleType.SnapBack -> SnapBackSample(
                         settings = settings,
                         onTap = onTap,
-                        onLongPress = onLongPress
+                        onLongPress = onLongPress,
+                        onLongPressReleased = onLongPressReleased
+
                     )
                     is SampleType.LazyColumn -> LazyColumnSample(
                         settings = settings,
                         onTap = onTap,
-                        onLongPress = onLongPress
+                        onLongPress = onLongPress,
+                        onLongPressReleased = onLongPressReleased
+
                     )
                     is SampleType.ScrollableRow -> ScrollableRowSample(
                         settings = settings,
                         onTap = onTap,
-                        onLongPress = onLongPress
+                        onLongPress = onLongPress,
+                        onLongPressReleased = onLongPressReleased
                     )
                 }
 

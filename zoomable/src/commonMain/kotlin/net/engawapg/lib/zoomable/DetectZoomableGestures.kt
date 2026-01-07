@@ -43,6 +43,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     onTap: ((position: Offset) -> Unit)? = null,
     onDoubleTap: ((position: Offset) -> Unit)? = null,
     onLongPress: ((position: Offset) -> Unit)? = null,
+    onLongPressReleased: ((position: Offset) -> Unit)? = null,
 ) = awaitEachGesture {
     val firstDown = awaitFirstDown(requireUnconsumed = false)
     if (onTap != null || onDoubleTap != null || onLongPress != null || enableOneFingerZoom()) {
@@ -56,6 +57,7 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
         onTap = onTap,
         onDoubleTap = onDoubleTap,
         onLongPress = onLongPress,
+        onLongPressReleased = onLongPressReleased,
         enableOneFingerZoom = enableOneFingerZoom,
     )
     onGestureEnd()
@@ -69,6 +71,7 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     onTap: ((position: Offset) -> Unit)?,
     onDoubleTap: ((position: Offset) -> Unit)?,
     onLongPress: ((position: Offset) -> Unit)?,
+    onLongPressReleased: ((position: Offset) -> Unit)?,
 ) {
     val startPosition = currentEvent.changes[0].position
     var event = try {
@@ -78,6 +81,8 @@ private suspend fun AwaitPointerEventScope.detectGesture(
     } catch (_: PointerEventTimeoutCancellationException) {
         onLongPress?.invoke(startPosition)
         consumeAllEventsUntilReleased()
+        val endPosition = currentEvent.changes[0].position
+        onLongPressReleased?.invoke(endPosition)
         return
     }
 

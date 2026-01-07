@@ -67,6 +67,7 @@ public fun Modifier.zoomable(
         if (zoomEnabled) zoomState.toggleScale(2.5f, position)
     },
     onLongPress: ((position: Offset) -> Unit)? = null,
+    onLongPressReleased: ((position: Offset) -> Unit)? = null,
     mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
@@ -77,6 +78,7 @@ public fun Modifier.zoomable(
     onTap = onTap,
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
+    onLongPressReleased = onLongPressReleased,
     mouseWheelZoom = mouseWheelZoom,
     enableNestedScroll = false,
 )
@@ -99,6 +101,7 @@ public fun Modifier.snapBackZoomable(
     onTap: ((position: Offset) -> Unit)? = null,
     onDoubleTap: (suspend (position: Offset) -> Unit)? = null,
     onLongPress: ((position: Offset) -> Unit)? = null,
+    onLongPressReleased: ((position: Offset) -> Unit)? = null,
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
     zoomEnabled = zoomEnabled,
@@ -108,6 +111,7 @@ public fun Modifier.snapBackZoomable(
     onTap = onTap,
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
+    onLongPressReleased = onLongPressReleased,
     mouseWheelZoom = MouseWheelZoom.Disabled,
     enableNestedScroll = false,
 )
@@ -146,6 +150,7 @@ public fun Modifier.zoomableWithScroll(
         if (zoomEnabled) zoomState.toggleScale(2.5f, position)
     },
     onLongPress: ((position: Offset) -> Unit)? = null,
+    onLongPressReleased: ((position: Offset) -> Unit)? = null,
     mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
 ): Modifier = this then ZoomableElement(
     zoomState = zoomState,
@@ -156,6 +161,7 @@ public fun Modifier.zoomableWithScroll(
     onTap = onTap,
     onDoubleTap = onDoubleTap,
     onLongPress = onLongPress,
+    onLongPressReleased = onLongPressReleased,
     mouseWheelZoom = mouseWheelZoom,
     enableNestedScroll = true,
 )
@@ -169,6 +175,7 @@ private data class ZoomableElement(
     val onTap: ((position: Offset) -> Unit)?,
     val onDoubleTap: (suspend (position: Offset) -> Unit)?,
     val onLongPress: ((position: Offset) -> Unit)?,
+    val onLongPressReleased: ((position: Offset) -> Unit)? = null,
     val mouseWheelZoom: MouseWheelZoom,
     val enableNestedScroll: Boolean,
 ) : ModifierNodeElement<ZoomableNode>() {
@@ -181,6 +188,7 @@ private data class ZoomableElement(
         onTap,
         onDoubleTap,
         onLongPress,
+        onLongPressReleased,
         mouseWheelZoom,
         enableNestedScroll,
     )
@@ -195,6 +203,7 @@ private data class ZoomableElement(
             onTap,
             onDoubleTap,
             onLongPress,
+            onLongPressReleased,
             mouseWheelZoom,
         )
     }
@@ -223,6 +232,7 @@ private class ZoomableNode(
     var onTap: ((position: Offset) -> Unit)?,
     var onDoubleTap: (suspend (position: Offset) -> Unit)?,
     var onLongPress: ((position: Offset) -> Unit)?,
+    var onLongPressReleased: ((position: Offset) -> Unit)?,
     var mouseWheelZoom: MouseWheelZoom,
     enableNestedScroll: Boolean,
 ) : DelegatingNode(),
@@ -239,6 +249,7 @@ private class ZoomableNode(
         onTap: ((position: Offset) -> Unit)?,
         onDoubleTap: (suspend (position: Offset) -> Unit)?,
         onLongPress: ((position: Offset) -> Unit)?,
+        onLongPressReleased: ((position: Offset) -> Unit)?,
         mouseWheelZoom: MouseWheelZoom,
     ) {
         if (this.zoomState != zoomState) {
@@ -257,6 +268,7 @@ private class ZoomableNode(
         }
         this.onTap = onTap
         this.onDoubleTap = onDoubleTap
+        this.onLongPressReleased = onLongPressReleased
         this.onLongPress = onLongPress
         this.mouseWheelZoom = mouseWheelZoom
     }
@@ -325,6 +337,11 @@ private class ZoomableNode(
                 },
                 onLongPress = if (onLongPress != null) {
                     { onLongPress?.invoke(it) }
+                } else {
+                    null
+                },
+                onLongPressReleased = if (onLongPressReleased != null) {
+                    { onLongPressReleased?.invoke(it) }
                 } else {
                     null
                 },
