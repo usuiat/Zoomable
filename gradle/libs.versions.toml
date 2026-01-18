@@ -12,7 +12,7 @@ android-targetSdk = "36"
 android-minSdk = "23"
 
 coil = "3.3.0"
-ktor = "3.3.2"
+ktor = "3.3.3"
 kotlinx-coroutine = "1.10.2"
 
 ktlint = "14.0.1"
