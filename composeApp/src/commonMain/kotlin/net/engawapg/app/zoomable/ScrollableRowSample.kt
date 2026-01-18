@@ -15,12 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.engawapg.app.zoomable.theme.ZoomableTheme
 import net.engawapg.lib.zoomable.ExperimentalZoomableApi
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomableWithScroll
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalZoomableApi::class)
 @Composable
