@@ -110,7 +110,6 @@ kotlin {
         invokeWhenCreated("androidDebug") {
             dependencies {
                 implementation(libs.compose.ui.tooling)
-                implementation(libs.compose.ui.test.manifest)
             }
         }
     }
