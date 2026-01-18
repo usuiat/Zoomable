@@ -1,5 +1,6 @@
 [versions]
-jetbrains-compose = "1.9.3"
+jetbrains-compose = "1.10.0"
+jetbrains-material3 = "1.9.0"
 jetpack-compose = "1.9.5"
 material-icons = "1.7.3"
 
@@ -8,7 +9,7 @@ androidGradle = "8.13.2"
 
 android-compileSdk = "36"
 android-targetSdk = "36"
-android-minSdk = "21"
+android-minSdk = "23"
 
 coil = "3.3.0"
 ktor = "3.3.2"
@@ -29,6 +30,15 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }
 
 [libraries]
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrains-compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetbrains-compose" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrains-compose" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains-compose" }
+compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "jetbrains-compose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-material3" }
+
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "jetpack-compose" }
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons" }
 

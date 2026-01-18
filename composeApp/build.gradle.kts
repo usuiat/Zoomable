@@ -71,11 +71,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(path = ":zoomable"))
-            implementation(compose.foundation)
-            implementation(compose.ui)
-            implementation(compose.components.uiToolingPreview)
-            implementation(compose.components.resources)
-            implementation(compose.material3)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.ui.tooling.preview)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.material3)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
@@ -109,7 +109,7 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         invokeWhenCreated("androidDebug") {
             dependencies {
-                implementation(compose.uiTooling)
+                implementation(libs.compose.ui.tooling)
                 implementation(libs.compose.ui.test.manifest)
             }
         }
