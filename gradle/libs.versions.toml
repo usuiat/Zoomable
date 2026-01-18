@@ -43,7 +43,7 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons" }
 
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
-androidx-activity = "androidx.activity:activity-compose:1.11.0"
+androidx-activity = "androidx.activity:activity-compose:1.12.2"
 androidx-core = "androidx.core:core-ktx:1.17.0"
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
