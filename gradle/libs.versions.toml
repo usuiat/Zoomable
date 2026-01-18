@@ -8,7 +8,7 @@ androidGradle = "8.13.2"
 
 android-compileSdk = "36"
 android-targetSdk = "36"
-android-minSdk = "21"
+android-minSdk = "23"
 
 coil = "3.3.0"
 ktor = "3.3.2"
