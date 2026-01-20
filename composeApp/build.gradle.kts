@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
@@ -95,8 +95,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.core)
             implementation(libs.androidx.activity)
-            implementation(libs.ktor.client.android)
-            implementation(libs.kotlinx.coroutines.android)
         }
         val androidUnitTest by getting {
             dependencies {
@@ -128,20 +126,11 @@ compose.desktop {
 }
 
 android {
-    namespace = "net.engawapg.app.zoomable"
+    namespace = "net.engawapg.app.zoomable.composeApp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "net.engawapg.app.zoomable"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
