@@ -23,7 +23,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build android
-        run: ./gradlew :composeApp:assembleDebug
+        run: ./gradlew :androidApp:assembleDebug
 
       - name: Build desktop
         run: ./gradlew :composeApp:desktopJar
