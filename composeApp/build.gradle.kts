@@ -15,13 +15,12 @@
  */
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.multiplatform.library)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
@@ -29,9 +28,16 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "net.engawapg.app.zoomable.composeApp"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+        }
+
+        androidResources {
+            enable = true
         }
     }
 
@@ -96,19 +102,8 @@ kotlin {
             implementation(libs.androidx.core)
             implementation(libs.androidx.activity)
         }
-        val androidUnitTest by getting {
-            dependencies {
-                implementation(libs.junit)
-            }
-        }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        invokeWhenCreated("androidDebug") {
-            dependencies {
-                implementation(libs.compose.ui.tooling)
-            }
         }
     }
 }
@@ -121,34 +116,6 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "net.engawapg.app.zoomable"
             packageVersion = "1.0.0"
-        }
-    }
-}
-
-android {
-    namespace = "net.engawapg.app.zoomable.composeApp"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
