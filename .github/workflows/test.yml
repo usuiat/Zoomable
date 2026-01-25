@@ -61,4 +61,4 @@ jobs:
           distribution: 'adopt'
 
       - name: Unit tests
-        run: ./gradlew :zoomable:testDebugUnitTest
+        run: ./gradlew :zoomable:testAndroidHostTest
