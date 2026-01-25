@@ -14,7 +14,7 @@ kotlin {
     }
 
     dependencies {
-        implementation(projects.composeApp)
+        implementation(projects.samples.composeApp)
         implementation(libs.androidx.core)
         implementation(libs.androidx.activity)
         implementation(libs.ktor.client.android)

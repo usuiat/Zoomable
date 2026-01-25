@@ -11,10 +11,10 @@ import androidx.compose.ui.layout.ContentScale
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.jetbrains.compose.resources.painterResource
-import zoomable_root.composeapp.generated.resources.Res
-import zoomable_root.composeapp.generated.resources.duck1
-import zoomable_root.composeapp.generated.resources.duck2
-import zoomable_root.composeapp.generated.resources.duck3
+import zoomable_root.samples.composeapp.generated.resources.Res
+import zoomable_root.samples.composeapp.generated.resources.duck1
+import zoomable_root.samples.composeapp.generated.resources.duck2
+import zoomable_root.samples.composeapp.generated.resources.duck3
 
 @Composable
 fun PagerSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {

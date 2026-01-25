@@ -36,9 +36,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.engawapg.app.zoomable.theme.ZoomableTheme
 import org.jetbrains.compose.resources.painterResource
-import zoomable_root.composeapp.generated.resources.Res
-import zoomable_root.composeapp.generated.resources.menu_24dp
-import zoomable_root.composeapp.generated.resources.settings_24dp
+import zoomable_root.samples.composeapp.generated.resources.Res
+import zoomable_root.samples.composeapp.generated.resources.menu_24dp
+import zoomable_root.samples.composeapp.generated.resources.settings_24dp
 
 sealed interface SampleType {
     val title: String
