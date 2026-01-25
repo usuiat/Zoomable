@@ -116,3 +116,7 @@ compose.desktop {
         }
     }
 }
+
+dependencies {
+    "androidRuntimeClasspath"(libs.compose.ui.tooling)
+}
