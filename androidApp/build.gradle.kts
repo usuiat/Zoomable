@@ -18,7 +18,6 @@ kotlin {
         implementation(libs.androidx.core)
         implementation(libs.androidx.activity)
         implementation(libs.ktor.client.android)
-        implementation(libs.kotlinx.coroutines.android)
     }
 }
 

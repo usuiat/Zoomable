@@ -43,7 +43,6 @@ kotlin {
         withHostTest {
             isIncludeAndroidResources = true
         }
-//        publishLibraryVariants("release") // TODO
     }
     jvm("desktop")
 

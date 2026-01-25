@@ -13,7 +13,6 @@ android-minSdk = "23"
 
 coil = "3.3.0"
 ktor = "3.3.3"
-kotlinx-coroutine = "1.10.2"
 
 ktlint = "14.0.1"
 dokka = "2.1.0"
@@ -52,9 +51,6 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
-
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
-kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutine" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 robolectric = "org.robolectric:robolectric:4.16.1"
