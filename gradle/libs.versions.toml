@@ -12,7 +12,7 @@ android-targetSdk = "36"
 android-minSdk = "23"
 
 coil = "3.3.0"
-ktor = "3.3.3"
+ktor = "3.4.0"
 
 ktlint = "14.0.1"
 dokka = "2.1.0"
