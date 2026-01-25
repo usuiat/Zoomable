@@ -23,7 +23,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build android
-        run: ./gradlew :composeApp:assembleDebug
+        run: ./gradlew :androidApp:assembleDebug
 
       - name: Build desktop
         run: ./gradlew :composeApp:desktopJar
@@ -61,4 +61,4 @@ jobs:
           distribution: 'adopt'
 
       - name: Unit tests
-        run: ./gradlew :zoomable:testDebugUnitTest
+        run: ./gradlew :zoomable:testAndroidHostTest

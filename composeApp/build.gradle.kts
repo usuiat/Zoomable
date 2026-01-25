@@ -15,13 +15,12 @@
  */
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.multiplatform.library)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
@@ -29,9 +28,16 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "net.engawapg.app.zoomable.composeApp"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+        }
+
+        androidResources {
+            enable = true
         }
     }
 
@@ -46,11 +52,9 @@ kotlin {
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
+                    // Serve sources to debug inside browser
+                    static(rootDirPath)
+                    static(projectDirPath)
                 }
             }
         }
@@ -80,37 +84,17 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
         }
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-        }
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-
-                implementation(libs.kotlinx.coroutines.swing)
-
-                implementation(libs.ktor.client.java)
-            }
+        val desktopMain by getting
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.java)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core)
             implementation(libs.androidx.activity)
-            implementation(libs.ktor.client.android)
-            implementation(libs.kotlinx.coroutines.android)
-        }
-        val androidUnitTest by getting {
-            dependencies {
-                implementation(libs.junit)
-            }
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        invokeWhenCreated("androidDebug") {
-            dependencies {
-                implementation(libs.compose.ui.tooling)
-            }
         }
     }
 }
@@ -127,39 +111,6 @@ compose.desktop {
     }
 }
 
-android {
-    namespace = "net.engawapg.app.zoomable"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "net.engawapg.app.zoomable"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+dependencies {
+    "androidRuntimeClasspath"(libs.compose.ui.tooling)
 }

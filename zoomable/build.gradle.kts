@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.multiplatform.library)
     alias(libs.plugins.vanniktech.maven.publish)
     alias(libs.plugins.dokka)
     alias(libs.plugins.kotlin.multiplatform)
@@ -32,11 +32,17 @@ plugins {
 kotlin {
     explicitApi()
 
-    androidTarget {
+    androidLibrary {
+        namespace = "net.engawapg.lib.zoomable"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
-        publishLibraryVariants("release")
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
     jvm("desktop")
 
@@ -78,63 +84,14 @@ kotlin {
             implementation(libs.androidx.annotation)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
-
-            implementation(libs.kotlinx.coroutines.test)
-
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
-
+            implementation(libs.kotlin.test)
+            implementation(libs.compose.ui.test)
             implementation(libs.compose.material.icons)
         }
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        invokeWhenCreated("androidDebug") {
-            dependencies {
-                implementation(libs.compose.ui.test.manifest)
-            }
-        }
-        val androidUnitTest by getting {
-            dependencies {
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.desktop.uiTestJUnit4)
-                implementation(libs.junit)
-                implementation(libs.robolectric)
-            }
-        }
-        val desktopTest by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
-        }
-    }
-}
-
-android {
-    namespace = "net.engawapg.lib.zoomable"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
+        val androidHostTest by getting
+        androidHostTest.dependencies {
+            implementation(libs.robolectric)
+            implementation(libs.compose.ui.test.manifest)
         }
     }
 }
