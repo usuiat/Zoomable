@@ -52,11 +52,9 @@ kotlin {
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
+                    // Serve sources to debug inside browser
+                    static(rootDirPath)
+                    static(projectDirPath)
                 }
             }
         }
@@ -86,14 +84,11 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
         }
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-
-                implementation(libs.kotlinx.coroutines.swing)
-
-                implementation(libs.ktor.client.java)
-            }
+        val desktopMain by getting
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.java)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core)
