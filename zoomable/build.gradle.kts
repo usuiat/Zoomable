@@ -39,6 +39,10 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
+
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
 //        publishLibraryVariants("release") // TODO
     }
     jvm("desktop")
@@ -81,14 +85,14 @@ kotlin {
             implementation(libs.androidx.annotation)
         }
         commonTest.dependencies {
-            implementation(kotlin("test"))
-
-            implementation(libs.kotlinx.coroutines.test)
-
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
-
+            implementation(libs.kotlin.test)
+            implementation(libs.compose.ui.test)
             implementation(libs.compose.material.icons)
+        }
+        val androidHostTest by getting
+        androidHostTest.dependencies {
+            implementation(libs.robolectric)
+            implementation(libs.compose.ui.test.manifest)
         }
     }
 }

@@ -86,9 +86,6 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
         }
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-        }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
