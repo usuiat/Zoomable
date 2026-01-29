@@ -47,3 +47,4 @@ rootProject.name = "zoomable-root"
 include(":zoomable")
 include(":samples:composeApp")
 include(":samples:androidApp")
+include(":samples:desktopApp")

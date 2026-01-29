@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -84,29 +83,12 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
         }
-        val desktopMain by getting
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.java)
-        }
         androidMain.dependencies {
             implementation(libs.androidx.core)
             implementation(libs.androidx.activity)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "net.engawapg.app.zoomable.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "net.engawapg.app.zoomable"
-            packageVersion = "1.0.0"
         }
     }
 }
