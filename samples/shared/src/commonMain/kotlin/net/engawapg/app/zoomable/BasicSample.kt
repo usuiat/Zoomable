@@ -9,8 +9,8 @@ import androidx.compose.ui.layout.ContentScale
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.jetbrains.compose.resources.painterResource
-import zoomable_root.samples.composeapp.generated.resources.Res
-import zoomable_root.samples.composeapp.generated.resources.penguin
+import zoomable_root.samples.shared.generated.resources.Res
+import zoomable_root.samples.shared.generated.resources.penguin
 
 @Composable
 fun BasicSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {

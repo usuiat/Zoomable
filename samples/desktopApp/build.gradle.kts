@@ -9,7 +9,7 @@ plugins {
 
 kotlin {
     dependencies {
-        implementation(projects.samples.composeApp)
+        implementation(projects.samples.shared)
         implementation(compose.desktop.currentOs)
         implementation(libs.ktor.client.java)
     }

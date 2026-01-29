@@ -27,7 +27,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "net.engawapg.app.zoomable.composeApp"
+        namespace = "net.engawapg.app.zoomable.sample.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
         compilerOptions {
@@ -52,7 +52,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "Shared"
             isStatic = true
         }
     }

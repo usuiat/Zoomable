@@ -9,8 +9,8 @@ import androidx.compose.ui.layout.ContentScale
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.snapBackZoomable
 import org.jetbrains.compose.resources.painterResource
-import zoomable_root.samples.composeapp.generated.resources.Res
-import zoomable_root.samples.composeapp.generated.resources.bird1
+import zoomable_root.samples.shared.generated.resources.Res
+import zoomable_root.samples.shared.generated.resources.bird1
 
 @Composable
 fun SnapBackSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offset) -> Unit) {

@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "zoomable-root"
 include(":zoomable")
-include(":samples:composeApp")
+include(":samples:shared")
 include(":samples:androidApp")
 include(":samples:desktopApp")
 include(":samples:webApp")
