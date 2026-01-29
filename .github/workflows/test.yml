@@ -23,13 +23,13 @@ jobs:
           distribution: 'adopt'
 
       - name: Build android
-        run: ./gradlew :androidApp:assembleDebug
+        run: ./gradlew :samples:androidApp:assembleDebug
 
       - name: Build desktop
-        run: ./gradlew :composeApp:desktopJar
+        run: ./gradlew :samples:desktopApp:jar
 
       - name: Build wasm
-        run: ./gradlew :composeApp:wasmJsBrowserDevelopmentWebpack --no-daemon --max-workers=1
+        run: ./gradlew :samples:webApp:wasmJsBrowserDevelopmentWebpack --no-daemon --max-workers=1
 
       - name: Check lint
         run: ./gradlew lint
@@ -48,7 +48,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build iOS
-        run: ./gradlew :composeApp:iosArm64Binaries
+        run: ./gradlew :samples:shared:iosArm64Binaries
 
   unit_tests:
     name: Unit tests
