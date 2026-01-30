@@ -225,14 +225,14 @@ Column(
 
 ## Samples
 
-You can try [sample app](./composeApp/) that contains following samples.
+You can try [sample app](./samples/) that contains following samples.
 
-- Standard Image composable ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/BasicSample.kt))
-- Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/CoilSample.kt))
-- Image on `HorizontalPager` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/PagerSample.kt))
-- Snap back zoom ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/SnapBackSample.kt))
-- `LazyColumn` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/LazyColumnSample.kt))
-- Row with `Modifier.horizontalScroll` ([source](composeApp/src/commonMain/kotlin/net/engawapg/app/zoomable/ScrollableRowSample.kt))
+- Standard Image composable ([source](samples/shared/src/commonMain/kotlin/net/engawapg/app/zoomable/BasicSample.kt))
+- Asynchronous image loading using [Coil](https://coil-kt.github.io/coil/) library ([source](samples/shared/src/commonMain/kotlin/net/engawapg/app/zoomable/CoilSample.kt))
+- Image on `HorizontalPager` ([source](samples/shared/src/commonMain/kotlin/net/engawapg/app/zoomable/PagerSample.kt))
+- Snap back zoom ([source](samples/shared/src/commonMain/kotlin/net/engawapg/app/zoomable/SnapBackSample.kt))
+- `LazyColumn` ([source](samples/shared/src/commonMain/kotlin/net/engawapg/app/zoomable/LazyColumnSample.kt))
+- Row with `Modifier.horizontalScroll` ([source](samples/shared/src/commonMain/kotlin/net/engawapg/app/zoomable/ScrollableRowSample.kt))
 
 ## License
 
