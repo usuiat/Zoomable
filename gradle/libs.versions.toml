@@ -4,7 +4,7 @@ jetbrains-material3 = "1.9.0"
 jetpack-compose = "1.10.2"
 material-icons = "1.7.3"
 
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 androidGradle = "9.0.0"
 
 android-compileSdk = "36"
