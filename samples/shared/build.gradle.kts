@@ -71,7 +71,6 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.core)
-            implementation(libs.androidx.activity)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
