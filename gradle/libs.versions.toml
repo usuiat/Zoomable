@@ -1,7 +1,7 @@
 [versions]
 jetbrains-compose = "1.10.0"
 jetbrains-material3 = "1.9.0"
-jetpack-compose = "1.10.2"
+jetpack-compose = "1.10.3"
 material-icons = "1.7.3"
 
 kotlin = "2.3.10"
