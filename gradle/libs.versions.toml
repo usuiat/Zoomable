@@ -5,7 +5,7 @@ jetpack-compose = "1.10.3"
 material-icons = "1.7.3"
 
 kotlin = "2.3.10"
-androidGradle = "9.0.0"
+androidGradle = "9.0.1"
 
 android-compileSdk = "36"
 android-targetSdk = "36"
