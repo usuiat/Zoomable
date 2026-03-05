@@ -14,7 +14,7 @@ android-minSdk = "23"
 coil = "3.3.0"
 ktor = "3.4.0"
 
-ktlint = "14.0.1"
+ktlint = "14.1.0"
 dokka = "2.1.0"
 
 [plugins]
