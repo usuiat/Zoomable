@@ -1,6 +1,7 @@
 package net.engawapg.app.zoomable
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import net.engawapg.lib.zoomable.SnapBackZoomableBox
@@ -34,11 +36,6 @@ import zoomable_root.samples.shared.generated.resources.eagle3
 fun SnapBackZoomableBoxSample(
     onTap: (Offset) -> Unit,
 ) {
-    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
-    val contentPadding = PaddingValues(
-        top = systemBarsPadding.calculateTopPadding(),
-        bottom = systemBarsPadding.calculateBottomPadding(),
-    )
     val images: List<DrawableResource> = listOf(
         Res.drawable.bird1,
         Res.drawable.duck1,
@@ -51,7 +48,6 @@ fun SnapBackZoomableBoxSample(
         Res.drawable.eagle3,
     )
     LazyColumn(
-        contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -66,7 +62,9 @@ fun SnapBackZoomableBoxSample(
                     painter = painterResource(resource),
                     contentDescription = "Zoomable image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp),
                 )
             }
         }

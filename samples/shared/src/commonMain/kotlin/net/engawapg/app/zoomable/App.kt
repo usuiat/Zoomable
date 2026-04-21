@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.engawapg.app.zoomable.theme.ZoomableTheme
+import net.engawapg.lib.zoomable.SnapBackZoomableOverlayHost
 import org.jetbrains.compose.resources.painterResource
 import zoomable_root.samples.shared.generated.resources.Res
 import zoomable_root.samples.shared.generated.resources.menu_24dp
@@ -67,7 +69,15 @@ val sampleTypes = listOf(
 @Preview
 fun App() {
     ZoomableTheme {
-        Scaffold { innerPadding ->
+        SnapBackZoomableOverlayHost(modifier = Modifier.fillMaxSize()) {
+            AppContent()
+        }
+    }
+}
+
+@Composable
+private fun AppContent() {
+    Scaffold { innerPadding ->
             var sampleType by remember { mutableStateOf(sampleTypes[0]) }
             var showSampleSelection by remember { mutableStateOf(false) }
             var settings by remember { mutableStateOf(Settings()) }
@@ -172,7 +182,6 @@ fun App() {
                 )
             }
         }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
