@@ -25,6 +25,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -90,6 +91,26 @@ public class ZoomState(
 
     private var layoutSize = Size.Zero
 
+    private val _isActive = mutableStateOf(false)
+
+    /**
+     * Whether a zoom or pan gesture is currently being applied to the content,
+     * or the content has not yet settled back to its resting state after such a
+     * gesture ended.
+     *
+     * Becomes `true` only when a touch gesture is actually consumed as a zoom or
+     * pan (not merely when a finger touches down), and remains `true` through any
+     * follow-up animation (e.g. the snap-back animation of
+     * [Modifier.snapBackZoomable]), then returns to `false` once the content is
+     * at rest.
+     *
+     * This can be used to decide whether to show additional UI that should only be
+     * visible while the user is interacting with the content, such as an overlay
+     * that displays the zoomed content above a clipping parent.
+     */
+    public val isActive: Boolean
+        get() = _isActive.value
+
     /**
      * Set composable layout size.
      *
@@ -149,6 +170,14 @@ public class ZoomState(
 
     internal fun startGesture() {
         velocityTracker.resetTracking()
+    }
+
+    internal fun activateGesture() {
+        _isActive.value = true
+    }
+
+    internal fun endGesture() {
+        _isActive.value = false
     }
 
     internal fun willChangeOffset(pan: Offset): Boolean {

@@ -306,10 +306,14 @@ private class ZoomableNode(
                 },
                 onGestureEnd = {
                     coroutineScope.launch {
-                        if (snapBackEnabled || zoomState.scale < 1f) {
-                            zoomState.changeScale(1f, Offset.Zero)
-                        } else {
-                            zoomState.startFling()
+                        try {
+                            if (snapBackEnabled || zoomState.scale < 1f) {
+                                zoomState.changeScale(1f, Offset.Zero)
+                            } else {
+                                zoomState.startFling()
+                            }
+                        } finally {
+                            zoomState.endGesture()
                         }
                     }
                 },
@@ -373,6 +377,9 @@ private class ZoomableNode(
             else -> zoomState.willChangeOffset(pan)
         }
         consumeGesture = newValue
+        if (newValue) {
+            zoomState.activateGesture()
+        }
         return newValue
     }
 
