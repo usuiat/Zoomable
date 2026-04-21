@@ -46,6 +46,9 @@ sealed interface SampleType {
     data class Coil(override val title: String = "Coil AsyncImage") : SampleType
     data class Pager(override val title: String = "Images on HorizontalPager") : SampleType
     data class SnapBack(override val title: String = "snapBackZoomable") : SampleType
+    data class SnapBackBox(
+        override val title: String = "SnapBackZoomableBox in LazyColumn",
+    ) : SampleType
     data class LazyColumn(override val title: String = "LazyColumn") : SampleType
     data class ScrollableRow(override val title: String = "Scrollable Row") : SampleType
 }
@@ -55,6 +58,7 @@ val sampleTypes = listOf(
     SampleType.Coil(),
     SampleType.Pager(),
     SampleType.SnapBack(),
+    SampleType.SnapBackBox(),
     SampleType.LazyColumn(),
     SampleType.ScrollableRow(),
 )
@@ -96,6 +100,9 @@ fun App() {
                         settings = settings,
                         onTap = onTap,
                         onLongPress = onLongPress
+                    )
+                    is SampleType.SnapBackBox -> SnapBackZoomableBoxSample(
+                        onTap = onTap,
                     )
                     is SampleType.LazyColumn -> LazyColumnSample(
                         settings = settings,
