@@ -15,7 +15,7 @@ coil = "3.3.0"
 ktor = "3.4.0"
 
 ktlint = "14.2.0"
-dokka = "2.1.0"
+dokka = "2.2.0"
 
 [plugins]
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
