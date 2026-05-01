@@ -25,6 +25,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -62,6 +64,8 @@ public class ZoomState(
         if (contentSize.isUnspecified) contentSize = Size.Zero
     }
 
+    private val currentMaxScaleState = mutableFloatStateOf(maxScale)
+
     private var _scale = Animatable(initialScale).apply {
         updateBounds(0.9f, maxScale)
     }
@@ -71,6 +75,21 @@ public class ZoomState(
      */
     public val scale: Float
         get() = _scale.value
+
+    /**
+     * Update the runtime upper bound on the scale used by gesture handlers.
+     *
+     * The effective maximum is `max(maxScale, scale)` so that the user-supplied
+     * [maxScale] continues to act as a floor. Used by overlays such as
+     * [SnapBackZoomableBox] to allow zooming far enough to fill the surrounding
+     * window when the anchor is small relative to the screen.
+     */
+    internal fun setCurrentMaxScale(scale: Float) {
+        val newMax = max(maxScale, scale)
+        if (currentMaxScaleState.floatValue == newMax) return
+        currentMaxScaleState.floatValue = newMax
+        _scale.updateBounds(0.9f, newMax)
+    }
 
     private var _offsetX = Animatable(0f)
 
@@ -89,6 +108,26 @@ public class ZoomState(
         get() = _offsetY.value
 
     private var layoutSize = Size.Zero
+
+    private val _isActive = mutableStateOf(false)
+
+    /**
+     * Whether a zoom or pan gesture is currently being applied to the content,
+     * or the content has not yet settled back to its resting state after such a
+     * gesture ended.
+     *
+     * Becomes `true` only when a touch gesture is actually consumed as a zoom or
+     * pan (not merely when a finger touches down), and remains `true` through any
+     * follow-up animation (e.g. the snap-back animation of
+     * [Modifier.snapBackZoomable]), then returns to `false` once the content is
+     * at rest.
+     *
+     * This can be used to decide whether to show additional UI that should only be
+     * visible while the user is interacting with the content, such as an overlay
+     * that displays the zoomed content above a clipping parent.
+     */
+    public val isActive: Boolean
+        get() = _isActive.value
 
     /**
      * Set composable layout size.
@@ -151,6 +190,14 @@ public class ZoomState(
         velocityTracker.resetTracking()
     }
 
+    internal fun activateGesture() {
+        _isActive.value = true
+    }
+
+    internal fun endGesture() {
+        _isActive.value = false
+    }
+
     internal fun willChangeOffset(pan: Offset): Boolean {
         var willChange = true
         val ratio = (abs(pan.x) / abs(pan.y))
@@ -184,7 +231,7 @@ public class ZoomState(
         enableBounce: Boolean = true,
     ) = coroutineScope {
         val minScale = if (enableBounce) 0.9f else 1f
-        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
+        val newScale = (scale * zoom).coerceIn(minScale, currentMaxScaleState.floatValue)
         val newOffset = calculateNewOffset(newScale, position, pan)
         val newBounds = calculateNewBounds(newScale)
 
@@ -238,7 +285,7 @@ public class ZoomState(
         position: Offset,
         animationSpec: AnimationSpec<Float> = spring(),
     ): Unit = coroutineScope {
-        val newScale = targetScale.coerceIn(1f, maxScale)
+        val newScale = targetScale.coerceIn(1f, currentMaxScaleState.floatValue)
         val newOffset = calculateNewOffset(newScale, position, Offset.Zero)
         val newBounds = calculateNewBounds(newScale)
 
