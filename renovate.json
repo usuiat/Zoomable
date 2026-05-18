@@ -11,7 +11,8 @@
         "/org\\.jlleitschuh\\.gradle\\.ktlint/",
         "/com\\.vanniktech\\.maven\\.publish/",
         "/androidx\\.compose\\.ui:ui-test-manifest/",
-        "/org\\.robolectric:robolectric/"
+        "/org\\.robolectric:robolectric/",
+        "/org\\.jetbrains\\.dokka/"
       ]
     },
     {
