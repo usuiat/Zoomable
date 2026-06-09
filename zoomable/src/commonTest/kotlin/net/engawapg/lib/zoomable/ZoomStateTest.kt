@@ -6,7 +6,9 @@ import androidx.compose.ui.geometry.Size
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 
 class ZoomStateTest {
@@ -212,6 +214,49 @@ class ZoomStateTest {
         zoomState.setLayoutSize(Size(100f, 100f))
 
         zoomState.applyGesture(Offset.Zero, 2f, Offset.Zero, 0)
+    }
+
+    @OptIn(ExperimentalZoomableApi::class)
+    @Test
+    fun isActive_isFalse_initially() {
+        val zoomState = ZoomState()
+
+        assertFalse(zoomState.isActive)
+    }
+
+    @OptIn(ExperimentalZoomableApi::class)
+    @Test
+    fun isActive_remainsFalse_onTouchDownWithoutConsumingGesture() {
+        val zoomState = ZoomState()
+
+        zoomState.startGesture()
+
+        assertFalse(zoomState.isActive)
+    }
+
+    @OptIn(ExperimentalZoomableApi::class)
+    @Test
+    fun isActive_becomesTrue_whenGestureIsConsumed() {
+        val zoomState = ZoomState()
+
+        zoomState.startGesture()
+        zoomState.activateGesture()
+
+        assertTrue(zoomState.isActive)
+    }
+
+    @OptIn(ExperimentalZoomableApi::class)
+    @Test
+    fun isActive_returnsToFalse_afterGestureEnds() {
+        val zoomState = ZoomState()
+
+        zoomState.startGesture()
+        zoomState.activateGesture()
+        assertTrue(zoomState.isActive)
+
+        zoomState.endGesture()
+
+        assertFalse(zoomState.isActive)
     }
 }
 
