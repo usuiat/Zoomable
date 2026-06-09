@@ -28,6 +28,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
@@ -217,6 +219,10 @@ public fun SnapBackZoomableBox(
         label = "anchorAlpha",
     )
 
+    // Compose [content] once and move the same subtree between the anchor and the
+    // overlay so its state and side effects (e.g. AsyncImage requests) aren't duplicated.
+    val movableContent = remember(content) { movableContentOf(content) }
+
     val controller = LocalSnapBackZoomableOverlayController.current
     if (controller != null) {
         HostedSnapBackZoomableBox(
@@ -226,7 +232,7 @@ public fun SnapBackZoomableBox(
             anchorAlpha = anchorAlpha,
             scrim = scrim,
             onTap = onTap,
-            content = content,
+            content = movableContent,
         )
     } else {
         PopupSnapBackZoomableBox(
@@ -235,7 +241,7 @@ public fun SnapBackZoomableBox(
             popupState = popupState,
             anchorAlpha = anchorAlpha,
             onTap = onTap,
-            content = content,
+            content = movableContent,
         )
     }
 }
@@ -283,13 +289,20 @@ private fun HostedSnapBackZoomableBox(
         }
     }
 
+    var anchorSize by remember { mutableStateOf(IntSize.Zero) }
+    val overlayVisible = zoomState.isActive || anchorAlpha < 1f
     Box(
         modifier = modifier
             .onGloballyPositioned { entry.anchorCoordinates = it }
             .snapBackZoomable(zoomState = zoomState, onTap = onTap)
-            .graphicsLayer { alpha = anchorAlpha },
+            .graphicsLayer { alpha = anchorAlpha }
+            .onSizeChanged { anchorSize = it },
     ) {
-        content()
+        if (!overlayVisible) {
+            content()
+        } else {
+            ReservedSpace(anchorSize)
+        }
     }
 }
 
@@ -360,8 +373,10 @@ private fun PopupSnapBackZoomableBox(
     onTap: ((position: Offset) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
+    var anchorSize by remember { mutableStateOf(IntSize.Zero) }
+    val overlayVisible = zoomState.isActive || anchorAlpha < 1f
     Box {
-        if (zoomState.isActive || anchorAlpha < 1f) {
+        if (overlayVisible) {
             ZoomablePopup(
                 popupState = popupState,
                 zoomState = zoomState,
@@ -373,11 +388,29 @@ private fun PopupSnapBackZoomableBox(
             modifier = modifier
                 .onGloballyPositioned { popupState.onAnchorPositioned(it) }
                 .snapBackZoomable(zoomState = zoomState, onTap = onTap)
-                .graphicsLayer { alpha = anchorAlpha },
+                .graphicsLayer { alpha = anchorAlpha }
+                .onSizeChanged { anchorSize = it },
         ) {
-            content()
+            if (!overlayVisible) {
+                content()
+            } else {
+                ReservedSpace(anchorSize)
+            }
         }
     }
+}
+
+/**
+ * An empty layout that occupies [size] pixels, used to hold the anchor's place
+ * while its content has been moved into the overlay.
+ */
+@Composable
+private fun ReservedSpace(size: IntSize) {
+    Box(
+        modifier = Modifier.layout { _, _ ->
+            layout(size.width, size.height) {}
+        },
+    )
 }
 
 @Composable
