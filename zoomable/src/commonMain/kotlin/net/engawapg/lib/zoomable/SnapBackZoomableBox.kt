@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalZoomableApi::class)
+
 package net.engawapg.lib.zoomable
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -62,6 +64,7 @@ import kotlin.math.roundToInt
  *
  * Usually you do not need to instantiate this yourself; use [rememberZoomablePopupState].
  */
+@ExperimentalZoomableApi
 @Stable
 public class ZoomablePopupState {
     internal var anchorWindowBounds by mutableStateOf(IntRect(0, 0, 0, 0))
@@ -96,6 +99,7 @@ public class ZoomablePopupState {
 /**
  * Creates a [ZoomablePopupState] that is remembered across compositions.
  */
+@ExperimentalZoomableApi
 @Composable
 public fun rememberZoomablePopupState(): ZoomablePopupState = remember { ZoomablePopupState() }
 
@@ -108,6 +112,7 @@ public fun rememberZoomablePopupState(): ZoomablePopupState = remember { Zoomabl
  * bar areas on platforms (notably Android) where the popup's native surface
  * is otherwise capped to the window's visible display frame.
  */
+@ExperimentalZoomableApi
 @Stable
 public class SnapBackZoomableOverlayController internal constructor() {
     internal var hostCoordinates: LayoutCoordinates? by mutableStateOf(null)
@@ -150,6 +155,7 @@ internal val LocalSnapBackZoomableOverlayController =
  * @param modifier The modifier applied to the host [Box].
  * @param content The screen content that can contain [SnapBackZoomableBox]es.
  */
+@ExperimentalZoomableApi
 @Composable
 public fun SnapBackZoomableOverlayHost(
     modifier: Modifier = Modifier,
@@ -205,6 +211,7 @@ public fun SnapBackZoomableOverlayHost(
  * @param onTap Called when a single tap is detected.
  * @param content The zoomable content.
  */
+@ExperimentalZoomableApi
 @Composable
 public fun SnapBackZoomableBox(
     modifier: Modifier = Modifier,

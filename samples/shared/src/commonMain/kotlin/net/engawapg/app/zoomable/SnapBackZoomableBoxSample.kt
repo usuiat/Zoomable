@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import net.engawapg.lib.zoomable.ExperimentalZoomableApi
 import net.engawapg.lib.zoomable.SnapBackZoomableBox
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -32,6 +33,7 @@ import zoomable_root.samples.shared.generated.resources.eagle1
 import zoomable_root.samples.shared.generated.resources.eagle2
 import zoomable_root.samples.shared.generated.resources.eagle3
 
+@OptIn(ExperimentalZoomableApi::class)
 @Composable
 fun SnapBackZoomableBoxSample(
     onTap: (Offset) -> Unit,

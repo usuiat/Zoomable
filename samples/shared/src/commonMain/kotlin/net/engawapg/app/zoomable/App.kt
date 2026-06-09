@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.engawapg.app.zoomable.theme.ZoomableTheme
+import net.engawapg.lib.zoomable.ExperimentalZoomableApi
 import net.engawapg.lib.zoomable.SnapBackZoomableOverlayHost
 import org.jetbrains.compose.resources.painterResource
 import zoomable_root.samples.shared.generated.resources.Res
@@ -65,6 +66,7 @@ val sampleTypes = listOf(
     SampleType.ScrollableRow(),
 )
 
+@OptIn(ExperimentalZoomableApi::class)
 @Composable
 @Preview
 fun App() {

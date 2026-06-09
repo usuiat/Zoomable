@@ -126,6 +126,7 @@ public class ZoomState(
      * visible while the user is interacting with the content, such as an overlay
      * that displays the zoomed content above a clipping parent.
      */
+    @ExperimentalZoomableApi
     public val isActive: Boolean
         get() = _isActive.value
 
