@@ -313,7 +313,7 @@ private class ZoomableNode(
                                 zoomState.startFling()
                             }
                         } finally {
-                            zoomState.endGesture()
+                            zoomState.deactiveGesture()
                         }
                     }
                 },

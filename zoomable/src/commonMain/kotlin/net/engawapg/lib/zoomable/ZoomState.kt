@@ -195,7 +195,7 @@ public class ZoomState(
         _isActive.value = true
     }
 
-    internal fun endGesture() {
+    internal fun deactiveGesture() {
         _isActive.value = false
     }
 
