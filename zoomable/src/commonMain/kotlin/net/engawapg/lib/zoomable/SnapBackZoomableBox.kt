@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
@@ -189,11 +188,6 @@ public fun SnapBackZoomableOverlayHost(
  * may extend across system bar areas); otherwise it falls back to a platform
  * [Popup].
  *
- * The runtime upper-bound on [zoomState]'s scale is raised so that [content]
- * can scale enough to fill the surrounding area at maximum zoom, even when the
- * anchor is small relative to the screen. The user-supplied [ZoomState.maxScale]
- * continues to act as a floor.
- *
  * Example:
  * ```
  * SnapBackZoomableBox(modifier = Modifier.fillMaxSize()) {
@@ -272,28 +266,6 @@ private fun HostedSnapBackZoomableBox(
     }
     SideEffect {
         entry.anchorAlpha = anchorAlpha
-    }
-
-    val hostCoords = controller.hostCoordinates
-    val anchorCoords = entry.anchorCoordinates
-    if (hostCoords != null &&
-        anchorCoords != null &&
-        hostCoords.isAttached &&
-        anchorCoords.isAttached
-    ) {
-        val hostSize = hostCoords.size
-        val anchorSize = anchorCoords.size
-        if (hostSize.width > 0 &&
-            hostSize.height > 0 &&
-            anchorSize.width > 0 &&
-            anchorSize.height > 0
-        ) {
-            val needed = max(
-                hostSize.width.toFloat() / anchorSize.width,
-                hostSize.height.toFloat() / anchorSize.height,
-            )
-            zoomState.setCurrentMaxScale(needed)
-        }
     }
 
     var anchorSize by remember { mutableStateOf(IntSize.Zero) }
