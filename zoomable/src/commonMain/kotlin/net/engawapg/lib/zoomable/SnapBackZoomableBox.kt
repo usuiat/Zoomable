@@ -60,12 +60,9 @@ import kotlin.math.roundToInt
 /**
  * A state object that tracks the anchor position and window size required to
  * render a [SnapBackZoomableBox] in a [Popup] overlay.
- *
- * Usually you do not need to instantiate this yourself; use [rememberZoomablePopupState].
  */
-@ExperimentalZoomableApi
 @Stable
-public class ZoomablePopupState {
+internal class ZoomablePopupState {
     internal var anchorWindowBounds by mutableStateOf(IntRect(0, 0, 0, 0))
         private set
 
@@ -98,9 +95,8 @@ public class ZoomablePopupState {
 /**
  * Creates a [ZoomablePopupState] that is remembered across compositions.
  */
-@ExperimentalZoomableApi
 @Composable
-public fun rememberZoomablePopupState(): ZoomablePopupState = remember { ZoomablePopupState() }
+internal fun rememberZoomablePopupState(): ZoomablePopupState = remember { ZoomablePopupState() }
 
 /**
  * Controller that lets [SnapBackZoomableBox] instances render their zoomed
@@ -111,9 +107,8 @@ public fun rememberZoomablePopupState(): ZoomablePopupState = remember { Zoomabl
  * bar areas on platforms (notably Android) where the popup's native surface
  * is otherwise capped to the window's visible display frame.
  */
-@ExperimentalZoomableApi
 @Stable
-public class SnapBackZoomableOverlayController internal constructor() {
+internal class SnapBackZoomableOverlayController {
     internal var hostCoordinates: LayoutCoordinates? by mutableStateOf(null)
     internal val entries: SnapshotStateList<SnapBackZoomableOverlayEntry> =
         mutableStateListOf()
@@ -197,8 +192,6 @@ public fun SnapBackZoomableOverlayHost(
  *
  * @param modifier The modifier applied to the anchor area (the original touch target).
  * @param zoomState A [ZoomState] object. Defaults to [rememberZoomState].
- * @param popupState A [ZoomablePopupState] object used for the [Popup] fallback.
- * Defaults to [rememberZoomablePopupState].
  * @param scrim Color painted behind the zoomed content. Its alpha is multiplied
  * by the zoom progress so the scrim fades in as the user zooms past 1x and
  * fades out during the snap-back animation. Pass [Color.Transparent] to disable.
@@ -210,7 +203,6 @@ public fun SnapBackZoomableOverlayHost(
 public fun SnapBackZoomableBox(
     modifier: Modifier = Modifier,
     zoomState: ZoomState = rememberZoomState(),
-    popupState: ZoomablePopupState = rememberZoomablePopupState(),
     scrim: Color = Color.Black.copy(alpha = 0.6f),
     onTap: ((position: Offset) -> Unit)? = null,
     content: @Composable () -> Unit,
@@ -239,7 +231,6 @@ public fun SnapBackZoomableBox(
         PopupSnapBackZoomableBox(
             modifier = modifier,
             zoomState = zoomState,
-            popupState = popupState,
             anchorAlpha = anchorAlpha,
             onTap = onTap,
             content = movableContent,
@@ -347,11 +338,11 @@ private fun HostedZoomOverlay(
 private fun PopupSnapBackZoomableBox(
     modifier: Modifier,
     zoomState: ZoomState,
-    popupState: ZoomablePopupState,
     anchorAlpha: Float,
     onTap: ((position: Offset) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
+    val popupState = rememberZoomablePopupState()
     var anchorSize by remember { mutableStateOf(IntSize.Zero) }
     val overlayVisible = zoomState.isActive || anchorAlpha < 1f
     Box {
