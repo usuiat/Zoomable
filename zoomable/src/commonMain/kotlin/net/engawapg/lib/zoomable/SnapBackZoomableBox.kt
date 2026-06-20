@@ -18,20 +18,17 @@
 
 package net.engawapg.lib.zoomable
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -120,7 +117,6 @@ internal class SnapBackZoomableOverlayEntry(
     val content: @Composable () -> Unit,
 ) {
     var anchorCoordinates: LayoutCoordinates? by mutableStateOf(null)
-    var anchorAlpha: Float by mutableFloatStateOf(1f)
 }
 
 internal val LocalSnapBackZoomableOverlayController =
@@ -207,11 +203,6 @@ public fun SnapBackZoomableBox(
     onTap: ((position: Offset) -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    val anchorAlpha by animateFloatAsState(
-        targetValue = if (zoomState.isActive) 0f else 1f,
-        label = "anchorAlpha",
-    )
-
     // Compose [content] once and move the same subtree between the anchor and the
     // overlay so its state and side effects (e.g. AsyncImage requests) aren't duplicated.
     val movableContent = remember(content) { movableContentOf(content) }
@@ -222,7 +213,6 @@ public fun SnapBackZoomableBox(
             modifier = modifier,
             zoomState = zoomState,
             controller = controller,
-            anchorAlpha = anchorAlpha,
             scrim = scrim,
             onTap = onTap,
             content = movableContent,
@@ -231,7 +221,6 @@ public fun SnapBackZoomableBox(
         PopupSnapBackZoomableBox(
             modifier = modifier,
             zoomState = zoomState,
-            anchorAlpha = anchorAlpha,
             onTap = onTap,
             content = movableContent,
         )
@@ -243,7 +232,6 @@ private fun HostedSnapBackZoomableBox(
     modifier: Modifier,
     zoomState: ZoomState,
     controller: SnapBackZoomableOverlayController,
-    anchorAlpha: Float,
     scrim: Color,
     onTap: ((position: Offset) -> Unit)?,
     content: @Composable () -> Unit,
@@ -255,20 +243,15 @@ private fun HostedSnapBackZoomableBox(
         controller.entries.add(entry)
         onDispose { controller.entries.remove(entry) }
     }
-    SideEffect {
-        entry.anchorAlpha = anchorAlpha
-    }
 
     var anchorSize by remember { mutableStateOf(IntSize.Zero) }
-    val overlayVisible = zoomState.isActive || anchorAlpha < 1f
     Box(
         modifier = modifier
             .onGloballyPositioned { entry.anchorCoordinates = it }
             .snapBackZoomable(zoomState = zoomState, onTap = onTap)
-            .graphicsLayer { alpha = anchorAlpha }
             .onSizeChanged { anchorSize = it },
     ) {
-        if (!overlayVisible) {
+        if (!zoomState.isActive) {
             content()
         } else {
             ReservedSpace(anchorSize)
@@ -282,10 +265,10 @@ private fun HostedZoomOverlay(
     hostCoords: LayoutCoordinates?,
 ) {
     val zoomState = entry.zoomState
-    // Keep the overlay visible through the snap-back animation AND the
-    // following alpha fade-in of the anchor, so the underlying content does
-    // not flash into view before the anchor is fully opaque again.
-    if (!zoomState.isActive && entry.anchorAlpha >= 1f) return
+    // The overlay stays visible while the gesture is active, which includes the
+    // snap-back animation, so the underlying content does not flash into view
+    // before the content has settled back to its resting state.
+    if (!zoomState.isActive) return
     val anchorCoords = entry.anchorCoordinates
     if (hostCoords == null || anchorCoords == null) return
     if (!hostCoords.isAttached || !anchorCoords.isAttached) return
@@ -338,15 +321,13 @@ private fun HostedZoomOverlay(
 private fun PopupSnapBackZoomableBox(
     modifier: Modifier,
     zoomState: ZoomState,
-    anchorAlpha: Float,
     onTap: ((position: Offset) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val popupState = rememberZoomablePopupState()
     var anchorSize by remember { mutableStateOf(IntSize.Zero) }
-    val overlayVisible = zoomState.isActive || anchorAlpha < 1f
     Box {
-        if (overlayVisible) {
+        if (zoomState.isActive) {
             ZoomablePopup(
                 popupState = popupState,
                 zoomState = zoomState,
@@ -358,10 +339,9 @@ private fun PopupSnapBackZoomableBox(
             modifier = modifier
                 .onGloballyPositioned { popupState.onAnchorPositioned(it) }
                 .snapBackZoomable(zoomState = zoomState, onTap = onTap)
-                .graphicsLayer { alpha = anchorAlpha }
                 .onSizeChanged { anchorSize = it },
         ) {
-            if (!overlayVisible) {
+            if (!zoomState.isActive) {
                 content()
             } else {
                 ReservedSpace(anchorSize)
