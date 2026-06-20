@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.size
 import androidx.compose.ui.unit.width
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 expect open class PlatformZoomableTest()
@@ -435,6 +436,55 @@ class ZoomableTest : PlatformZoomableTest() {
             assertEquals(boundsAfter.width, boundsBefore.width)
             assertEquals(boundsAfter.height, boundsBefore.height)
         }
+
+    @OptIn(ExperimentalZoomableApi::class)
+    @Test
+    fun snapBackZoomable_isActive_transitions_through_gesture_flow() = runComposeUiTest {
+        lateinit var zoomState: ZoomState
+        setContent {
+            val icon = Icons.Default.Info
+            zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .snapBackZoomable(
+                        zoomState = zoomState,
+                    )
+            )
+        }
+
+        val image = onNodeWithContentDescription("image")
+
+        // Initially the content is at rest.
+        assertFalse(zoomState.isActive)
+
+        // Touching down without moving does not consume a gesture, so isActive stays false.
+        image.performTouchInput {
+            down(0, center + Offset(-100f, 0f))
+            down(1, center + Offset(+100f, 0f))
+        }
+        assertFalse(zoomState.isActive)
+
+        // Pinching consumes the gesture, so isActive becomes true.
+        image.performTouchInput {
+            moveTo(0, center + Offset(-200f, 0f))
+            moveTo(1, center + Offset(+200f, 0f))
+        }
+        assertTrue(zoomState.isActive)
+
+        // Releasing the fingers triggers the snap-back animation; once it completes
+        // isActive returns to false.
+        image.performTouchInput {
+            up(0)
+            up(1)
+        }
+        waitForIdle()
+        assertFalse(zoomState.isActive)
+    }
 
     @Test
     fun enableOneFingerZoom_can_be_changed() = runComposeUiTest {
