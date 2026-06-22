@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -221,6 +223,7 @@ public fun SnapBackZoomableBox(
         PopupSnapBackZoomableBox(
             modifier = modifier,
             zoomState = zoomState,
+            scrim = scrim,
             onTap = onTap,
             content = movableContent,
         )
@@ -259,6 +262,19 @@ private fun HostedSnapBackZoomableBox(
     }
 }
 
+/**
+ * Returns the scrim opacity factor for the given [scale], fading the scrim in from fully
+ * transparent at rest (scale 1) to its configured alpha once the content has scaled up.
+ */
+internal fun scrimAlphaForScale(scale: Float): Float = ((scale - 1f) * 2f).coerceIn(0f, 1f)
+
+@Composable
+private fun rememberScrimAlpha(zoomState: ZoomState): State<Float> = remember(zoomState) {
+    derivedStateOf {
+        scrimAlphaForScale(zoomState.scale)
+    }
+}
+
 @Composable
 private fun HostedZoomOverlay(
     entry: SnapBackZoomableOverlayEntry,
@@ -275,11 +291,7 @@ private fun HostedZoomOverlay(
 
     val anchorOffset = hostCoords.localPositionOf(anchorCoords, Offset.Zero)
     val anchorSize = anchorCoords.size
-    val scrimAlpha by remember(zoomState) {
-        derivedStateOf {
-            ((zoomState.scale - 1f) * 2f).coerceIn(0f, 1f)
-        }
-    }
+    val scrimAlpha by rememberScrimAlpha(zoomState)
 
     // Scrim spans the whole host.
     Box(
@@ -321,6 +333,7 @@ private fun HostedZoomOverlay(
 private fun PopupSnapBackZoomableBox(
     modifier: Modifier,
     zoomState: ZoomState,
+    scrim: Color,
     onTap: ((position: Offset) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
@@ -331,6 +344,7 @@ private fun PopupSnapBackZoomableBox(
             ZoomablePopup(
                 popupState = popupState,
                 zoomState = zoomState,
+                scrim = scrim,
                 content = content,
             )
         }
@@ -367,8 +381,10 @@ private fun ReservedSpace(size: IntSize) {
 private fun ZoomablePopup(
     popupState: ZoomablePopupState,
     zoomState: ZoomState,
+    scrim: Color,
     content: @Composable () -> Unit,
 ) {
+    val scrimAlpha by rememberScrimAlpha(zoomState)
     Popup(
         popupPositionProvider = popupState.positionProvider,
         onDismissRequest = {},
@@ -378,25 +394,29 @@ private fun ZoomablePopup(
         // that graphicsLayer transforms can extend past the anchor bounds without
         // being clipped by the popup's content measurement.
         Box(
-            modifier = Modifier.layout { measurable, _ ->
-                val anchor = popupState.anchorWindowBounds
-                val window = popupState.windowSize
-                val anchorWidth = anchor.width.coerceAtLeast(1)
-                val anchorHeight = anchor.height.coerceAtLeast(1)
-                val windowWidth = window.width.coerceAtLeast(anchorWidth)
-                val windowHeight = window.height.coerceAtLeast(anchorHeight)
-                val placeable = measurable.measure(
-                    Constraints(
-                        minWidth = anchorWidth,
-                        maxWidth = anchorWidth,
-                        minHeight = anchorHeight,
-                        maxHeight = anchorHeight,
-                    ),
-                )
-                layout(windowWidth, windowHeight) {
-                    placeable.place(anchor.left, anchor.top)
+            modifier = Modifier
+                .drawBehind {
+                    drawRect(scrim.copy(alpha = scrim.alpha * scrimAlpha))
                 }
-            },
+                .layout { measurable, _ ->
+                    val anchor = popupState.anchorWindowBounds
+                    val window = popupState.windowSize
+                    val anchorWidth = anchor.width.coerceAtLeast(1)
+                    val anchorHeight = anchor.height.coerceAtLeast(1)
+                    val windowWidth = window.width.coerceAtLeast(anchorWidth)
+                    val windowHeight = window.height.coerceAtLeast(anchorHeight)
+                    val placeable = measurable.measure(
+                        Constraints(
+                            minWidth = anchorWidth,
+                            maxWidth = anchorWidth,
+                            minHeight = anchorHeight,
+                            maxHeight = anchorHeight,
+                        ),
+                    )
+                    layout(windowWidth, windowHeight) {
+                        placeable.place(anchor.left, anchor.top)
+                    }
+                },
         ) {
             Box(
                 modifier = Modifier.graphicsLayer {

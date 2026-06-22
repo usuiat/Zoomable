@@ -10,12 +10,14 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.semantics
@@ -24,11 +26,13 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.TouchInjectionScope
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.doubleClick
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performMouseInput
@@ -484,6 +488,68 @@ class ZoomableTest : PlatformZoomableTest() {
         }
         waitForIdle()
         assertFalse(zoomState.isActive)
+    }
+
+    @OptIn(ExperimentalZoomableApi::class)
+    @Test
+    fun snapBackZoomableBox_moves_content_to_popup_without_duplicate_composition() =
+        runComposeUiTest {
+            var activeContentCount = 0
+            var maxActiveContentCount = 0
+            setContent {
+                val icon = Icons.Default.Info
+                val zoomState =
+                    rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+                SnapBackZoomableBox(
+                    modifier = Modifier.size(300.dp),
+                    zoomState = zoomState,
+                    scrim = Color.Transparent,
+                ) {
+                    DisposableEffect(Unit) {
+                        activeContentCount++
+                        maxActiveContentCount = maxOf(maxActiveContentCount, activeContentCount)
+                        onDispose { activeContentCount-- }
+                    }
+                    Image(
+                        imageVector = icon,
+                        contentDescription = "image",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+
+            onAllNodesWithContentDescription("image").assertCountEquals(1)
+            assertEquals(1, activeContentCount)
+
+            val image = onNodeWithContentDescription("image")
+            image.performTouchInput {
+                down(0, center + Offset(-100f, 0f))
+                down(1, center + Offset(+100f, 0f))
+                moveTo(0, center + Offset(-200f, 0f))
+                moveTo(1, center + Offset(+200f, 0f))
+                up(0)
+                up(1)
+            }
+            waitForIdle()
+
+            onAllNodesWithContentDescription("image").assertCountEquals(1)
+            assertEquals(1, activeContentCount)
+            assertEquals(1, maxActiveContentCount)
+        }
+
+    @Test
+    fun scrimAlphaForScale_fades_in_as_content_scales_up() {
+        // At rest (or smaller) the scrim is fully transparent.
+        assertEquals(0f, scrimAlphaForScale(0.5f))
+        assertEquals(0f, scrimAlphaForScale(1f))
+
+        // It fades in linearly while scaling up.
+        assertEquals(0.5f, scrimAlphaForScale(1.25f))
+
+        // It reaches full opacity at 1.5x and stays clamped beyond that.
+        assertEquals(1f, scrimAlphaForScale(1.5f))
+        assertEquals(1f, scrimAlphaForScale(3f))
     }
 
     @Test
