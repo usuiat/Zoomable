@@ -1,21 +1,21 @@
 [versions]
-jetbrains-compose = "1.10.0"
+jetbrains-compose = "1.11.0"
 jetbrains-material3 = "1.9.0"
-jetpack-compose = "1.10.6"
+jetpack-compose = "1.11.4"
 material-icons = "1.7.3"
 
-kotlin = "2.3.10"
-androidGradle = "9.1.1"
+kotlin = "2.3.21"
+androidGradle = "9.2.1"
 
 android-compileSdk = "36"
 android-targetSdk = "36"
 android-minSdk = "23"
 
-coil = "3.3.0"
+coil = "3.4.0"
 ktor = "3.4.0"
 
 ktlint = "14.2.0"
-dokka = "2.1.0"
+dokka = "2.2.0"
 
 [plugins]
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
@@ -26,7 +26,7 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradle" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.37.0" }
 
 [libraries]
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrains-compose" }
@@ -42,9 +42,9 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "jetpack-compose" }
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons" }
 
-androidx-annotation = "androidx.annotation:annotation:1.9.1"
-androidx-activity = "androidx.activity:activity-compose:1.12.3"
-androidx-core = "androidx.core:core-ktx:1.17.0"
+androidx-annotation = "androidx.annotation:annotation:1.10.0"
+androidx-activity = "androidx.activity:activity-compose:1.13.0"
+androidx-core = "androidx.core:core-ktx:1.18.0"
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
