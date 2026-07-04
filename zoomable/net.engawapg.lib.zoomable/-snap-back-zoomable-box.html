@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SnapBackZoomableBox</title>
+    <link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
+        <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer="defer"></script>
+</head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../index.html" tabindex="1">
+                    zoomable
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+2.13.0        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true"
+                        data-filter=":zoomable/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":zoomable/commonMain"
+                                       data-filter=":zoomable/commonMain"/>
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    zoomable
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="zoomable::net.engawapg.lib.zoomable//SnapBackZoomableBox/#androidx.compose.ui.Modifier#net.engawapg.lib.zoomable.ZoomState#androidx.compose.ui.graphics.Color#kotlin.Function1[androidx.compose.ui.geometry.Offset,kotlin.Unit]?#kotlin.Function0[kotlin.Unit]/PointingToDeclaration//-1298956168">
+  <div class="breadcrumbs"><a href="../../index.html">zoomable</a><span class="delimiter">/</span><a href="index.html">net.engawapg.lib.zoomable</a><span class="delimiter">/</span><span class="current">SnapBackZoomableBox</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Snap</span><wbr></wbr><span>Back</span><wbr></wbr><span>Zoomable</span><wbr></wbr><span><span>Box</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword">fun </span><a href="-snap-back-zoomable-box.html"><span class="token function">SnapBackZoomableBox</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">modifier<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a><span class="token operator"> = </span>Modifier<span class="token punctuation">, </span></span><span class="parameter ">zoomState<span class="token operator">: </span><a href="-zoom-state/index.html">ZoomState</a><span class="token operator"> = </span>rememberZoomState()<span class="token punctuation">, </span></span><span class="parameter ">scrim<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a><span class="token operator"> = </span>Color.Black.copy(alpha = 0.6f)<span class="token punctuation">, </span></span><span class="parameter ">onTap<span class="token operator">: </span><span class="token punctuation">(</span>position<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/geometry/Offset.html">Offset</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">content<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a> </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A container that makes its <a href="-snap-back-zoomable-box.html">content</a> zoomable with snap-back behavior while allowing the zoomed content to escape the clipping bounds of its parent.</p><p class="paragraph">Pinch zoom and pan gestures are supported; when the pointers are released the content animates back to its original size and position.</p><p class="paragraph">While a gesture is in progress (including the snap-back animation), <a href="-snap-back-zoomable-box.html">content</a> is rendered as an overlay over a <a href="-snap-back-zoomable-box.html">scrim</a> background. If this box is nested inside a <a href="-snap-back-zoomable-overlay-host.html">SnapBackZoomableOverlayHost</a>, the overlay lives in that host (and may extend across system bar areas); otherwise it falls back to a platform <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/window/package-summary.html">Popup</a>.</p><p class="paragraph">Example:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">SnapBackZoomableBox(modifier = Modifier.fillMaxSize()) {<br>    AsyncImage(model = url, modifier = Modifier.fillMaxSize())<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h4 class="tableheader">Parameters</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>modifier</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The modifier applied to the anchor area (the original touch target).</p></div></div></div></div><div class="table-row table-row_content" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>zoom</span><wbr></wbr><span><span>State</span></span></u></div></span></div><div><div class="title"><p class="paragraph">A <a href="-zoom-state/index.html">ZoomState</a> object. Defaults to <a href="remember-zoom-state.html">rememberZoomState</a>.</p></div></div></div></div><div class="table-row table-row_content" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>scrim</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Color painted behind the zoomed content. Its alpha is multiplied by the zoom progress so the scrim fades in as the user zooms past 1x and fades out during the snap-back animation. Pass <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.Companion.html#transparent">Color.Transparent</a> to disable.</p></div></div></div></div><div class="table-row table-row_content" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>on</span><wbr></wbr><span><span>Tap</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Called when a single tap is detected.</p></div></div></div></div><div class="table-row table-row_content" data-filterable-current=":zoomable/commonMain" data-filterable-set=":zoomable/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>content</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The zoomable content.</p></div></div></div></div></div></div></div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

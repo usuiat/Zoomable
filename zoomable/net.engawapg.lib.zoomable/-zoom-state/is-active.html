@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>offsetY</title>
+    <title>isActive</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
         <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js", "js");</script>
@@ -103,12 +103,12 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="member" id="content" pageIds="zoomable::net.engawapg.lib.zoomable/ZoomState/offsetY/#/PointingToDeclaration//-1298956168">
-  <div class="breadcrumbs"><a href="../../../index.html">zoomable</a><span class="delimiter">/</span><a href="../index.html">net.engawapg.lib.zoomable</a><span class="delimiter">/</span><a href="index.html">ZoomState</a><span class="delimiter">/</span><span class="current">offsetY</span></div>
+<div class="main-content" data-page-type="member" id="content" pageIds="zoomable::net.engawapg.lib.zoomable/ZoomState/isActive/#/PointingToDeclaration//-1298956168">
+  <div class="breadcrumbs"><a href="../../../index.html">zoomable</a><span class="delimiter">/</span><a href="../index.html">net.engawapg.lib.zoomable</a><span class="delimiter">/</span><a href="index.html">ZoomState</a><span class="delimiter">/</span><span class="current">isActive</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>offset</span><wbr></wbr><span><span>Y</span></span></h1>
+    <h1 class="cover"><span>is</span><wbr></wbr><span><span>Active</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="offset-y.html">offsetY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><p class="paragraph">The vertical offset of the content.</p></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":zoomable/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-active.html">isActive</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><p class="paragraph">Whether a zoom or pan gesture is currently being applied to the content, or the content has not yet settled back to its resting state after such a gesture ended.</p><p class="paragraph">Becomes <code class="lang-kotlin">true</code> only when a touch gesture is actually consumed as a zoom or pan (not merely when a finger touches down), and remains <code class="lang-kotlin">true</code> through any follow-up animation (e.g. the snap-back animation of <a href="../snap-back-zoomable.html">Modifier.snapBackZoomable</a>), then returns to <code class="lang-kotlin">false</code> once the content is at rest.</p><p class="paragraph">This can be used to decide whether to show additional UI that should only be visible while the user is interacting with the content, such as an overlay that displays the zoomed content above a clipping parent.</p></div></div>
 </div>
     <div class="footer">
         <div class="footer--container">
