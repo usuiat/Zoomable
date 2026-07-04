@@ -7,8 +7,8 @@ material-icons = "1.7.3"
 kotlin = "2.4.0"
 androidGradle = "9.2.1"
 
-android-compileSdk = "36"
-android-targetSdk = "36"
+android-compileSdk = "37"
+android-targetSdk = "37"
 android-minSdk = "23"
 
 coil = "3.5.0"
