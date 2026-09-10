@@ -54,4 +54,4 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-robolectric = "org.robolectric:robolectric:4.16.1"
+robolectric = "org.robolectric:robolectric:4.17"
