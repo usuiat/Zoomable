@@ -11,7 +11,7 @@ android-compileSdk = "37"
 android-targetSdk = "37"
 android-minSdk = "23"
 
-coil = "3.5.0"
+coil = "3.6.2"
 ktor = "3.5.1"
 
 ktlint = "14.2.0"
