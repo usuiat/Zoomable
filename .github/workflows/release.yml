@@ -13,10 +13,10 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Publish and release
         run: ./gradlew publishToMavenCentral --no-configuration-cache
