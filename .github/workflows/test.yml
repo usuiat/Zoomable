@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Build android
         run: ./gradlew :samples:androidApp:assembleDebug
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Build iOS
         run: ./gradlew :samples:shared:iosArm64Binaries
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
 
       - name: Unit tests
         run: ./gradlew :zoomable:testAndroidHostTest
