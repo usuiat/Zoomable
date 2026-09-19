@@ -22,6 +22,11 @@
     {
       "automerge": true,
       "matchManagers": ["github-actions"]
+    },
+    {
+      "description": "Pin the CI build JDK manually.",
+      "enabled": false,
+      "matchDatasources": ["java-version"]
     }
   ]
 }
