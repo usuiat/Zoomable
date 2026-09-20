@@ -1,28 +1,40 @@
 package net.engawapg.lib.zoomable
 
 import androidx.compose.animation.core.snap
+import androidx.compose.runtime.MonotonicFrameClock
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.TestMonotonicFrameClock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
 /**
+ * Emits a frame as soon as one is asked for, which is all that animations driven with
+ * [androidx.compose.animation.core.snap] need to settle.
+ *
+ * Compose ships TestMonotonicFrameClock, but only for the JVM targets.
+ */
+private class ImmediateFrameClock : MonotonicFrameClock {
+    private var frameTimeNanos = 0L
+
+    override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R {
+        frameTimeNanos += 16_000_000L
+        return onFrame(frameTimeNanos)
+    }
+}
+
+/**
  * Runs a test that drives an [androidx.compose.animation.core.Animatable], which does not advance
  * without a frame clock in the coroutine context.
  */
-@OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 private fun runAnimationTest(body: suspend CoroutineScope.() -> Unit): TestResult = runTest {
-    withContext(TestMonotonicFrameClock(this)) {
+    withContext(ImmediateFrameClock()) {
         body()
     }
 }
