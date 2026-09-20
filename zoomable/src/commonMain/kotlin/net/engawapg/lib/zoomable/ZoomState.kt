@@ -470,8 +470,9 @@ public class ZoomState(
  * @param initialScale The initial scale of the content.
  * @param bounce How far the scale can go beyond its normal range during a gesture.
  *
- * When [maxScale], [contentSize], and [initialScale] change, a new ZoomState instance is created.
- * The remaining parameters are only read when that happens, so changing them alone has no effect.
+ * When [maxScale], [contentSize], [initialScale], and [bounce] change, a new ZoomState instance is
+ * created, which resets the scale and the offsets. [velocityDecay] is only read when that happens,
+ * so changing it alone has no effect.
  */
 @Composable
 public fun rememberZoomState(
@@ -480,6 +481,6 @@ public fun rememberZoomState(
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
     @FloatRange(from = 1.0) initialScale: Float = 1f,
     bounce: Bounce = Bounce.Default,
-): ZoomState = remember(maxScale, contentSize, initialScale) {
+): ZoomState = remember(maxScale, contentSize, initialScale, bounce) {
     ZoomState(maxScale, contentSize, velocityDecay, initialScale, bounce)
 }

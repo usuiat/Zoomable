@@ -141,13 +141,6 @@ internal fun SettingsContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
-        Text(
-            text = "To reflect the changed values, switch the sample to be displayed.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         RadioButtonSettingItem(
             text = "1.0",
             selected = settings.initialScale == 1f,
@@ -166,13 +159,6 @@ internal fun SettingsContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
-        Text(
-            text = "To reflect the changed values, switch the sample to be displayed.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         RadioButtonSettingItem(
             text = "Default: Bounce(${Bounce.Default.lower}, ${Bounce.Default.upper})",
             selected = settings.bounce == Bounce.Default,
