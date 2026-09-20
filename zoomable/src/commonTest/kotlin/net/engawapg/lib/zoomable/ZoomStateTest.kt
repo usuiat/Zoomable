@@ -353,19 +353,19 @@ class ZoomStateTest {
         )
         zoomState.setLayoutSize(Size(100f, 100f))
 
-        // Enlarge to the bounced maximum of 4.0 around a point right of the centre.
-        zoomState.applyGesture(Offset.Zero, 4f, Offset(75f, 50f), 0)
+        // Enlarge to the bounced maximum of 4.0 around a point a quarter into the layout.
+        zoomState.applyGesture(Offset.Zero, 4f, Offset(25f, 25f), 0)
         assertEquals(4f, zoomState.scale)
-        assertEquals(-75f, zoomState.offsetX)
-        assertEquals(0f, zoomState.offsetY)
+        assertEquals(75f, zoomState.offsetX)
+        assertEquals(75f, zoomState.offsetY)
 
         zoomState.endBounce(snap())
 
-        // Shrinking back to 2.0 around the same point halves how far the content is shifted.
-        // Shrinking around the centre instead would have clamped the offset to -50f.
+        // Shrinking back to 2.0 around that same point keeps it in place, whereas shrinking around
+        // the centre would have left an offset of 37.5f.
         assertEquals(2f, zoomState.scale)
-        assertEquals(-25f, zoomState.offsetX)
-        assertEquals(0f, zoomState.offsetY)
+        assertEquals(25f, zoomState.offsetX)
+        assertEquals(25f, zoomState.offsetY)
     }
 
     @Test
@@ -377,17 +377,20 @@ class ZoomStateTest {
         )
         zoomState.setLayoutSize(Size(100f, 100f))
 
-        // Enlarge around the centre, then let the fingers travel right without zooming.
+        // Enlarge around the centre, which leaves the content centred, then let the fingers travel
+        // to the top left corner without zooming.
         zoomState.applyGesture(Offset.Zero, 4f, Offset(50f, 50f), 0)
-        zoomState.applyGesture(Offset.Zero, 1f, Offset(75f, 50f), 0)
+        zoomState.applyGesture(Offset.Zero, 1f, Offset.Zero, 0)
+        assertEquals(0f, zoomState.offsetX)
+        assertEquals(0f, zoomState.offsetY)
 
         zoomState.endBounce(snap())
 
         // Shrinking happens around where the fingers ended up, not around the centre they started
-        // from, which would have left the offset at 0.
+        // from, which would have left the offset at 0f.
         assertEquals(2f, zoomState.scale)
-        assertEquals(12.5f, zoomState.offsetX)
-        assertEquals(0f, zoomState.offsetY)
+        assertEquals(-25f, zoomState.offsetX)
+        assertEquals(-25f, zoomState.offsetY)
     }
 
     @Test
