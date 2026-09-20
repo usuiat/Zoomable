@@ -380,6 +380,52 @@ class ZoomStateTest {
     }
 
     @Test
+    fun endBounce_shrinksAroundTheLastGesturePosition() = runAnimationTest {
+        val zoomState = ZoomState(
+            maxScale = 2f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.9f, upper = 2f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        // Enlarge to the bounced maximum of 4.0 around a point right of the centre.
+        zoomState.applyGesture(Offset.Zero, 4f, Offset(75f, 50f), 0)
+        assertEquals(4f, zoomState.scale)
+        assertEquals(-75f, zoomState.offsetX)
+        assertEquals(0f, zoomState.offsetY)
+
+        zoomState.endBounce(snap())
+
+        // Shrinking back to 2.0 around the same point halves how far the content is shifted, which
+        // is still within the 50px the restored scale allows, so the clamp does not kick in.
+        assertEquals(2f, zoomState.scale)
+        assertEquals(-25f, zoomState.offsetX)
+        assertEquals(0f, zoomState.offsetY)
+    }
+
+    @Test
+    fun endBounce_panningAfterZoomingMovesThePositionItShrinksAround() = runAnimationTest {
+        val zoomState = ZoomState(
+            maxScale = 2f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.9f, upper = 2f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        // Enlarge around the centre, then let the fingers travel right without zooming.
+        zoomState.applyGesture(Offset.Zero, 4f, Offset(50f, 50f), 0)
+        zoomState.applyGesture(Offset.Zero, 1f, Offset(75f, 50f), 0)
+
+        zoomState.endBounce(snap())
+
+        // Shrinking happens around where the fingers ended up, not around the centre they started
+        // from, which would have left the offset at 0.
+        assertEquals(2f, zoomState.scale)
+        assertEquals(12.5f, zoomState.offsetX)
+        assertEquals(0f, zoomState.offsetY)
+    }
+
+    @Test
     fun endBounce_withinNormalRange_keepsScaleAndOffset() = runAnimationTest {
         val zoomState = ZoomState(maxScale = 5f, contentSize = Size(100f, 100f))
         zoomState.setLayoutSize(Size(100f, 100f))

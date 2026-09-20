@@ -171,8 +171,15 @@ public class ZoomState(
 
     private val velocityTracker = VelocityTracker()
 
+    /**
+     * Where the fingers were when the gesture was last applied, so that a bounce can be undone
+     * around the same point. Null until a gesture is applied.
+     */
+    private var lastGesturePosition: Offset? = null
+
     internal fun startGesture() {
         velocityTracker.resetTracking()
+        lastGesturePosition = null
     }
 
     internal fun activateGesture() {
@@ -232,6 +239,8 @@ public class ZoomState(
         launch {
             _scale.snapTo(newScale)
         }
+
+        lastGesturePosition = position
 
         if (zoom == 1f) {
             velocityTracker.addPosition(timeMillis, position)
@@ -301,33 +310,13 @@ public class ZoomState(
     /**
      * Animate the scale back into the normal range after a bounce.
      *
-     * Unlike [changeScale], this keeps the content centred where it is instead of scaling around a
-     * given position, because a bounce is undone rather than aimed somewhere. The offsets only move
-     * as much as the narrower bounds of the restored scale require.
+     * The content shrinks back around the point the gesture last touched. Does nothing when no
+     * gesture has been applied.
      */
-    internal suspend fun endBounce(animationSpec: AnimationSpec<Float> = spring()): Unit =
-        coroutineScope {
-            val newScale = scale.coerceIn(1f, maxScale)
-            val newBounds = calculateNewBounds(newScale)
-
-            val x = _offsetX.value.coerceIn(newBounds.left, newBounds.right)
-            launch {
-                _offsetX.updateBounds(null, null)
-                _offsetX.animateTo(x, animationSpec)
-                _offsetX.updateBounds(newBounds.left, newBounds.right)
-            }
-
-            val y = _offsetY.value.coerceIn(newBounds.top, newBounds.bottom)
-            launch {
-                _offsetY.updateBounds(null, null)
-                _offsetY.animateTo(y, animationSpec)
-                _offsetY.updateBounds(newBounds.top, newBounds.bottom)
-            }
-
-            launch {
-                _scale.animateTo(newScale, animationSpec)
-            }
-        }
+    internal suspend fun endBounce(animationSpec: AnimationSpec<Float> = spring()) {
+        val position = lastGesturePosition ?: return
+        changeScale(scale, position, animationSpec)
+    }
 
     private fun calculateNewOffset(newScale: Float, position: Offset, pan: Offset): Offset {
         val size = fitContentSize * scale
