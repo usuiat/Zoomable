@@ -16,6 +16,8 @@
 
 package net.engawapg.lib.zoomable
 
+import androidx.annotation.FloatRange
+
 /**
  * Specifies how far the content can be scaled beyond its normal range while a zoom gesture is in
  * progress. Once the gesture ends, the scale animates back into the normal range.
@@ -35,7 +37,10 @@ package net.engawapg.lib.zoomable
  * @param upper The factor applied to [ZoomState.maxScale]. Must be at least `1.0`. A value of `1.0`
  * disables bouncing while enlarging.
  */
-public data class Bounce(public val lower: Float, public val upper: Float) {
+public data class Bounce(
+    @param:FloatRange(from = 0.0, fromInclusive = false, to = 1.0) public val lower: Float,
+    @param:FloatRange(from = 1.0) public val upper: Float,
+) {
     init {
         require(lower > 0f && lower <= 1f) {
             "lower must be greater than 0.0 and at most 1.0."
