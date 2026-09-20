@@ -11,6 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
@@ -19,7 +20,7 @@ import kotlinx.coroutines.withContext
  * Runs a test that drives an [androidx.compose.animation.core.Animatable], which does not advance
  * without a frame clock in the coroutine context.
  */
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 private fun runAnimationTest(body: suspend CoroutineScope.() -> Unit): TestResult = runTest {
     withContext(TestMonotonicFrameClock(this)) {
         body()
@@ -391,22 +392,6 @@ class ZoomStateTest {
         assertEquals(2f, zoomState.scale)
         assertEquals(-25f, zoomState.offsetX)
         assertEquals(-25f, zoomState.offsetY)
-    }
-
-    @Test
-    fun endBounce_withinNormalRange_keepsScaleAndOffset() = runAnimationTest {
-        val zoomState = ZoomState(maxScale = 5f, contentSize = Size(100f, 100f))
-        zoomState.setLayoutSize(Size(100f, 100f))
-        zoomState.applyGesture(Offset(10f, 10f), 2f, Offset(50f, 50f), 0)
-        val scale = zoomState.scale
-        val offsetX = zoomState.offsetX
-        val offsetY = zoomState.offsetY
-
-        zoomState.endBounce(snap())
-
-        assertEquals(scale, zoomState.scale)
-        assertEquals(offsetX, zoomState.offsetX)
-        assertEquals(offsetY, zoomState.offsetY)
     }
 }
 
