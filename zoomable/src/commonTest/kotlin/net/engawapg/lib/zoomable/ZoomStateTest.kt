@@ -1,5 +1,7 @@
 package net.engawapg.lib.zoomable
 
+import androidx.compose.animation.core.snap
+import androidx.compose.runtime.MonotonicFrameClock
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -7,7 +9,33 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+
+/**
+ * Emits frames as fast as they are requested, so that animations driven with
+ * [androidx.compose.animation.core.snap] settle without any virtual time needing to pass.
+ */
+private class ImmediateFrameClock : MonotonicFrameClock {
+    private var frameTimeNanos = 0L
+
+    override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R {
+        frameTimeNanos += 16_000_000L
+        return onFrame(frameTimeNanos)
+    }
+}
+
+/**
+ * Runs a test that drives an [androidx.compose.animation.core.Animatable], which does not advance
+ * without a frame clock in the coroutine context.
+ */
+private fun runAnimationTest(body: suspend CoroutineScope.() -> Unit): TestResult = runTest {
+    withContext(ImmediateFrameClock()) {
+        body()
+    }
+}
 
 class ZoomStateTest {
 
@@ -212,6 +240,159 @@ class ZoomStateTest {
         zoomState.setLayoutSize(Size(100f, 100f))
 
         zoomState.applyGesture(Offset.Zero, 2f, Offset.Zero, 0)
+    }
+
+    @Test
+    fun applyGesture_shrinkWithCustomBounce_shrinksToBouncedMin() = runTest {
+        val zoomState = ZoomState(
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.5f, upper = 1f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 0.1f, Offset(50f, 50f), 0)
+        assertEquals(0.5f, zoomState.scale)
+    }
+
+    @Test
+    fun applyGesture_enlargeWithCustomBounce_enlargesToBouncedMax() = runTest {
+        val zoomState = ZoomState(
+            maxScale = 5f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.9f, upper = 1.2f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 100f, Offset(50f, 50f), 0)
+        assertEquals(6f, zoomState.scale)
+    }
+
+    @Test
+    fun applyGesture_bounceNone_doesNotExceedNormalRange() = runTest {
+        val zoomState = ZoomState(
+            maxScale = 5f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce.None,
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 0.1f, Offset(50f, 50f), 0)
+        assertEquals(1f, zoomState.scale)
+
+        zoomState.applyGesture(Offset.Zero, 100f, Offset(50f, 50f), 0)
+        assertEquals(5f, zoomState.scale)
+    }
+
+    @Test
+    fun applyGesture_bounceArgumentOverridesStateBounce() = runTest {
+        val zoomState = ZoomState(
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.5f, upper = 1f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 0.1f, Offset(50f, 50f), 0, bounce = Bounce.None)
+        assertEquals(1f, zoomState.scale)
+    }
+
+    @Test
+    fun isBouncing_withinNormalRange_isFalse() = runTest {
+        val zoomState = ZoomState(maxScale = 5f, contentSize = Size(100f, 100f))
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 2f, Offset(50f, 50f), 0)
+        assertEquals(false, zoomState.isBouncing)
+    }
+
+    @Test
+    fun isBouncing_shrunkBelowNormalRange_isTrue() = runTest {
+        val zoomState = ZoomState(contentSize = Size(100f, 100f))
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 0.5f, Offset(50f, 50f), 0)
+        assertEquals(true, zoomState.isBouncing)
+    }
+
+    @Test
+    fun isBouncing_enlargedBeyondNormalRange_isTrue() = runTest {
+        val zoomState = ZoomState(
+            maxScale = 5f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.9f, upper = 1.2f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        zoomState.applyGesture(Offset.Zero, 100f, Offset(50f, 50f), 0)
+        assertEquals(true, zoomState.isBouncing)
+    }
+
+    @Test
+    fun endBounce_afterShrinking_restoresScaleToMin() = runAnimationTest {
+        val zoomState = ZoomState(contentSize = Size(100f, 100f))
+        zoomState.setLayoutSize(Size(100f, 100f))
+        zoomState.applyGesture(Offset.Zero, 0.5f, Offset(50f, 50f), 0)
+
+        zoomState.endBounce(snap())
+
+        assertEquals(1f, zoomState.scale)
+        assertEquals(0f, zoomState.offsetX)
+        assertEquals(0f, zoomState.offsetY)
+    }
+
+    @Test
+    fun endBounce_afterEnlarging_restoresScaleToMax() = runAnimationTest {
+        val zoomState = ZoomState(
+            maxScale = 5f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.9f, upper = 1.2f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+        zoomState.applyGesture(Offset.Zero, 100f, Offset(50f, 50f), 0)
+
+        zoomState.endBounce(snap())
+
+        assertEquals(5f, zoomState.scale)
+        assertEquals(false, zoomState.isBouncing)
+    }
+
+    @Test
+    fun endBounce_afterEnlarging_clampsOffsetIntoRestoredBounds() = runAnimationTest {
+        val zoomState = ZoomState(
+            maxScale = 2f,
+            contentSize = Size(100f, 100f),
+            bounce = Bounce(lower = 0.9f, upper = 2f),
+        )
+        zoomState.setLayoutSize(Size(100f, 100f))
+
+        // Enlarge to the bounced maximum of 4.0 around the top left corner, which pans the content
+        // further than the restored scale of 2.0 allows.
+        zoomState.applyGesture(Offset.Zero, 100f, Offset.Zero, 0)
+        assertEquals(4f, zoomState.scale)
+        assertEquals(150f, zoomState.offsetX)
+        assertEquals(150f, zoomState.offsetY)
+
+        zoomState.endBounce(snap())
+
+        // At a scale of 2.0 the content may only be panned by half its overflow, i.e. 50px.
+        assertEquals(2f, zoomState.scale)
+        assertEquals(50f, zoomState.offsetX)
+        assertEquals(50f, zoomState.offsetY)
+    }
+
+    @Test
+    fun endBounce_withinNormalRange_keepsScaleAndOffset() = runAnimationTest {
+        val zoomState = ZoomState(maxScale = 5f, contentSize = Size(100f, 100f))
+        zoomState.setLayoutSize(Size(100f, 100f))
+        zoomState.applyGesture(Offset(10f, 10f), 2f, Offset(50f, 50f), 0)
+        val scale = zoomState.scale
+        val offsetX = zoomState.offsetX
+        val offsetY = zoomState.offsetY
+
+        zoomState.endBounce(snap())
+
+        assertEquals(scale, zoomState.scale)
+        assertEquals(offsetX, zoomState.offsetX)
+        assertEquals(offsetY, zoomState.offsetY)
     }
 }
 

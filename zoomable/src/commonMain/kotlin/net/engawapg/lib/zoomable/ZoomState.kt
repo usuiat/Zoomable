@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
  * be used as content size.
  * @param velocityDecay The decay animation spec for fling behaviour.
  * @param initialScale The initial scale of the content.
+ * @param bounce How far the scale can go beyond its normal range during a gesture.
  */
 @Stable
 public class ZoomState(
@@ -56,6 +57,7 @@ public class ZoomState(
     private var contentSize: Size = Size.Zero,
     private val velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
     @param:FloatRange(from = 1.0) private val initialScale: Float = 1f,
+    private val bounce: Bounce = Bounce.Default,
 ) {
     init {
         require(maxScale >= 1.0f) { "maxScale must be at least 1.0." }
@@ -64,7 +66,7 @@ public class ZoomState(
     }
 
     private var _scale = Animatable(initialScale).apply {
-        updateBounds(0.9f, maxScale)
+        updateBounds(bounce.lower, maxScale * bounce.upper)
     }
 
     /**
@@ -211,10 +213,9 @@ public class ZoomState(
         zoom: Float,
         position: Offset,
         timeMillis: Long,
-        enableBounce: Boolean = true,
+        bounce: Bounce = this@ZoomState.bounce,
     ) = coroutineScope {
-        val minScale = if (enableBounce) 0.9f else 1f
-        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
+        val newScale = (scale * zoom).coerceIn(bounce.lower, maxScale * bounce.upper)
         val newOffset = calculateNewOffset(newScale, position, pan)
         val newBounds = calculateNewBounds(newScale)
 
@@ -290,6 +291,43 @@ public class ZoomState(
             _scale.animateTo(newScale, animationSpec)
         }
     }
+
+    /**
+     * Whether the scale is currently outside the normal range because of bouncing.
+     */
+    internal val isBouncing: Boolean
+        get() = (scale < 1f) || (scale > maxScale)
+
+    /**
+     * Animate the scale back into the normal range after a bounce.
+     *
+     * Unlike [changeScale], this keeps the content centred where it is instead of scaling around a
+     * given position, because a bounce is undone rather than aimed somewhere. The offsets only move
+     * as much as the narrower bounds of the restored scale require.
+     */
+    internal suspend fun endBounce(animationSpec: AnimationSpec<Float> = spring()): Unit =
+        coroutineScope {
+            val newScale = scale.coerceIn(1f, maxScale)
+            val newBounds = calculateNewBounds(newScale)
+
+            val x = _offsetX.value.coerceIn(newBounds.left, newBounds.right)
+            launch {
+                _offsetX.updateBounds(null, null)
+                _offsetX.animateTo(x, animationSpec)
+                _offsetX.updateBounds(newBounds.left, newBounds.right)
+            }
+
+            val y = _offsetY.value.coerceIn(newBounds.top, newBounds.bottom)
+            launch {
+                _offsetY.updateBounds(null, null)
+                _offsetY.animateTo(y, animationSpec)
+                _offsetY.updateBounds(newBounds.top, newBounds.bottom)
+            }
+
+            launch {
+                _scale.animateTo(newScale, animationSpec)
+            }
+        }
 
     private fun calculateNewOffset(newScale: Float, position: Offset, pan: Offset): Offset {
         val size = fitContentSize * scale
@@ -441,8 +479,10 @@ public class ZoomState(
  * be used as content size.
  * @param velocityDecay The decay animation spec for fling behaviour.
  * @param initialScale The initial scale of the content.
+ * @param bounce How far the scale can go beyond its normal range during a gesture.
  *
  * When [maxScale], [contentSize], and [initialScale] change, a new ZoomState instance is created.
+ * The remaining parameters are only read when that happens, so changing them alone has no effect.
  */
 @Composable
 public fun rememberZoomState(
@@ -450,6 +490,7 @@ public fun rememberZoomState(
     contentSize: Size = Size.Zero,
     velocityDecay: DecayAnimationSpec<Float> = exponentialDecay(),
     @FloatRange(from = 1.0) initialScale: Float = 1f,
+    bounce: Bounce = Bounce.Default,
 ): ZoomState = remember(maxScale, contentSize, initialScale) {
-    ZoomState(maxScale, contentSize, velocityDecay, initialScale)
+    ZoomState(maxScale, contentSize, velocityDecay, initialScale, bounce)
 }

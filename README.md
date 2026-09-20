@@ -166,6 +166,27 @@ zoomable(
 )
 ```
 
+### Bounce
+
+While a zoom gesture is in progress, the content can be scaled a little beyond its normal range, and
+springs back once the gesture ends. Pass a `Bounce` to `rememberZoomState` to configure how far it
+goes.
+
+Both values are factors applied to the boundaries of the normal scale range, not absolute scale
+values. Note that the two are applied to different boundaries: `lower` is applied to the minimum
+scale, which is always `1.0`, while `upper` is applied to `maxScale`.
+
+```Kotlin
+val zoomState = rememberZoomState(
+    maxScale = 5f,
+    // Scale can reach 0.8 while shrinking and 6.0 while enlarging.
+    bounce = Bounce(lower = 0.8f, upper = 1.2f),
+)
+```
+
+By default, the content bounces while shrinking but not while enlarging (`Bounce.Default`). Use
+`Bounce.None` to disable bouncing altogether.
+
 ### ScrollGesturePropagation
 
 You can choose when to propagate scroll gestures to the parent Pager composable by specifying `scrollGesturePropagation`.
