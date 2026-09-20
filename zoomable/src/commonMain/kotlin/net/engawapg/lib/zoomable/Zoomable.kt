@@ -307,10 +307,10 @@ private class ZoomableNode(
                 onGestureEnd = {
                     coroutineScope.launch {
                         try {
-                            if (snapBackEnabled || zoomState.scale < 1f) {
-                                zoomState.changeScale(1f, Offset.Zero)
-                            } else {
-                                zoomState.startFling()
+                            when {
+                                snapBackEnabled -> zoomState.changeScale(1f, Offset.Zero)
+                                zoomState.isBouncing -> zoomState.endBounce()
+                                else -> zoomState.startFling()
                             }
                         } finally {
                             zoomState.deactiveGesture()
@@ -350,7 +350,8 @@ private class ZoomableNode(
                             zoom = zoom,
                             position = position,
                             timeMillis = 0L,
-                            enableBounce = false,
+                            // A wheel rotation has no end event to animate the bounce back from.
+                            bounce = Bounce.None,
                         )
                     }
                 },

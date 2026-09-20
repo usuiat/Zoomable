@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import net.engawapg.lib.zoomable.Bounce
 import net.engawapg.lib.zoomable.MouseWheelZoom
 import net.engawapg.lib.zoomable.ScrollGesturePropagation
 
@@ -34,6 +35,7 @@ data class Settings(
     val enableOneFingerZoom: Boolean = true,
     val scrollGesturePropagation: ScrollGesturePropagation = ScrollGesturePropagation.ContentEdge,
     val initialScale: Float = 1f,
+    val bounce: Bounce = Bounce.Default,
     val mouseWheelZoom: MouseWheelZoom = MouseWheelZoom.EnabledWithCtrlKey,
 )
 
@@ -139,13 +141,6 @@ internal fun SettingsContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
-        Text(
-            text = "To reflect the changed values, switch the sample to be displayed.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         RadioButtonSettingItem(
             text = "1.0",
             selected = settings.initialScale == 1f,
@@ -155,6 +150,26 @@ internal fun SettingsContent(
             text = "2.0",
             selected = settings.initialScale == 2f,
             onClick = { onSettingsChange(settings.copy(initialScale = 2f)) },
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+
+        Text(
+            text = "bounce",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        RadioButtonSettingItem(
+            text = "Default: Bounce(${Bounce.Default.lower}, ${Bounce.Default.upper})",
+            selected = settings.bounce == Bounce.Default,
+            onClick = { onSettingsChange(settings.copy(bounce = Bounce.Default)) },
+        )
+        RadioButtonSettingItem(
+            text = "Bounce(0.25, 1.5)",
+            selected = settings.bounce == Bounce(lower = 0.25f, upper = 1.5f),
+            onClick = {
+                onSettingsChange(settings.copy(bounce = Bounce(lower = 0.25f, upper = 1.5f)))
+            },
         )
 
         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))

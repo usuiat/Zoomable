@@ -35,7 +35,10 @@ fun ScrollableRowSample(
         modifier = Modifier
             .fillMaxSize()
             .zoomableWithScroll(
-                zoomState = rememberZoomState(initialScale = settings.initialScale),
+                zoomState = rememberZoomState(
+                    initialScale = settings.initialScale,
+                    bounce = settings.bounce,
+                ),
                 zoomEnabled = settings.zoomEnabled,
                 enableOneFingerZoom = settings.enableOneFingerZoom,
                 onTap = onTap,
