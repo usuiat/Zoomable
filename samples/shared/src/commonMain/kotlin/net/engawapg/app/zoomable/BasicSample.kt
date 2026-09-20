@@ -18,6 +18,7 @@ fun BasicSample(settings: Settings, onTap: (Offset) -> Unit, onLongPress: (Offse
     val zoomState = rememberZoomState(
         contentSize = painter.intrinsicSize,
         initialScale = settings.initialScale,
+        bounce = settings.bounce,
     )
     Image(
         painter = painter,
