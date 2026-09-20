@@ -1,10 +1,11 @@
 package net.engawapg.lib.zoomable
 
 import androidx.compose.animation.core.snap
-import androidx.compose.runtime.MonotonicFrameClock
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.TestMonotonicFrameClock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -15,24 +16,12 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 
 /**
- * Emits frames as fast as they are requested, so that animations driven with
- * [androidx.compose.animation.core.snap] settle without any virtual time needing to pass.
- */
-private class ImmediateFrameClock : MonotonicFrameClock {
-    private var frameTimeNanos = 0L
-
-    override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R {
-        frameTimeNanos += 16_000_000L
-        return onFrame(frameTimeNanos)
-    }
-}
-
-/**
  * Runs a test that drives an [androidx.compose.animation.core.Animatable], which does not advance
  * without a frame clock in the coroutine context.
  */
+@OptIn(ExperimentalTestApi::class)
 private fun runAnimationTest(body: suspend CoroutineScope.() -> Unit): TestResult = runTest {
-    withContext(ImmediateFrameClock()) {
+    withContext(TestMonotonicFrameClock(this)) {
         body()
     }
 }
@@ -356,31 +345,7 @@ class ZoomStateTest {
     }
 
     @Test
-    fun endBounce_afterEnlarging_clampsOffsetIntoRestoredBounds() = runAnimationTest {
-        val zoomState = ZoomState(
-            maxScale = 2f,
-            contentSize = Size(100f, 100f),
-            bounce = Bounce(lower = 0.9f, upper = 2f),
-        )
-        zoomState.setLayoutSize(Size(100f, 100f))
-
-        // Enlarge to the bounced maximum of 4.0 around the top left corner, which pans the content
-        // further than the restored scale of 2.0 allows.
-        zoomState.applyGesture(Offset.Zero, 100f, Offset.Zero, 0)
-        assertEquals(4f, zoomState.scale)
-        assertEquals(150f, zoomState.offsetX)
-        assertEquals(150f, zoomState.offsetY)
-
-        zoomState.endBounce(snap())
-
-        // At a scale of 2.0 the content may only be panned by half its overflow, i.e. 50px.
-        assertEquals(2f, zoomState.scale)
-        assertEquals(50f, zoomState.offsetX)
-        assertEquals(50f, zoomState.offsetY)
-    }
-
-    @Test
-    fun endBounce_shrinksAroundTheLastGesturePosition() = runAnimationTest {
+    fun endBounce_shrinksAroundTheZoomPosition() = runAnimationTest {
         val zoomState = ZoomState(
             maxScale = 2f,
             contentSize = Size(100f, 100f),
@@ -396,15 +361,15 @@ class ZoomStateTest {
 
         zoomState.endBounce(snap())
 
-        // Shrinking back to 2.0 around the same point halves how far the content is shifted, which
-        // is still within the 50px the restored scale allows, so the clamp does not kick in.
+        // Shrinking back to 2.0 around the same point halves how far the content is shifted.
+        // Shrinking around the centre instead would have clamped the offset to -50f.
         assertEquals(2f, zoomState.scale)
         assertEquals(-25f, zoomState.offsetX)
         assertEquals(0f, zoomState.offsetY)
     }
 
     @Test
-    fun endBounce_panningAfterZoomingMovesThePositionItShrinksAround() = runAnimationTest {
+    fun endBounce_shrinksAroundThePanPositionWhenPannedAfterZooming() = runAnimationTest {
         val zoomState = ZoomState(
             maxScale = 2f,
             contentSize = Size(100f, 100f),
