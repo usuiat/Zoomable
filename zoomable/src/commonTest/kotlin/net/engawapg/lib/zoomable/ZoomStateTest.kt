@@ -1,6 +1,7 @@
 package net.engawapg.lib.zoomable
 
 import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.MonotonicFrameClock
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -339,6 +340,22 @@ class ZoomStateTest {
         assertEquals(1f, zoomState.scale)
         assertEquals(0f, zoomState.offsetX)
         assertEquals(0f, zoomState.offsetY)
+    }
+
+    /**
+     * Unlike [snap], a spring runs through intermediate frames. Starting exactly at the lower bound,
+     * its first frame can be rounded to slightly below the bound, which must not stop the animation
+     * there. This has been observed only on JS.
+     */
+    @Test
+    fun endBounce_withSpringFromLowerBound_restoresScaleToMin() = runAnimationTest {
+        val zoomState = ZoomState(contentSize = Size(100f, 100f))
+        zoomState.setLayoutSize(Size(100f, 100f))
+        zoomState.applyGesture(Offset.Zero, 0.5f, Offset(50f, 50f), 0)
+
+        zoomState.endBounce(spring())
+
+        assertEquals(1f, zoomState.scale)
     }
 
     @Test
