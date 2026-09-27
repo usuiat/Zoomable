@@ -8,10 +8,13 @@ plugins {
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        outputModuleName.set("webApp")
-        browser {
+    listOf(
+        js(),
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmJs()
+    ).forEach { target ->
+        target.outputModuleName.set("webApp")
+        target.browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
@@ -23,7 +26,7 @@ kotlin {
                 }
             }
         }
-        binaries.executable()
+        target.binaries.executable()
     }
 
     sourceSets.commonMain.dependencies {
