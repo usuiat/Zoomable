@@ -54,7 +54,7 @@ jobs:
         run: ./gradlew :samples:shared:iosArm64Binaries
 
       - name: Build macOS
-        run: ./gradlew :zoomable:compileKotlinMacosArm64
+        run: ./gradlew :samples:macosApp:linkDebugExecutableMacosArm64
 
   unit_tests:
     name: Unit tests
