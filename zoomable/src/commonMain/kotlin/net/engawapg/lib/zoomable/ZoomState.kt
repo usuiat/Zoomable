@@ -297,7 +297,16 @@ public class ZoomState(
         }
 
         launch {
-            _scale.animateTo(newScale, animationSpec)
+            // The target is already within the normal range, so the bounds are not needed during
+            // the animation. Keeping them can end the animation at its first frame when it starts
+            // exactly at a bound, because the animated value may be rounded to slightly outside of
+            // it (as observed on Kotlin/JS, where Float values are not rounded to 32 bits).
+            _scale.updateBounds(null, null)
+            try {
+                _scale.animateTo(newScale, animationSpec)
+            } finally {
+                _scale.updateBounds(bounce.lower, maxScale * bounce.upper)
+            }
         }
     }
 
