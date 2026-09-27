@@ -29,18 +29,19 @@ Zoomable can be used in the following ways:
 
 Zoomable supports Android, iOS, macOS, Desktop, and Web (Wasm and JS).
 
-|Platform|Pinch|Double-tap|Tap-and-drag|Mouse scroll wheel|
-|--|--|--|--|--|
-|Android|✅|✅|✅|✅|
-|iOS|✅|✅|✅|✅|
-|macOS|*2|*2|*2|*2|
-|Desktop|*1|✅|✅|✅|
-|Wasm|✅|✅|✅|✅|
-|JS|✅|✅|✅|✅|
+| Platform | Pinch | Double-tap | Tap-and-drag | Mouse scroll wheel |
+|----------|-------|------------|--------------|-------------------|
+| Android  | ✅     | ✅          | ✅            | ✅                 |
+| iOS      | ✅     | ✅          | ✅            | ✅                 |
+| macOS | -     | 🧪 *2      | 🧪 *2        | 🧪 *3             |
+| Desktop  | - *1  | ✅          | ✅            | ✅                 |
+| Wasm     | ✅     | ✅          | ✅            | ✅                 |
+| JS       | ✅     | ✅          | ✅            | ✅                 |
 
 - ✅: Supported
-- *1: Compose desktop does not support multi-touch gestures.
-- *2: Compose for macOS is experimental. Verified by unit tests only.
+- *1: [Compose desktop does not support multi-touch gestures.](https://kotlinlang.org/docs/multiplatform/compose-platform-specifics.html#touch-and-mouse-support)
+- *2: Works, but not officially supported. [Compose for macOS is experimental.](https://github.com/JetBrains/compose-multiplatform/issues/4580)
+- *3: Works only with `MouseWheelZoom.Enabled`. Zooming with a modifier key (e.g. `MouseWheelZoom.EnabledWithCtrlKey`, the default) does not work because Compose for macOS does not report modifier key state.
 
 ## API Reference
 
