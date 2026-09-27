@@ -47,6 +47,10 @@ kotlin {
     }
     jvm("desktop")
 
+    js {
+        browser()
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
@@ -69,6 +73,7 @@ kotlin {
             group("nonAndroid") {
                 withJvm()
                 withIos()
+                withJs()
                 withWasmJs()
             }
         }
