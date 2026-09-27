@@ -27,7 +27,7 @@ Zoomable can be used in the following ways:
 
 ## Platforms
 
-Zoomable supports Android, iOS, and Desktop.
+Zoomable supports Android, iOS, Desktop, and Web (Wasm and JS).
 
 |Platform|Pinch|Double-tap|Tap-and-drag|Mouse scroll wheel|
 |--|--|--|--|--|
@@ -35,6 +35,7 @@ Zoomable supports Android, iOS, and Desktop.
 |iOS|✅|✅|✅|✅|
 |Desktop|*1|✅|✅|✅|
 |Wasm|✅|✅|✅|✅|
+|JS|✅|✅|✅|✅|
 
 - ✅: Supported
 - *1: Compose desktop does not support multi-touch gestures.
