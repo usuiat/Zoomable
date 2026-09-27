@@ -31,6 +31,9 @@ jobs:
       - name: Build wasm
         run: ./gradlew :samples:webApp:wasmJsBrowserDevelopmentWebpack --no-daemon --max-workers=1
 
+      - name: Build js
+        run: ./gradlew :samples:webApp:jsBrowserDevelopmentWebpack --no-daemon --max-workers=1
+
       - name: Check lint
         run: ./gradlew lint
 
