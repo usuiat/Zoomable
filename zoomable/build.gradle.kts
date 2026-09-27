@@ -66,6 +66,8 @@ kotlin {
         }
     }
 
+    macosArm64()
+
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
         sourceSetTrees(KotlinSourceSetTree.main, KotlinSourceSetTree.test)
@@ -73,6 +75,7 @@ kotlin {
             group("nonAndroid") {
                 withJvm()
                 withIos()
+                withMacos()
                 withJs()
                 withWasmJs()
             }
