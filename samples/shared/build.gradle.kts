@@ -60,6 +60,8 @@ kotlin {
         }
     }
 
+    macosArm64()
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(path = ":zoomable"))
@@ -75,7 +77,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.core)
         }
-        iosMain.dependencies {
+        appleMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
     }
