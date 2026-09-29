@@ -65,6 +65,12 @@ dependencies {
 
 The latest version: <img alt="version badge" src="https://img.shields.io/github/v/release/usuiat/Zoomable?filter=*.*.*">
 
+If your app targets macOS (native), add the following to `gradle.properties`, since Compose for macOS is experimental.
+
+```
+org.jetbrains.compose.experimental.macos.enabled=true
+```
+
 ### Basic Usage
 
 You can use `Modifier.zoomable` to make contents such as an image zoomable.
