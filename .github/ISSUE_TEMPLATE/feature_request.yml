@@ -1,0 +1,51 @@
+name: Feature request
+description: Suggest a new feature or an improvement to Zoomable.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your suggestion!
+        To keep the API simple, new features are evaluated by how widely they are useful. Please describe your use case in detail.
+        If you plan to open a pull request, please wait until the direction is agreed on in this issue.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What are you trying to achieve, and why is it difficult with the current API?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work? An API sketch is welcome.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / workarounds
+      description: Any alternatives or workarounds you have considered.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platforms
+      description: Select the platforms this request relates to.
+      multiple: true
+      options:
+        - All
+        - Android
+        - iOS
+        - macOS
+        - Desktop (JVM)
+        - Web (Wasm)
+        - Web (JS)
+    validations:
+      required: false
