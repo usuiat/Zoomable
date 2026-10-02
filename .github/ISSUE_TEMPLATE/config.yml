@@ -3,6 +3,3 @@ contact_links:
   - name: Questions
     url: https://github.com/usuiat/Zoomable/discussions/categories/q-a
     about: Ask questions about how to use Zoomable in Discussions.
-  - name: API documentation
-    url: https://usuiat.github.io/Zoomable/
-    about: Browse the API reference.
