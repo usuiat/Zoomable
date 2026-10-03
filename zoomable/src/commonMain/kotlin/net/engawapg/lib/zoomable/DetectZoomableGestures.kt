@@ -22,7 +22,6 @@ import androidx.compose.ui.util.fastForEach
  * A caller of this function can choose if the pointer events will be consumed.
  * And the caller can implement [onGestureStart] and [onGestureEnd] event.
  *
- * @param cancelIfZoomCanceled If true, cancel gesture when the number of fingers become one.
  * @param enableOneFingerZoom If true, enable one finger zoom gesture, double tap followed by
  * vertical scrolling.
  * @param canConsumeGesture Lambda that asks the caller whether the gesture can be consumed.
@@ -34,7 +33,6 @@ import androidx.compose.ui.util.fastForEach
  * @param onLongPress will be called when time elapses without the pointer moving
  */
 internal suspend fun PointerInputScope.detectZoomableGestures(
-    cancelIfZoomCanceled: () -> Boolean,
     enableOneFingerZoom: () -> Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
@@ -50,7 +48,6 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
     }
     onGestureStart()
     detectGesture(
-        cancelIfZoomCanceled = cancelIfZoomCanceled,
         canConsumeGesture = canConsumeGesture,
         onGesture = onGesture,
         onTap = onTap,
@@ -62,7 +59,6 @@ internal suspend fun PointerInputScope.detectZoomableGestures(
 }
 
 private suspend fun AwaitPointerEventScope.detectGesture(
-    cancelIfZoomCanceled: () -> Boolean,
     enableOneFingerZoom: () -> Boolean,
     canConsumeGesture: (pan: Offset, zoom: Float) -> Boolean,
     onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Unit,
@@ -94,9 +90,6 @@ private suspend fun AwaitPointerEventScope.detectGesture(
             }
         }
         hasMoved = true
-        if (cancelIfZoomCanceled() && event.isPointerReducedToOne) {
-            break
-        }
         event = awaitEvent() ?: return
     }
     if (hasMoved) {
@@ -184,9 +177,6 @@ private suspend fun AwaitPointerEventScope.consumeAllEventsUntilReleased() {
 
 private val PointerEvent.isPressed
     get() = changes.fastAny { it.pressed }
-
-private val PointerEvent.isPointerReducedToOne
-    get() = changes.count { it.previousPressed } > 1 && changes.count { it.pressed } == 1
 
 /**
  * Await second down or timeout from first up

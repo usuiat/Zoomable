@@ -65,7 +65,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
 
     private fun ComposeUiTest.pointerInputContentWithDetectZoomableGestures(
         result: ZoomableResult,
-        cancelIfZoomCanceled: Boolean = false,
         enableOneFingerZoom: Boolean = true,
         canConsumeGesture: (Offset, Float) -> Boolean = { _, _ -> true },
         onTap: ((Offset) -> Unit)? = { result.tap++ },
@@ -80,7 +79,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                     .size(300.dp)
                     .pointerInput(Unit) {
                         detectZoomableGestures(
-                            cancelIfZoomCanceled = { cancelIfZoomCanceled },
                             canConsumeGesture = canConsumeGesture,
                             onGesture = { _, pan, zoom, _ ->
                                 result.pan += pan
@@ -99,7 +97,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
 
     private fun ComposeUiTest.nestedPointerInputContentWithDetectZoomableGestures(
         result: ZoomableResult,
-        cancelIfZoomCanceled: Boolean = false,
         enableOneFingerZoom: Boolean = true,
         canConsumeGesture: (Offset, Float) -> Boolean = { _, _ -> true },
         firstDownOnParent: (down: PointerInputChange) -> Unit = {},
@@ -126,7 +123,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                         .size(300.dp)
                         .pointerInput(Unit) {
                             detectZoomableGestures(
-                                cancelIfZoomCanceled = { cancelIfZoomCanceled },
                                 canConsumeGesture = canConsumeGesture,
                                 onGesture = { _, pan, zoom, _ ->
                                     result.pan += pan
@@ -431,37 +427,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
     }
 
     @Test
-    fun gesture_should_stop_when_number_of_fingers_become_one() = runComposeUiTest {
-        val result = ZoomableResult()
-        val target = pointerInputContentWithDetectZoomableGestures(
-            result = result,
-            cancelIfZoomCanceled = true,
-        )
-
-        target.performGesture {
-            // move right 50px
-            down(0, center)
-            moveBy(Offset(50f, 0f))
-            // zoom 2x
-            down(1, center + Offset(-50f, 0f))
-            moveBy(0, Offset(50f, 0f))
-            moveBy(1, Offset(-50f, 0f))
-            // move down 50px
-            up(0)
-            moveBy(1, Offset(0f, 50f))
-            // zoom 2x
-            down(0, center + Offset(0f, 50f))
-            moveBy(0, Offset(50f, 0f))
-            moveBy(1, Offset(-50f, 0f))
-            up(0)
-            up(1)
-        }
-
-        assertEquals(2f, result.zoom)
-        assertEquals(Offset(50f, 0f), result.pan)
-    }
-
-    @Test
     fun pan_and_zoom_after_long_press_should_be_ignored() = runComposeUiTest {
         val result = ZoomableResult()
         val target = pointerInputContentWithDetectZoomableGestures(result)
@@ -538,7 +503,6 @@ class DetectZoomableGesturesTest : PlatformZoomableTest() {
                         .size(300.dp)
                         .pointerInput(Unit) {
                             detectZoomableGestures(
-                                cancelIfZoomCanceled = { true },
                                 canConsumeGesture = { _, _ -> true },
                                 onGesture = { _, _, _, _ -> },
                                 onTap = null,
