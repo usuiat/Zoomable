@@ -441,6 +441,52 @@ class ZoomableTest : PlatformZoomableTest() {
             assertEquals(boundsAfter.height, boundsBefore.height)
         }
 
+    @Test
+    fun snapBackZoomable_keeps_zoom_and_pans_after_one_finger_is_released() = runComposeUiTest {
+        lateinit var zoomState: ZoomState
+        setContent {
+            val icon = Icons.Default.Info
+            zoomState =
+                rememberZoomState(contentSize = Size(icon.viewportWidth, icon.viewportHeight))
+            Image(
+                imageVector = icon,
+                contentDescription = "image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .snapBackZoomable(
+                        zoomState = zoomState,
+                    )
+            )
+        }
+
+        val image = onNodeWithContentDescription("image")
+        image.performTouchInput {
+            down(0, center + Offset(-100f, 0f))
+            down(1, center + Offset(+100f, 0f))
+            moveTo(0, center + Offset(-200f, 0f))
+            moveTo(1, center + Offset(+200f, 0f))
+            up(0)
+        }
+        waitForIdle()
+        val scaleAfterOneFingerUp = zoomState.scale
+        val offsetXAfterOneFingerUp = zoomState.offsetX
+        assertTrue(scaleAfterOneFingerUp > 1f)
+
+        image.performTouchInput {
+            moveBy(1, Offset(-100f, 0f))
+        }
+        waitForIdle()
+        assertEquals(scaleAfterOneFingerUp, zoomState.scale)
+        assertTrue(zoomState.offsetX < offsetXAfterOneFingerUp)
+
+        image.performTouchInput {
+            up(1)
+        }
+        waitForIdle()
+        assertEquals(1f, zoomState.scale)
+    }
+
     @OptIn(ExperimentalZoomableApi::class)
     @Test
     fun snapBackZoomable_isActive_transitions_through_gesture_flow() = runComposeUiTest {
