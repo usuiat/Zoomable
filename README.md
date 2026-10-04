@@ -220,7 +220,7 @@ You can change the behavior by using the `mouseWheelZoom` argument of `zoomable`
 
 ### Snap Back Zoom
 
-`Modifier.snapBackZoomable` allows you to zoom an image with a pinch gesture and automatically return it to its original size when you release your finger.
+`Modifier.snapBackZoomable` allows you to zoom an image with a pinch gesture and automatically return it to its original size when you release all fingers.
 You can easily achieve Instagram-like behavior.
 
 <img width="150" alt="Snap back zoom" src="./doc/snap_back_zoomable.gif" />

@@ -82,7 +82,7 @@ public fun Modifier.zoomable(
 )
 
 /**
- * A modifier function that allows content to be zoomable and automatically return to its original size when the finger is released.
+ * A modifier function that allows content to be zoomable and automatically return to its original size when all fingers are released.
  *
  * @param zoomState A [ZoomState] object.
  * @param zoomEnabled specifies if zoom behaviour is enabled or disabled. Even if this is false,
@@ -284,7 +284,6 @@ private class ZoomableNode(
     val pointerInputNode = delegate(
         SuspendingPointerInputModifierNode {
             detectZoomableGestures(
-                cancelIfZoomCanceled = { snapBackEnabled },
                 onGestureStart = {
                     resetConsumeGesture()
                     zoomState.startGesture()
